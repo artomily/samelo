@@ -16,6 +16,7 @@ const VideoPlayer = dynamic(() => import('@/app/components/VideoPlayer').then((m
 })
 import { WalletBadge } from '@/app/components/WalletBadge'
 import { ClaimButton } from '@/app/components/ClaimButton'
+import { ConnectBanner } from '@/app/components/ConnectBanner'
 import { toast } from '@/app/components/Toast'
 
 export default function FeedContent() {
@@ -115,6 +116,9 @@ export default function FeedContent() {
       </header>
 
       <div className="mx-auto w-full max-w-lg px-4 py-4">
+        {/* Soft connect prompt when wallet not connected */}
+        <ConnectBanner className="mb-4" />
+
         {/* Active player */}
         <VideoPlayer
           key={activeId}
@@ -141,13 +145,15 @@ export default function FeedContent() {
           </div>
         </div>
 
-        {/* Claim */}
-        <div className="mb-6">
-          <ClaimButton
-            pendingCents={pendingCents}
-            onClaimed={handleClaimed}
-          />
-        </div>
+        {/* Claim — only when connected */}
+        {address && (
+          <div className="mb-6">
+            <ClaimButton
+              pendingCents={pendingCents}
+              onClaimed={handleClaimed}
+            />
+          </div>
+        )}
 
         {/* Divider */}
         <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted">

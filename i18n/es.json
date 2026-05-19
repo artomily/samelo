@@ -1,4 +1,5 @@
 {
+  "home": "Inicio",
   "watch": "Ver",
   "earnings": "Ganancias",
   "profile": "Perfil",
@@ -25,5 +26,21 @@
   "errorTitle": "Algo salió mal",
   "errorDesc": "Ocurrió un error inesperado. Por favor, inténtalo de nuevo.",
   "tryAgain": "Intentar de nuevo",
-  "language": "Idioma"
+  "language": "Idioma",
+  "heroTagline": "Ve videos.",
+  "heroTagline2": "Gana cUSD real.",
+  "heroSub": "Semelo recompensa tu atención con dinero real en la blockchain de Celo.",
+  "watchNow": "Empezar a Ver",
+  "howItWorks": "Cómo funciona",
+  "step1Title": "Ver",
+  "step1Desc": "Elige un video patrocinado corto y mira al menos el 80%.",
+  "step2Title": "Ganar",
+  "step2Desc": "Las recompensas de cUSD se acreditan en tu billetera instantáneamente.",
+  "step3Title": "Reclamar",
+  "step3Desc": "Toca Reclamar para transferir tu cUSD ganado on-chain, sin gas.",
+  "poweredBy": "Con tecnología de Celo",
+  "connectToEarn": "Conecta tu billetera para empezar a ganar",
+  "connectDesc": "Los videos se reproducen para todos — conéctate para rastrear ganancias y reclamar recompensas.",
+  "connectWallet": "Conectar Billetera",
+  "viewingDemo": "Viendo en modo demostración"
 }

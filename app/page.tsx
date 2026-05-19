@@ -1,10 +1,19 @@
-import { ConnectGuard } from '@/app/components/ConnectGuard'
-import FeedContent from '@/app/components/FeedContent'
+import { Navbar } from '@/app/components/landing/Navbar'
+import { HeroSection } from '@/app/components/landing/HeroSection'
+import { BentoFeatures } from '@/app/components/landing/BentoFeatures'
+import { HowItWorks } from '@/app/components/landing/HowItWorks'
+import { EarningsTicker } from '@/app/components/landing/EarningsTicker'
+import { CTASection } from '@/app/components/landing/CTASection'
 
-export default function Home() {
+export default function LandingPage() {
   return (
-    <ConnectGuard>
-      <FeedContent />
-    </ConnectGuard>
+    <div className="flex min-h-dvh flex-col bg-bg text-primary">
+      <Navbar />
+      <HeroSection />
+      <BentoFeatures />
+      <HowItWorks />
+      <EarningsTicker />
+      <CTASection />
+    </div>
   )
 }

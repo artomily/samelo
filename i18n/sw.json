@@ -1,4 +1,5 @@
 {
+  "home": "Nyumbani",
   "watch": "Tazama",
   "earnings": "Mapato",
   "profile": "Wasifu",
@@ -25,5 +26,21 @@
   "errorTitle": "Hitilafu imetokea",
   "errorDesc": "Hitilafu isiyotarajiwa ilitokea. Tafadhali jaribu tena.",
   "tryAgain": "Jaribu tena",
-  "language": "Lugha"
+  "language": "Lugha",
+  "heroTagline": "Tazama video.",
+  "heroTagline2": "Pata cUSD halisi.",
+  "heroSub": "Semelo inakupa thamani kwa makini yako kwa pesa halisi kwenye blockchain ya Celo.",
+  "watchNow": "Anza Kutazama",
+  "howItWorks": "Jinsi inavyofanya kazi",
+  "step1Title": "Tazama",
+  "step1Desc": "Chagua video fupi inayofadhiliwa na uitazame zaidi ya 80%.",
+  "step2Title": "Pata",
+  "step2Desc": "Tuzo za cUSD zinaongezwa kwenye pochi yako mara moja baada ya kila video.",
+  "step3Title": "Dai",
+  "step3Desc": "Bonyeza Dai kuhamisha cUSD uliyopata kwenye mlolongo, bila ada ya gesi.",
+  "poweredBy": "Inaendeshwa na Celo",
+  "connectToEarn": "Unganisha pochi kuanza kupata",
+  "connectDesc": "Video zinachezwa kwa kila mtu — unganisha kufuatilia mapato na kudai tuzo.",
+  "connectWallet": "Unganisha Pochi",
+  "viewingDemo": "Unaangalia hali ya maonyesho"
 }

@@ -8,6 +8,22 @@ import { useTranslation, type TranslationKey } from '@/lib/i18n'
 const tabs: { href: string; labelKey: TranslationKey; icon: (active: boolean) => React.ReactNode }[] = [
   {
     href: '/',
+    labelKey: 'home',
+    icon: (active: boolean) => (
+      <svg
+        viewBox="0 0 24 24"
+        fill={active ? 'currentColor' : 'none'}
+        stroke="currentColor"
+        strokeWidth={1.8}
+        className="h-6 w-6"
+      >
+        <path d="M3 12L12 3l9 9" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M9 21V12h6v9" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+  {
+    href: '/watch',
     labelKey: 'watch',
     icon: (active: boolean) => (
       <svg
@@ -59,6 +75,9 @@ const tabs: { href: string; labelKey: TranslationKey; icon: (active: boolean) =>
 export function BottomNav() {
   const pathname = usePathname()
   const { t } = useTranslation()
+
+  // Don't show on landing page — except we DO show it (home tab is active there)
+  // Keep nav visible everywhere
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-surface pb-safe">

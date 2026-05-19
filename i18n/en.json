@@ -1,4 +1,5 @@
 {
+  "home": "Home",
   "watch": "Watch",
   "earnings": "Earnings",
   "profile": "Profile",
@@ -25,5 +26,21 @@
   "errorTitle": "Something went wrong",
   "errorDesc": "An unexpected error occurred. Please try again.",
   "tryAgain": "Try again",
-  "language": "Language"
+  "language": "Language",
+  "heroTagline": "Watch videos.",
+  "heroTagline2": "Earn real cUSD.",
+  "heroSub": "Semelo rewards your attention with real money on the Celo blockchain.",
+  "watchNow": "Start Watching",
+  "howItWorks": "How it works",
+  "step1Title": "Watch",
+  "step1Desc": "Pick a short sponsored video and watch at least 80% of it.",
+  "step2Title": "Earn",
+  "step2Desc": "cUSD rewards are credited to your wallet instantly after each video.",
+  "step3Title": "Claim",
+  "step3Desc": "Tap Claim to transfer your earned cUSD on-chain, no gas needed.",
+  "poweredBy": "Powered by Celo",
+  "connectToEarn": "Connect wallet to start earning",
+  "connectDesc": "Videos play for everyone — connect to track earnings and claim rewards.",
+  "connectWallet": "Connect Wallet",
+  "viewingDemo": "Viewing in demo mode"
 }
