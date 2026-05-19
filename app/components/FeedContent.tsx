@@ -1,19 +1,48 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
+import { useAccount } from 'wagmi'
 import { MOCK_VIDEOS } from '@/lib/mock-videos'
 import { VideoCard } from '@/app/components/VideoCard'
 import { VideoPlayer } from '@/app/components/VideoPlayer'
 import { RewardCounter } from '@/app/components/RewardCounter'
 import { WalletBadge } from '@/app/components/WalletBadge'
+import { ClaimButton } from '@/app/components/ClaimButton'
 import { toast } from '@/app/components/Toast'
 
 export default function FeedContent() {
+  const { address } = useAccount()
   const [activeId, setActiveId] = useState<string>(MOCK_VIDEOS[0].id)
   const [pendingCents, setPendingCents] = useState(0)
   const [earnedIds, setEarnedIds] = useState<Set<string>>(new Set())
+  const watchTokenRef = useRef<string | null>(null)
 
   const activeVideo = MOCK_VIDEOS.find((v) => v.id === activeId)!
+
+  // Fetch watch token whenever the active video or wallet changes
+  useEffect(() => {
+    if (!address) return
+    watchTokenRef.current = null
+    fetch(`/api/watch/token?videoId=${activeId}&walletAddress=${address}`)
+      .then((r) => r.json())
+      .then((d: { token?: string }) => {
+        watchTokenRef.current = d.token ?? null
+      })
+      .catch(() => {})
+  }, [activeId, address])
+
+  // Sync pending from server on mount
+  useEffect(() => {
+    if (!address) return
+    fetch(`/api/rewards/pending?walletAddress=${address}`)
+      .then((r) => r.json())
+      .then((d: { totalCents?: number }) => {
+        if (typeof d.totalCents === 'number') {
+          setPendingCents(d.totalCents)
+        }
+      })
+      .catch(() => {})
+  }, [address])
 
   const handleSelect = useCallback(
     (id: string) => {
@@ -24,14 +53,42 @@ export default function FeedContent() {
   )
 
   const handleEarned = useCallback(
-    (rewardCents: number) => {
+    async (rewardCents: number) => {
       if (earnedIds.has(activeId)) return
       setEarnedIds((prev) => new Set(prev).add(activeId))
+      // Optimistic update
       setPendingCents((prev) => prev + rewardCents)
       toast(`+$${(rewardCents / 100).toFixed(2)} cUSD earned!`, 'success')
+
+      if (!address || !watchTokenRef.current) return
+
+      try {
+        const res = await fetch('/api/watch/complete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            videoId: activeId,
+            walletAddress: address,
+            token: watchTokenRef.current,
+          }),
+        })
+        if (res.ok) {
+          const data = (await res.json()) as { totalPendingCents?: number }
+          if (typeof data.totalPendingCents === 'number') {
+            setPendingCents(data.totalPendingCents)
+          }
+        }
+      } catch {
+        // Network error — optimistic update remains, will re-sync on next mount
+      }
     },
-    [activeId, earnedIds],
+    [activeId, earnedIds, address],
   )
+
+  const handleClaimed = useCallback(() => {
+    setPendingCents(0)
+    setEarnedIds(new Set())
+  }, [])
 
   return (
     <div className="flex min-h-dvh flex-col bg-bg">
@@ -56,7 +113,7 @@ export default function FeedContent() {
         />
 
         {/* Active video meta */}
-        <div className="mt-3 mb-5">
+        <div className="mt-3 mb-4">
           <h2 className="text-base font-semibold leading-snug">
             {activeVideo.title}
           </h2>
@@ -72,6 +129,14 @@ export default function FeedContent() {
               </span>
             )}
           </div>
+        </div>
+
+        {/* Claim */}
+        <div className="mb-6">
+          <ClaimButton
+            pendingCents={pendingCents}
+            onClaimed={handleClaimed}
+          />
         </div>
 
         {/* Divider */}
@@ -94,3 +159,5 @@ export default function FeedContent() {
     </div>
   )
 }
+
+

@@ -25,6 +25,8 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // Prevent Next.js from bundling native modules — they must stay server-side
+  serverExternalPackages: ['better-sqlite3'],
   async headers() {
     return [
       {
