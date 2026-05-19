@@ -1,26 +1,60 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Semelo brand tokens */
+  --bg: #0A0E1A;
+  --surface: #111827;
+  --card: #1F2937;
+  --accent: #35D07F;
+  --accent-hover: #2ABD70;
+  --gold: #FBCC5C;
+  --text-primary: #F9FAFB;
+  --text-muted: #9CA3AF;
+  --border: #374151;
+  --danger: #EF4444;
+
+  /* Legacy aliases */
+  --background: var(--bg);
+  --foreground: var(--text-primary);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-card: var(--card);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-gold: var(--gold);
+  --color-primary: var(--text-primary);
+  --color-muted: var(--text-muted);
+  --color-border: var(--border);
+  --color-danger: var(--danger);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  overscroll-behavior: none;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Hide scrollbar on mobile while preserving scrollability */
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
 }
