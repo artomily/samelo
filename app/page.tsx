@@ -1,10 +1,10 @@
 import { ConnectGuard } from '@/app/components/ConnectGuard'
-import { HomeScreen } from '@/app/components/HomeScreen'
+import FeedContent from '@/app/components/FeedContent'
 
 export default function Home() {
   return (
     <ConnectGuard>
-      <HomeScreen />
+      <FeedContent />
     </ConnectGuard>
   )
 }
