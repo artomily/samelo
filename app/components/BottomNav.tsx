@@ -3,11 +3,12 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
+import { useTranslation, type TranslationKey } from '@/lib/i18n'
 
-const tabs = [
+const tabs: { href: string; labelKey: TranslationKey; icon: (active: boolean) => React.ReactNode }[] = [
   {
     href: '/',
-    label: 'Watch',
+    labelKey: 'watch',
     icon: (active: boolean) => (
       <svg
         viewBox="0 0 24 24"
@@ -23,7 +24,7 @@ const tabs = [
   },
   {
     href: '/earnings',
-    label: 'Earnings',
+    labelKey: 'earnings',
     icon: (active: boolean) => (
       <svg
         viewBox="0 0 24 24"
@@ -39,7 +40,7 @@ const tabs = [
   },
   {
     href: '/profile',
-    label: 'Profile',
+    labelKey: 'profile',
     icon: (active: boolean) => (
       <svg
         viewBox="0 0 24 24"
@@ -57,6 +58,7 @@ const tabs = [
 
 export function BottomNav() {
   const pathname = usePathname()
+  const { t } = useTranslation()
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-surface pb-safe">
@@ -73,7 +75,7 @@ export function BottomNav() {
               )}
             >
               {tab.icon(active)}
-              {tab.label}
+              {t(tab.labelKey)}
             </Link>
           )
         })}

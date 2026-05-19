@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useAccount } from 'wagmi'
 import { MOCK_VIDEOS } from '@/lib/mock-videos'
 import { Skeleton } from '@/app/components/Skeleton'
+import { useTranslation } from '@/lib/i18n'
 
 interface EarningsItem {
   id: number
@@ -29,6 +30,7 @@ function formatDate(epochSeconds: number): string {
 
 export function EarningsList() {
   const { address } = useAccount()
+  const { t } = useTranslation()
   const [items, setItems] = useState<EarningsItem[]>([])
   const [nextCursor, setNextCursor] = useState<number | null>(0)
   const [loading, setLoading] = useState(false)
@@ -82,8 +84,8 @@ export function EarningsList() {
     return (
       <div className="flex flex-col items-center gap-2 py-16 text-center">
         <span className="text-3xl">🎬</span>
-        <p className="text-sm font-medium">No earnings yet</p>
-        <p className="text-xs text-muted">Watch videos to start earning cUSD</p>
+        <p className="text-sm font-medium">{t('noEarnings')}</p>
+        <p className="text-xs text-muted">{t('noEarningsDesc')}</p>
       </div>
     )
   }
@@ -92,9 +94,9 @@ export function EarningsList() {
     <div className="space-y-5">
       {/* Summary row */}
       <div className="grid grid-cols-3 gap-2">
-        <StatPill label="Total earned" cents={totals.earned} />
-        <StatPill label="Claimed" cents={totals.claimed} accent={false} dim />
-        <StatPill label="Pending" cents={pending} accent />
+        <StatPill label={t('totalEarned')} cents={totals.earned} />
+        <StatPill label={t('claimedLabel')} cents={totals.claimed} accent={false} dim />
+        <StatPill label={t('pending')} cents={pending} accent />
       </div>
 
       {/* History list */}
@@ -136,7 +138,7 @@ export function EarningsList() {
           disabled={loading}
           className="w-full rounded-xl border border-border py-2.5 text-sm font-medium text-muted transition hover:border-accent hover:text-accent disabled:opacity-50"
         >
-          {loading ? 'Loading…' : 'Load more'}
+          {loading ? t('loading') : t('loadMore')}
         </button>
       )}
     </div>
@@ -149,7 +151,7 @@ function StatPill({
   accent = false,
   dim = false,
 }: {
-  label: string
+  label: React.ReactNode
   cents: number
   accent?: boolean
   dim?: boolean

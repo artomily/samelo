@@ -2,9 +2,11 @@
 
 import { useEffect } from 'react'
 import { useMiniPay } from '@/hooks/useMiniPay'
+import { useTranslation } from '@/lib/i18n'
 
 export function ConnectGuard({ children }: { children: React.ReactNode }) {
   const { isConnected, isMiniPay, isConnecting, connectMiniPay } = useMiniPay()
+  const { t } = useTranslation()
 
   // Auto-connect when running inside MiniPay
   useEffect(() => {
@@ -19,17 +21,16 @@ export function ConnectGuard({ children }: { children: React.ReactNode }) {
       <div className="flex min-h-dvh flex-col items-center justify-center gap-6 p-8 text-center">
         <div className="text-7xl">📱</div>
         <div>
-          <h1 className="mb-2 text-2xl font-bold">Open in MiniPay</h1>
+          <h1 className="mb-2 text-2xl font-bold">{t('openInMinipay')}</h1>
           <p className="max-w-xs text-sm leading-relaxed text-muted">
-            Semelo runs inside the MiniPay wallet. Open this link in MiniPay to
-            start earning real cUSD.
+            {t('openMinipayDesc')}
           </p>
         </div>
         <a
           href="minipay://open?url=https://semelo.xyz"
           className="rounded-full bg-accent px-6 py-3 text-sm font-semibold text-bg transition-opacity hover:opacity-90 active:opacity-75"
         >
-          Open MiniPay
+          {t('openMinipayButton')}
         </a>
       </div>
     )

@@ -3,15 +3,24 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { useAccount } from 'wagmi'
 import { MOCK_VIDEOS } from '@/lib/mock-videos'
+import dynamic from 'next/dynamic'
 import { VideoCard } from '@/app/components/VideoCard'
-import { VideoPlayer } from '@/app/components/VideoPlayer'
 import { RewardCounter } from '@/app/components/RewardCounter'
+import { Skeleton } from '@/app/components/Skeleton'
+import { useTranslation } from '@/lib/i18n'
+import { LanguagePicker } from '@/app/components/LanguagePicker'
+
+const VideoPlayer = dynamic(() => import('@/app/components/VideoPlayer').then((m) => ({ default: m.VideoPlayer })), {
+  ssr: false,
+  loading: () => <Skeleton className="aspect-video w-full rounded-2xl" />,
+})
 import { WalletBadge } from '@/app/components/WalletBadge'
 import { ClaimButton } from '@/app/components/ClaimButton'
 import { toast } from '@/app/components/Toast'
 
 export default function FeedContent() {
   const { address } = useAccount()
+  const { t } = useTranslation()
   const [activeId, setActiveId] = useState<string>(MOCK_VIDEOS[0].id)
   const [pendingCents, setPendingCents] = useState(0)
   const [earnedIds, setEarnedIds] = useState<Set<string>>(new Set())
@@ -99,6 +108,7 @@ export default function FeedContent() {
           <span className="text-base font-bold tracking-tight">Semelo</span>
         </div>
         <div className="flex items-center gap-3">
+          <LanguagePicker />
           <RewardCounter pendingCents={pendingCents} />
           <WalletBadge />
         </div>
@@ -125,7 +135,7 @@ export default function FeedContent() {
             </span>
             {earnedIds.has(activeId) && (
               <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold text-accent">
-                Earned ✓
+                {t('earned')}
               </span>
             )}
           </div>
@@ -141,7 +151,7 @@ export default function FeedContent() {
 
         {/* Divider */}
         <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted">
-          More videos
+          {t('moreVideos')}
         </p>
 
         {/* Video list */}
