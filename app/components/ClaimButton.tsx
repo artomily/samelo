@@ -8,6 +8,10 @@ import { cn } from '@/lib/utils'
 
 const CELO_EXPLORER = 'https://celoscan.io/tx/'
 
+/**
+ * Button status labels for different claim states
+ * Guides user through the claiming process
+ */
 function buttonLabel(status: ClaimStatus): string {
   switch (status) {
     case 'fetching':
@@ -30,6 +34,11 @@ interface ClaimButtonProps {
   onClaimed?: () => void
 }
 
+/**
+ * ClaimButton - Manages the reward claiming workflow
+ * Handles wallet confirmation, transaction tracking, and error recovery
+ * Integrates with Celo blockchain and displays transaction on explorer
+ */
 export function ClaimButton({ pendingCents, onClaimed }: ClaimButtonProps) {
   const { address } = useAccount()
   const { refetch: refetchBalance } = useCUSDBalance(address)
