@@ -2,6 +2,10 @@
 
 import { cn } from '@/lib/utils'
 
+/**
+ * Skeleton - A loading placeholder component with pulse animation
+ * Used for content that's still loading
+ */
 interface SkeletonProps {
   className?: string
 }
