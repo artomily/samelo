@@ -2,15 +2,15 @@
 
 :root {
   /* Semelo brand tokens */
-  --bg: #0A0E1A;
-  --surface: #111827;
-  --card: #1F2937;
-  --accent: #35D07F;
-  --accent-hover: #2ABD70;
-  --gold: #FBCC5C;
-  --text-primary: #F9FAFB;
-  --text-muted: #9CA3AF;
-  --border: #374151;
+  --bg: #0A0A0A;
+  --surface: #141414;
+  --card: #1E1E1E;
+  --accent: #E11D1D;
+  --accent-hover: #C91919;
+  --gold: #F87171;
+  --text-primary: #F5F5F5;
+  --text-muted: #888888;
+  --border: #2A2A2A;
   --danger: #EF4444;
 
   /* Legacy aliases */
