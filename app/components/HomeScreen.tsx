@@ -4,6 +4,11 @@ import { useMiniPay } from '@/hooks/useMiniPay'
 import { useCUSDBalance } from '@/hooks/useCUSDBalance'
 import { WalletBadge } from './WalletBadge'
 
+/**
+ * HomeScreen - Main landing page when connected
+ * Displays brand, wallet details, and feed of available videos
+ * Serves as entry point for authenticated users
+ */
 export function HomeScreen() {
   const { address } = useMiniPay()
   const { display: balance, isLoading } = useCUSDBalance(address)
