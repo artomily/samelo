@@ -45,3 +45,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+#skills
+.agents
+.claude/
+
+# Foundry build artifacts and cache
+contracts/out/
+contracts/cache/
