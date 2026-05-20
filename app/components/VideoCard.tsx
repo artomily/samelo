@@ -3,6 +3,10 @@
 import Image from 'next/image'
 import type { Video } from '@/lib/mock-videos'
 
+/**
+ * VideoCard - Displays a single video with thumbnail, title, and reward amount
+ * Used in the feed content and video selection interface
+ */
 interface VideoCardProps {
   video: Video
   isActive: boolean
