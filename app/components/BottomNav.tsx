@@ -5,6 +5,11 @@ import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { useTranslation, type TranslationKey } from '@/lib/i18n'
 
+/**
+ * BottomNav - Mobile-first navigation bar
+ * Shows home, watch, earnings, and profile tabs with icons
+ * Active tab highlighted with accent color
+ */
 const tabs: { href: string; labelKey: TranslationKey; icon: (active: boolean) => React.ReactNode }[] = [
   {
     href: '/',
