@@ -12,7 +12,7 @@ import { useTranslation, type TranslationKey } from '@/lib/i18n'
  */
 const tabs: { href: string; labelKey: TranslationKey; icon: (active: boolean) => React.ReactNode }[] = [
   {
-    href: '/',
+    href: '/home',
     labelKey: 'home',
     icon: (active: boolean) => (
       <svg
@@ -88,7 +88,9 @@ export function BottomNav() {
     <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-surface pb-safe">
       <div className="flex items-stretch">
         {tabs.map((tab) => {
-          const active = pathname === tab.href
+          const active =
+            pathname === tab.href ||
+            (tab.href !== '/home' && pathname.startsWith(`${tab.href}/`))
           return (
             <Link
               key={tab.href}
