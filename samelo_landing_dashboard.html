@@ -1,0 +1,435 @@
+
+<style>
+  :root {
+    --red: #E11D1D;
+    --red-dark: #A31515;
+    --red-dim: rgba(225,29,29,0.12);
+    --black: #0A0A0A;
+    --surface: #141414;
+    --surface2: #1E1E1E;
+    --surface3: #272727;
+    --border: rgba(255,255,255,0.08);
+    --border-red: rgba(225,29,29,0.3);
+    --text: #F5F5F5;
+    --text-muted: #888;
+    --text-dim: #555;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body, html { background: transparent; }
+
+  .wrap { font-family: var(--font-sans, system-ui); color: var(--text); background: var(--black); border-radius: 16px; overflow: hidden; width: 100%; }
+
+  /* NAV */
+  .nav { display: flex; align-items: center; justify-content: space-between; padding: 14px 28px; border-bottom: 0.5px solid var(--border); background: rgba(10,10,10,0.95); }
+  .logo { font-size: 18px; font-weight: 500; color: var(--text); letter-spacing: -0.5px; }
+  .logo span { color: var(--red); }
+  .nav-links { display: flex; gap: 20px; }
+  .nav-links a { font-size: 13px; color: var(--text-muted); text-decoration: none; }
+  .nav-btn { background: var(--red); color: #fff; border: none; border-radius: 8px; padding: 7px 16px; font-size: 13px; cursor: pointer; font-weight: 500; }
+
+  /* HERO */
+  .hero { padding: 64px 28px 52px; text-align: center; position: relative; background: var(--black); border-bottom: 0.5px solid var(--border); }
+  .hero-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--red-dim); border: 0.5px solid var(--border-red); border-radius: 999px; padding: 5px 14px; font-size: 12px; color: #f87171; margin-bottom: 24px; }
+  .hero-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); }
+  .hero h1 { font-size: 38px; font-weight: 500; line-height: 1.15; letter-spacing: -1px; max-width: 520px; margin: 0 auto 16px; }
+  .hero h1 em { color: var(--red); font-style: normal; }
+  .hero p { font-size: 15px; color: var(--text-muted); max-width: 380px; margin: 0 auto 32px; line-height: 1.6; }
+  .hero-cta { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary { background: var(--red); color: #fff; border: none; border-radius: 10px; padding: 12px 24px; font-size: 14px; font-weight: 500; cursor: pointer; }
+  .btn-outline { background: transparent; color: var(--text); border: 0.5px solid var(--border); border-radius: 10px; padding: 12px 24px; font-size: 14px; cursor: pointer; }
+  .hero-stats { display: flex; gap: 32px; justify-content: center; margin-top: 48px; padding-top: 32px; border-top: 0.5px solid var(--border); }
+  .hero-stat { text-align: center; }
+  .hero-stat-num { font-size: 22px; font-weight: 500; color: var(--text); }
+  .hero-stat-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+  /* HOW IT WORKS */
+  .section { padding: 52px 28px; border-bottom: 0.5px solid var(--border); }
+  .section-label { font-size: 11px; color: var(--red); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 10px; }
+  .section-title { font-size: 22px; font-weight: 500; margin-bottom: 32px; }
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .step { background: var(--surface); border: 0.5px solid var(--border); border-radius: 12px; padding: 20px 16px; position: relative; }
+  .step-num { font-size: 11px; color: var(--red); font-weight: 500; margin-bottom: 10px; }
+  .step-icon { font-size: 22px; color: var(--red); margin-bottom: 10px; }
+  .step-title { font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+  .step-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+  .step-arrow { position: absolute; right: -8px; top: 50%; transform: translateY(-50%); color: var(--text-dim); font-size: 14px; z-index: 1; }
+
+  /* FEATURES */
+  .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .feature-card { background: var(--surface); border: 0.5px solid var(--border); border-radius: 12px; padding: 20px; }
+  .feature-card.accent { border-color: var(--border-red); background: var(--surface2); }
+  .feature-icon { font-size: 20px; color: var(--red); margin-bottom: 12px; }
+  .feature-title { font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+  .feature-desc { font-size: 12px; color: var(--text-muted); line-height: 1.55; }
+
+  /* TESTIMONIALS */
+  .testimonials { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .testi { background: var(--surface); border: 0.5px solid var(--border); border-radius: 12px; padding: 18px; }
+  .testi-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 14px; font-style: italic; }
+  .testi-user { display: flex; align-items: center; gap: 10px; }
+  .testi-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--red-dim); border: 0.5px solid var(--border-red); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: #f87171; }
+  .testi-name { font-size: 13px; font-weight: 500; }
+  .testi-sub { font-size: 11px; color: var(--text-muted); }
+
+  /* CTA */
+  .cta-section { padding: 52px 28px; text-align: center; background: var(--surface); border-bottom: 0.5px solid var(--border); }
+  .cta-section h2 { font-size: 26px; font-weight: 500; margin-bottom: 12px; letter-spacing: -0.5px; }
+  .cta-section p { font-size: 14px; color: var(--text-muted); margin-bottom: 28px; }
+
+  /* DIVIDER */
+  .divider { height: 0.5px; background: var(--border); }
+
+  /* DASHBOARD TAB */
+  .tab-bar { display: flex; gap: 4px; padding: 14px 28px 0; background: var(--black); border-bottom: 0.5px solid var(--border); }
+  .tab { font-size: 13px; padding: 8px 16px; border-radius: 8px 8px 0 0; color: var(--text-muted); cursor: pointer; border: 0.5px solid transparent; }
+  .tab.active { background: var(--surface); color: var(--text); border-color: var(--border); border-bottom-color: var(--surface); }
+  .tab-label { font-size: 11px; color: var(--red); letter-spacing: 1px; text-transform: uppercase; padding: 18px 28px 8px; background: var(--surface); }
+
+  .dashboard { background: var(--surface); padding: 20px 28px 28px; }
+  .dash-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .dash-greeting { font-size: 16px; font-weight: 500; }
+  .dash-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .wallet-chip { display: flex; align-items: center; gap: 8px; background: var(--surface3); border: 0.5px solid var(--border); border-radius: 8px; padding: 8px 14px; font-size: 12px; color: var(--text-muted); }
+  .wallet-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; }
+
+  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+  .metric { background: var(--surface2); border-radius: 10px; padding: 14px 16px; border: 0.5px solid var(--border); }
+  .metric.highlight { border-color: var(--border-red); }
+  .metric-label { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; }
+  .metric-val { font-size: 20px; font-weight: 500; }
+  .metric-val.red { color: #f87171; }
+  .metric-change { font-size: 11px; color: #22c55e; margin-top: 3px; }
+
+  .dash-cols { display: grid; grid-template-columns: 1fr 300px; gap: 14px; }
+  .card { background: var(--surface2); border: 0.5px solid var(--border); border-radius: 12px; padding: 18px; }
+  .card-title { font-size: 13px; font-weight: 500; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; }
+  .card-title span { font-size: 11px; color: var(--text-muted); font-weight: 400; }
+
+  /* Video feed */
+  .video-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 0.5px solid var(--border); }
+  .video-item:last-child { border-bottom: none; }
+  .video-thumb { width: 52px; height: 36px; border-radius: 6px; background: var(--surface3); border: 0.5px solid var(--border-red); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .video-meta { flex: 1; }
+  .video-title { font-size: 12px; font-weight: 500; margin-bottom: 3px; }
+  .video-brand { font-size: 11px; color: var(--text-muted); }
+  .video-reward { font-size: 12px; color: #f87171; font-weight: 500; }
+  .watch-btn { background: var(--red); color: #fff; border: none; border-radius: 6px; padding: 5px 12px; font-size: 11px; cursor: pointer; white-space: nowrap; }
+
+  /* Points card */
+  .points-display { background: var(--surface3); border: 0.5px solid var(--border-red); border-radius: 10px; padding: 16px; margin-bottom: 14px; text-align: center; }
+  .points-num { font-size: 32px; font-weight: 500; color: #f87171; }
+  .points-label { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .deploy-btn { width: 100%; background: var(--red); color: #fff; border: none; border-radius: 8px; padding: 10px; font-size: 13px; font-weight: 500; cursor: pointer; margin-bottom: 10px; }
+  .points-history { font-size: 12px; }
+  .ph-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 0.5px solid var(--border); color: var(--text-muted); }
+  .ph-row:last-child { border-bottom: none; }
+  .ph-pts { color: #f87171; font-weight: 500; }
+
+  /* Streak bar */
+  .streak-row { display: flex; gap: 6px; margin-top: 6px; }
+  .streak-day { flex: 1; height: 24px; border-radius: 5px; background: var(--surface3); border: 0.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text-muted); }
+  .streak-day.done { background: var(--red-dim); border-color: var(--border-red); color: #f87171; }
+
+  /* Footer */
+  .footer { display: flex; align-items: center; justify-content: space-between; padding: 14px 28px; background: var(--black); border-top: 0.5px solid var(--border); }
+  .footer-logo { font-size: 14px; font-weight: 500; }
+  .footer-logo span { color: var(--red); }
+  .footer-links { display: flex; gap: 16px; }
+  .footer-links a { font-size: 12px; color: var(--text-muted); text-decoration: none; }
+  .footer-copy { font-size: 11px; color: var(--text-dim); }
+</style>
+
+<div class="wrap">
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="logo">Sam<span>elo</span></div>
+    <div class="nav-links">
+      <a href="#">How it works</a>
+      <a href="#">Earn</a>
+      <a href="#">Referral</a>
+      <a href="#">Points</a>
+    </div>
+    <button class="nav-btn">Open in MiniPay</button>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-badge">
+      <div class="hero-badge-dot"></div>
+      Live on Celo · MiniPay Native
+    </div>
+    <h1>Watch content.<br><em>Earn real money.</em><br>No complexity.</h1>
+    <p>Samelo routes ad revenue on-chain so every video you watch turns into real cUSD — instantly usable in your MiniPay wallet.</p>
+    <div class="hero-cta">
+      <button class="btn-primary" onclick="document.querySelector('.tab-bar').scrollIntoView({behavior:'smooth'})">Start Earning</button>
+      <button class="btn-outline">How it works</button>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num">$0.05</div>
+        <div class="hero-stat-label">Per video watched</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">24h</div>
+        <div class="hero-stat-label">Instant payout</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">cUSD</div>
+        <div class="hero-stat-label">Stablecoin rewards</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">0</div>
+        <div class="hero-stat-label">Setup friction</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section">
+    <div class="section-label">How it works</div>
+    <div class="section-title">From attention to income in 4 steps</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <i class="ti ti-device-mobile step-icon" aria-hidden="true"></i>
+        <div class="step-title">Open in MiniPay</div>
+        <div class="step-desc">No wallet setup. Your MiniPay wallet is already connected.</div>
+        <div class="step-arrow"><i class="ti ti-arrow-right" aria-hidden="true"></i></div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <i class="ti ti-player-play step-icon" aria-hidden="true"></i>
+        <div class="step-title">Watch content</div>
+        <div class="step-desc">Short ads and branded videos. Each watch earns points and cUSD.</div>
+        <div class="step-arrow"><i class="ti ti-arrow-right" aria-hidden="true"></i></div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <i class="ti ti-bolt step-icon" aria-hidden="true"></i>
+        <div class="step-title">Deploy points</div>
+        <div class="step-desc">Sync your earned points on-chain with one tap for full transparency.</div>
+        <div class="step-arrow"><i class="ti ti-arrow-right" aria-hidden="true"></i></div>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <i class="ti ti-wallet step-icon" aria-hidden="true"></i>
+        <div class="step-title">Claim rewards</div>
+        <div class="step-desc">Real cUSD lands directly in your MiniPay wallet. Spend or save.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="section">
+    <div class="section-label">Why Samelo</div>
+    <div class="section-title">Built different from day one</div>
+    <div class="features">
+      <div class="feature-card accent">
+        <i class="ti ti-coin feature-icon" aria-hidden="true"></i>
+        <div class="feature-title">Real yield model</div>
+        <div class="feature-desc">Rewards backed by actual ad revenue — no token emissions, no inflation, no speculation.</div>
+      </div>
+      <div class="feature-card">
+        <i class="ti ti-shield-check feature-icon" aria-hidden="true"></i>
+        <div class="feature-title">On-chain transparency</div>
+        <div class="feature-desc">Every reward distribution is verifiable on Celo. Trustless and auditable by anyone.</div>
+      </div>
+      <div class="feature-card">
+        <i class="ti ti-bolt feature-icon" aria-hidden="true"></i>
+        <div class="feature-title">MiniPay native</div>
+        <div class="feature-desc">Zero wallet friction. Earn and spend instantly without leaving the MiniPay ecosystem.</div>
+      </div>
+      <div class="feature-card">
+        <i class="ti ti-users feature-icon" aria-hidden="true"></i>
+        <div class="feature-title">Referral rewards</div>
+        <div class="feature-desc">Invite friends and earn bonus points every time they complete a watch session.</div>
+      </div>
+      <div class="feature-card">
+        <i class="ti ti-chart-line feature-icon" aria-hidden="true"></i>
+        <div class="feature-title">Points system</div>
+        <div class="feature-desc">Accumulate off-chain points, deploy on-chain, unlock boosts and leaderboard ranking.</div>
+      </div>
+      <div class="feature-card">
+        <i class="ti ti-map-pin feature-icon" aria-hidden="true"></i>
+        <div class="feature-title">Emerging market first</div>
+        <div class="feature-desc">Lightweight, fast on 3G, and designed for mobile-first users across Africa and Southeast Asia.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="section">
+    <div class="section-label">Community</div>
+    <div class="section-title">What early users say</div>
+    <div class="testimonials">
+      <div class="testi">
+        <div class="testi-text">"I earn cUSD every morning while having coffee. It's not life-changing but it's real money from real ads."</div>
+        <div class="testi-user">
+          <div class="testi-avatar">AK</div>
+          <div>
+            <div class="testi-name">Amara K.</div>
+            <div class="testi-sub">Lagos, Nigeria</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi">
+        <div class="testi-text">"The points system keeps me coming back. Deploying on-chain feels like leveling up in a game."</div>
+        <div class="testi-user">
+          <div class="testi-avatar">RD</div>
+          <div>
+            <div class="testi-name">Rizal D.</div>
+            <div class="testi-sub">Jakarta, Indonesia</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi">
+        <div class="testi-text">"Finally a Web3 app that doesn't need me to understand crypto. I just watch and earn in my MiniPay."</div>
+        <div class="testi-user">
+          <div class="testi-avatar">FM</div>
+          <div>
+            <div class="testi-name">Fatima M.</div>
+            <div class="testi-sub">Nairobi, Kenya</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section">
+    <h2>Ready to earn while you watch?</h2>
+    <p>Join thousands of users turning attention into real income on Celo.</p>
+    <button class="btn-primary" style="font-size:15px; padding: 13px 32px;">Open Samelo in MiniPay</button>
+  </section>
+
+  <!-- DASHBOARD -->
+  <div class="tab-bar">
+    <div class="tab active"><i class="ti ti-layout-dashboard" aria-hidden="true" style="font-size:13px; margin-right:5px;"></i>Dashboard</div>
+    <div class="tab"><i class="ti ti-player-play" aria-hidden="true" style="font-size:13px; margin-right:5px;"></i>Watch</div>
+    <div class="tab"><i class="ti ti-bolt" aria-hidden="true" style="font-size:13px; margin-right:5px;"></i>Points</div>
+    <div class="tab"><i class="ti ti-users" aria-hidden="true" style="font-size:13px; margin-right:5px;"></i>Referrals</div>
+  </div>
+  <div class="tab-label">Dashboard preview</div>
+
+  <div class="dashboard">
+    <div class="dash-header">
+      <div>
+        <div class="dash-greeting">Good morning, Amara 👋</div>
+        <div class="dash-sub">You have 3 videos ready to watch today</div>
+      </div>
+      <div class="wallet-chip">
+        <div class="wallet-dot"></div>
+        0x3f...a8b2 · MiniPay
+      </div>
+    </div>
+
+    <!-- Metrics -->
+    <div class="metrics">
+      <div class="metric highlight">
+        <div class="metric-label">Total earned</div>
+        <div class="metric-val red">$4.82</div>
+        <div class="metric-change">↑ $0.35 today</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Pending points</div>
+        <div class="metric-val">340</div>
+        <div class="metric-change">↑ 40 today</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Deployed on-chain</div>
+        <div class="metric-val">1,250</div>
+        <div class="metric-change" style="color:var(--text-muted)">Last: 2 days ago</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Referrals</div>
+        <div class="metric-val">7</div>
+        <div class="metric-change">↑ 1 this week</div>
+      </div>
+    </div>
+
+    <div class="dash-cols">
+      <!-- Left: video feed -->
+      <div class="card">
+        <div class="card-title">Today's content <span>3 available</span></div>
+        <div class="video-item">
+          <div class="video-thumb"><i class="ti ti-player-play" style="font-size:16px; color:var(--red)" aria-hidden="true"></i></div>
+          <div class="video-meta">
+            <div class="video-title">Celo Ecosystem Overview</div>
+            <div class="video-brand">Celo Foundation · 0:30</div>
+          </div>
+          <div class="video-reward">+$0.05</div>
+          <button class="watch-btn">Watch</button>
+        </div>
+        <div class="video-item">
+          <div class="video-thumb"><i class="ti ti-player-play" style="font-size:16px; color:var(--red)" aria-hidden="true"></i></div>
+          <div class="video-meta">
+            <div class="video-title">MiniPay: Send Money Fast</div>
+            <div class="video-brand">Opera · 0:20</div>
+          </div>
+          <div class="video-reward">+$0.04</div>
+          <button class="watch-btn">Watch</button>
+        </div>
+        <div class="video-item">
+          <div class="video-thumb"><i class="ti ti-player-play" style="font-size:16px; color:var(--red)" aria-hidden="true"></i></div>
+          <div class="video-meta">
+            <div class="video-title">DeFi for Everyone</div>
+            <div class="video-brand">GoodDollar · 0:45</div>
+          </div>
+          <div class="video-reward">+$0.06</div>
+          <button class="watch-btn">Watch</button>
+        </div>
+
+        <!-- Streak -->
+        <div style="margin-top:18px;">
+          <div class="card-title" style="margin-bottom:8px;">Daily streak <span style="color:#f87171">🔥 5 days</span></div>
+          <div class="streak-row">
+            <div class="streak-day done">Mo</div>
+            <div class="streak-day done">Tu</div>
+            <div class="streak-day done">We</div>
+            <div class="streak-day done">Th</div>
+            <div class="streak-day done">Fr</div>
+            <div class="streak-day">Sa</div>
+            <div class="streak-day">Su</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: points panel -->
+      <div>
+        <div class="card" style="margin-bottom:12px;">
+          <div class="card-title">Points to deploy</div>
+          <div class="points-display">
+            <div class="points-num">340</div>
+            <div class="points-label">pending off-chain points</div>
+          </div>
+          <button class="deploy-btn"><i class="ti ti-bolt" aria-hidden="true" style="margin-right:5px;"></i>Deploy Onchain</button>
+          <div style="font-size:11px; color:var(--text-muted); text-align:center;">Next deployment available in 18h 24m</div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Recent activity</div>
+          <div class="points-history">
+            <div class="ph-row"><span>Watched video</span><span class="ph-pts">+10 pts</span></div>
+            <div class="ph-row"><span>Daily check-in</span><span class="ph-pts">+5 pts</span></div>
+            <div class="ph-row"><span>Referral confirmed</span><span class="ph-pts">+50 pts</span></div>
+            <div class="ph-row"><span>Streak bonus</span><span class="ph-pts">+25 pts</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-logo">Sam<span>elo</span></div>
+    <div class="footer-links">
+      <a href="#">Docs</a>
+      <a href="#">Contract</a>
+      <a href="#">Twitter</a>
+      <a href="#">Telegram</a>
+    </div>
+    <div class="footer-copy">Built on Celo · Powered by MiniPay</div>
+  </footer>
+
+</div>
