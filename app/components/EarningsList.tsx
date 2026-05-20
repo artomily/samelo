@@ -6,6 +6,12 @@ import { MOCK_VIDEOS } from '@/lib/mock-videos'
 import { Skeleton } from '@/app/components/Skeleton'
 import { useTranslation } from '@/lib/i18n'
 
+/**
+ * EarningsList - Displays user's earning history with pagination
+ * Fetches video watch history and reward amounts
+ * Supports infinite scroll with cursor-based pagination
+ */
+
 interface EarningsItem {
   id: number
   video_id: string
