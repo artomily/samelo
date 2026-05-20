@@ -52,5 +52,5 @@ next-env.d.ts
 .claude/
 
 # Foundry build artifacts and cache
-contracts/out/
-contracts/cache/
+samelo-contracts/out/
+samelo-contracts/cache/
