@@ -7,8 +7,9 @@ import { cn } from '@/lib/utils'
 
 const NAV_LINKS = [
   { href: '#how-it-works', label: 'How it works' },
-  { href: '#features', label: 'Features' },
-  { href: '#earnings', label: 'Earnings' },
+  { href: '#earn', label: 'Earn' },
+  { href: '#referral', label: 'Referral' },
+  { href: '#features', label: 'Points' },
 ]
 
 export function Navbar() {
@@ -24,26 +25,22 @@ export function Navbar() {
   const closeMenu = () => setMenuOpen(false)
 
   return (
-    <nav
-      data-state={menuOpen ? 'active' : undefined}
-      className="group fixed inset-x-0 top-0 z-50 w-full px-3 pt-2"
-    >
+    <nav className="fixed inset-x-0 top-0 z-50 w-full">
       <div
         className={cn(
-          'mx-auto flex max-w-4xl items-center justify-between px-4 py-3 transition-all duration-300',
+          'mx-auto flex max-w-5xl items-center justify-between px-6 py-3.5 transition-all duration-300',
           isScrolled
-            ? 'rounded-2xl border border-border bg-bg/80 px-4 shadow-xl backdrop-blur-lg'
+            ? 'border-b border-border bg-bg/95 backdrop-blur-lg'
             : 'bg-transparent'
         )}
       >
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2" onClick={closeMenu}>
-          <span className="h-2.5 w-2.5 rounded-full bg-accent" />
-          <span className="text-sm font-bold tracking-tight text-primary">Semelo</span>
+        <Link href="/" className="text-[17px] font-medium tracking-tight text-primary" onClick={closeMenu}>
+          Sem<span className="text-accent">elo</span>
         </Link>
 
-        {/* Desktop links — absolutely centred */}
-        <ul className="absolute inset-x-0 mx-auto hidden w-fit items-center gap-6 text-sm lg:flex">
+        {/* Desktop links */}
+        <ul className="absolute inset-x-0 mx-auto hidden w-fit items-center gap-7 text-[13px] lg:flex">
           {NAV_LINKS.map((link) => (
             <li key={link.href}>
               <a
@@ -61,26 +58,26 @@ export function Navbar() {
         <div className="flex items-center gap-3">
           <Link
             href="/watch"
-            className="hidden rounded-full bg-accent px-4 py-1.5 text-sm font-semibold text-bg transition-colors hover:bg-accent-hover lg:inline-flex"
+            className="hidden rounded-lg bg-accent px-4 py-2 text-[13px] font-medium text-white transition-colors hover:bg-accent-hover lg:inline-flex"
           >
-            Open App
+            Open in MiniPay
           </Link>
 
-          {/* Hamburger — mobile only */}
+          {/* Hamburger */}
           <button
             onClick={() => setMenuOpen((v) => !v)}
             className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-surface lg:hidden"
             aria-label="Toggle menu"
           >
             <Menu
-              size={18}
+              size={17}
               className={cn(
                 'absolute transition-all duration-200',
                 menuOpen ? 'scale-0 opacity-0' : 'scale-100 opacity-100'
               )}
             />
             <X
-              size={18}
+              size={17}
               className={cn(
                 'absolute transition-all duration-200',
                 menuOpen ? 'scale-100 opacity-100' : 'scale-0 opacity-0'
@@ -93,16 +90,16 @@ export function Navbar() {
       {/* Mobile panel */}
       <div
         className={cn(
-          'mx-auto mt-1 max-w-4xl overflow-hidden rounded-2xl border border-border bg-surface px-4 shadow-2xl transition-all duration-300 lg:hidden',
+          'overflow-hidden border-b border-border bg-bg/98 backdrop-blur-lg transition-all duration-300 lg:hidden',
           menuOpen ? 'max-h-80 py-4 opacity-100' : 'max-h-0 py-0 opacity-0'
         )}
       >
-        <ul className="flex flex-col gap-1">
+        <ul className="flex flex-col gap-1 px-6">
           {NAV_LINKS.map((link) => (
             <li key={link.href}>
               <a
                 href={link.href}
-                className="block rounded-xl px-3 py-2.5 text-sm text-muted transition-colors hover:bg-card hover:text-primary"
+                className="block rounded-lg px-3 py-2.5 text-[13px] text-muted transition-colors hover:bg-card hover:text-primary"
                 onClick={closeMenu}
               >
                 {link.label}
@@ -110,13 +107,13 @@ export function Navbar() {
             </li>
           ))}
         </ul>
-        <div className="mt-3 border-t border-border pt-3">
+        <div className="mt-3 border-t border-border px-6 pt-3">
           <Link
             href="/watch"
             onClick={closeMenu}
-            className="block w-full rounded-xl bg-accent py-2.5 text-center text-sm font-semibold text-bg transition-colors hover:bg-accent-hover"
+            className="block w-full rounded-lg bg-accent py-2.5 text-center text-[13px] font-medium text-white transition-colors hover:bg-accent-hover"
           >
-            Open App →
+            Open in MiniPay
           </Link>
         </div>
       </div>
