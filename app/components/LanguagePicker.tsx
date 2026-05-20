@@ -2,6 +2,11 @@
 
 import { useTranslation, type Locale } from '@/lib/i18n'
 
+/**
+ * LanguagePicker - Toggle between supported languages
+ * Supports English, Swahili, and Spanish
+ * Persists selection to localStorage
+ */
 const LOCALES: { value: Locale; label: string }[] = [
   { value: 'en', label: 'EN' },
   { value: 'sw', label: 'SW' },
