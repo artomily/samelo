@@ -12,7 +12,7 @@ const EARNINGS = [
 function TickerRow({ items, reverse }: { items: typeof EARNINGS; reverse?: boolean }) {
   const doubled = [...items, ...items]
   return (
-    <div className="flex overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
+    <div className="flex overflow-hidden mask-[linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
       <div
         className="flex shrink-0 gap-3"
         style={{
