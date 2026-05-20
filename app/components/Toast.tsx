@@ -3,6 +3,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { cn } from '@/lib/utils'
 
+/**
+ * Toast notification system with global context-free API
+ * Supports default, success, and error variants
+ * Auto-dismiss after timeout
+ */
 export type ToastVariant = 'default' | 'success' | 'error'
 
 interface ToastMessage {
@@ -14,7 +19,10 @@ interface ToastMessage {
 let toastCount = 0
 const subscribers = new Set<(t: ToastMessage) => void>()
 
-/** Call this anywhere — no context needed */
+/**
+ * Call this anywhere — no context needed
+ * Triggers toast notification with optional variant
+ */
 export function toast(message: string, variant: ToastVariant = 'default') {
   const t: ToastMessage = { id: ++toastCount, message, variant }
   subscribers.forEach((fn) => fn(t))
