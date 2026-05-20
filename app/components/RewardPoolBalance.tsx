@@ -7,6 +7,11 @@ import { CUSD_DECIMALS } from '@/lib/tokens'
 
 const REWARD_POOL_ADDRESS = (process.env.NEXT_PUBLIC_REWARD_POOL_ADDRESS ?? '0x') as `0x${string}`
 
+/**
+ * RewardPoolBalance - Displays global reward pool funding status
+ * Polls contract balance at 30 second intervals
+ * Shows available cUSD for future claim rewards
+ */
 export function RewardPoolBalance() {
   const { isConnected } = useAccount()
 
