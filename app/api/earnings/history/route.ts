@@ -1,51 +1,52 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getDb, WatchRow } from '@/lib/db'
+import { getServiceSupabase } from '@/lib/supabase'
 
 const PAGE_SIZE = 20
 
-export function GET(req: NextRequest) {
+export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
   const walletAddress = searchParams.get('walletAddress')
-  const cursor = parseInt(searchParams.get('cursor') ?? '0', 10)
+  const cursor = searchParams.get('cursor') // ISO timestamp cursor for keyset pagination
 
   if (!walletAddress || !/^0x[0-9a-fA-F]{40}$/.test(walletAddress)) {
     return NextResponse.json({ error: 'Invalid walletAddress' }, { status: 400 })
   }
 
-  const db = getDb()
+  const supabase = getServiceSupabase()
 
-  const rows = db
-    .prepare(
-      `SELECT id, video_id, reward_cents, watched_at, claimed
-       FROM watches
-       WHERE wallet_address = ?
-         AND id > ?
-       ORDER BY watched_at DESC
-       LIMIT ?`,
-    )
-    .all(walletAddress, cursor, PAGE_SIZE + 1) as Pick<
-      WatchRow,
-      'id' | 'video_id' | 'reward_cents' | 'watched_at' | 'claimed'
-    >[]
+  // Keyset pagination on watched_at
+  let query = supabase
+    .from('watches')
+    .select('id, video_id, reward_cents, watched_at, claimed')
+    .eq('wallet_address', walletAddress.toLowerCase())
+    .order('watched_at', { ascending: false })
+    .limit(PAGE_SIZE + 1)
 
-  const hasMore = rows.length > PAGE_SIZE
-  const items = hasMore ? rows.slice(0, PAGE_SIZE) : rows
-  const nextCursor = hasMore ? items[items.length - 1].id : null
+  if (cursor) {
+    query = query.lt('watched_at', cursor)
+  }
 
-  const totalRow = db
-    .prepare(`SELECT SUM(reward_cents) as total FROM watches WHERE wallet_address = ?`)
-    .get(walletAddress) as { total: number | null }
+  const { data: rows, error } = await query
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
 
-  const claimedRow = db
-    .prepare(
-      `SELECT SUM(reward_cents) as total FROM watches WHERE wallet_address = ? AND claimed = 1`,
-    )
-    .get(walletAddress) as { total: number | null }
+  const hasMore = (rows ?? []).length > PAGE_SIZE
+  const items = hasMore ? (rows ?? []).slice(0, PAGE_SIZE) : (rows ?? [])
+  const nextCursor = hasMore ? items[items.length - 1].watched_at : null
 
-  return NextResponse.json({
-    items,
-    nextCursor,
-    totalEarnedCents: totalRow.total ?? 0,
-    totalClaimedCents: claimedRow.total ?? 0,
-  })
+  // Aggregate totals
+  const { data: allRows } = await supabase
+    .from('watches')
+    .select('reward_cents, claimed')
+    .eq('wallet_address', walletAddress.toLowerCase())
+
+  let totalEarnedCents = 0
+  let totalClaimedCents = 0
+  for (const r of allRows ?? []) {
+    totalEarnedCents += r.reward_cents ?? 0
+    if (r.claimed) totalClaimedCents += r.reward_cents ?? 0
+  }
+
+  return NextResponse.json({ items, nextCursor, totalEarnedCents, totalClaimedCents })
 }
