@@ -1,5 +1,9 @@
 'use client'
 
+/**
+ * RewardCounter - Displays the current pending reward amount
+ * Shows animated counter with USD formatting
+ */
 interface RewardCounterProps {
   pendingCents: number
 }
