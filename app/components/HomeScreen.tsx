@@ -3,6 +3,7 @@
 import { useMiniPay } from '@/hooks/useMiniPay'
 import { useCUSDBalance } from '@/hooks/useCUSDBalance'
 import { WalletBadge } from './WalletBadge'
+import { AnalyticsPanel } from './AnalyticsPanel'
 
 /**
  * HomeScreen - Main landing page when connected
@@ -23,6 +24,9 @@ export function HomeScreen() {
         </div>
         <WalletBadge />
       </header>
+
+      {/* Analytics */}
+      <AnalyticsPanel />
 
       {/* Main */}
       <main className="flex flex-1 flex-col items-center justify-center gap-8 px-6 py-12 text-center">
