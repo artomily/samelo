@@ -4,6 +4,11 @@ import { useCallback, useRef } from 'react'
 import { useWatchSession } from '@/hooks/useWatchSession'
 import type { Video } from '@/lib/mock-videos'
 
+/**
+ * VideoPlayer - Plays individual videos and tracks watch progress
+ * Monitors completion time to determine earned rewards
+ * Supports custom completion callback for reward distribution
+ */
 interface VideoPlayerProps {
   video: Video
   onEarned: (rewardCents: number) => void
