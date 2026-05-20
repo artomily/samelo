@@ -57,7 +57,7 @@ export function Navbar() {
         {/* Right slot */}
         <div className="flex items-center gap-3">
           <Link
-            href="/watch"
+            href="/home"
             className="hidden rounded-lg bg-accent px-4 py-2 text-[13px] font-medium text-white transition-colors hover:bg-accent-hover lg:inline-flex"
           >
             Open in MiniPay
@@ -109,7 +109,7 @@ export function Navbar() {
         </ul>
         <div className="mt-3 border-t border-border px-6 pt-3">
           <Link
-            href="/watch"
+            href="/home"
             onClick={closeMenu}
             className="block w-full rounded-lg bg-accent py-2.5 text-center text-[13px] font-medium text-white transition-colors hover:bg-accent-hover"
           >
