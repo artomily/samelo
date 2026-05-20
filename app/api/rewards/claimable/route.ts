@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getDb } from '@/lib/db'
-import { isAddress, keccak256, encodePacked } from 'viem'
+import { getServiceSupabase } from '@/lib/supabase'
+import { isAddress, keccak256, encodePacked, randomBytes } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 
 export async function GET(request: NextRequest) {
@@ -14,60 +14,56 @@ export async function GET(request: NextRequest) {
   }
 
   const rawKey = process.env.REWARD_ORACLE_PRIVATE_KEY
-  if (!rawKey || rawKey === '0x') {
-    // Dev mode: return amount without signature (claim won't work on-chain yet)
-    const db = getDb()
-    const row = db
-      .prepare(
-        `SELECT COALESCE(SUM(reward_cents), 0) AS total
-         FROM watches
-         WHERE wallet_address = ? AND claimed = 0`,
-      )
-      .get(wallet.toLowerCase()) as { total: number }
+  const supabase = getServiceSupabase()
 
+  // Sum unclaimed rewards
+  const { data: rows } = await supabase
+    .from('watches')
+    .select('reward_cents')
+    .eq('wallet_address', wallet.toLowerCase())
+    .eq('claimed', false)
+
+  const amountCents = (rows ?? []).reduce((s, r) => s + (r.reward_cents ?? 0), 0)
+
+  if (!rawKey || rawKey === '0x') {
     return NextResponse.json({
       amountWei: '0',
-      amountCents: row.total,
+      amountCents,
       signature: null,
-      nonce: 0,
+      nonce: null,
       devMode: true,
     })
   }
 
-  const db = getDb()
+  if (amountCents === 0) {
+    return NextResponse.json({
+      amountWei: '0',
+      amountCents: 0,
+      signature: null,
+      nonce: null,
+      devMode: false,
+    })
+  }
 
-  const totalRow = db
-    .prepare(
-      `SELECT COALESCE(SUM(reward_cents), 0) AS total
-       FROM watches
-       WHERE wallet_address = ? AND claimed = 0`,
-    )
-    .get(wallet.toLowerCase()) as { total: number }
-
-  const amountCents = totalRow.total
-  // Convert cents → cUSD wei (cUSD has 18 decimals; 1 cent = 10^16 wei)
+  // 1 cent = 0.01 CELO = 10^16 wei
   const amountWei = BigInt(amountCents) * BigInt(10 ** 16)
 
-  // Fetch current nonce from DB (incremented after each successful on-chain claim)
-  const nonceRow = db
-    .prepare(`SELECT COALESCE(MAX(nonce), 0) AS nonce FROM claim_nonces WHERE wallet_address = ?`)
-    .get(wallet.toLowerCase()) as { nonce: number } | undefined
+  // Random bytes32 nonce — unique per claim request
+  const nonce = `0x${Buffer.from(randomBytes(32)).toString('hex')}` as `0x${string}`
 
-  // Lazily create the nonces table if it doesn't exist
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS claim_nonces (
-      wallet_address TEXT PRIMARY KEY,
-      nonce          INTEGER NOT NULL DEFAULT 0
-    )
-  `)
+  // Treasury contract address (where executeRewardAction is called)
+  const treasuryAddress = (process.env.NEXT_PUBLIC_TREASURY_ADDRESS ??
+    process.env.NEXT_PUBLIC_TREASURY_SIMPLE_ADDRESS) as `0x${string}` | undefined
 
-  const nonce = nonceRow?.nonce ?? 0
+  if (!treasuryAddress) {
+    return NextResponse.json({ error: 'Treasury not configured' }, { status: 503 })
+  }
 
-  // Sign: keccak256(abi.encodePacked(wallet, amountWei, nonce))
+  // Sign: keccak256(abi.encodePacked(user, amount, actionType=0, nonce, treasury))
   const hash = keccak256(
     encodePacked(
-      ['address', 'uint256', 'uint256'],
-      [wallet as `0x${string}`, amountWei, BigInt(nonce)],
+      ['address', 'uint256', 'uint8', 'bytes32', 'address'],
+      [wallet as `0x${string}`, amountWei, 0, nonce, treasuryAddress],
     ),
   )
 
