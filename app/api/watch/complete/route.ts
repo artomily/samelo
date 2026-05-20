@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getDb } from '@/lib/db'
+import { getServiceSupabase } from '@/lib/supabase'
 import { verifyWatchToken } from '@/lib/watchToken'
 import { MOCK_VIDEOS } from '@/lib/mock-videos'
 import { isAddress } from 'viem'
 
-const RATE_LIMIT_WINDOW_SECONDS = 60 * 60 * 24 // 24 hours
+const RATE_LIMIT_WINDOW_MS = 24 * 60 * 60 * 1000 // 24 hours
 
 export async function POST(request: NextRequest) {
   let body: unknown
@@ -49,51 +49,56 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unknown video' }, { status: 404 })
   }
 
-  const db = getDb()
-  const now = Math.floor(Date.now() / 1000)
-  const windowStart = now - RATE_LIMIT_WINDOW_SECONDS
+  const supabase = getServiceSupabase()
+  const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MS).toISOString()
 
   // Rate-limit: 1 reward per wallet per video per 24 h
-  const existing = db
-    .prepare(
-      `SELECT id FROM watches
-       WHERE wallet_address = ? AND video_id = ? AND watched_at > ?`,
-    )
-    .get(walletAddress.toLowerCase(), videoId, windowStart)
+  const { data: existing } = await supabase
+    .from('watches')
+    .select('id')
+    .eq('wallet_address', walletAddress.toLowerCase())
+    .eq('video_id', videoId)
+    .gte('watched_at', windowStart)
+    .maybeSingle()
 
   if (existing) {
     // Already earned today — return current pending without inserting
-    const totalRow = db
-      .prepare(
-        `SELECT COALESCE(SUM(reward_cents), 0) AS total
-         FROM watches
-         WHERE wallet_address = ? AND claimed = 0`,
-      )
-      .get(walletAddress.toLowerCase()) as { total: number }
+    const { data: totalRow } = await supabase
+      .from('watches')
+      .select('reward_cents')
+      .eq('wallet_address', walletAddress.toLowerCase())
+      .eq('claimed', false)
 
-    return NextResponse.json({
-      alreadyClaimed: true,
-      totalPendingCents: totalRow.total,
-    })
+    const totalPendingCents = (totalRow ?? []).reduce(
+      (sum, r) => sum + (r.reward_cents ?? 0),
+      0,
+    )
+
+    return NextResponse.json({ alreadyClaimed: true, totalPendingCents })
   }
 
   // Record the watch event
-  db.prepare(
-    `INSERT INTO watches (wallet_address, video_id, reward_cents, watched_at)
-     VALUES (?, ?, ?, ?)`,
-  ).run(walletAddress.toLowerCase(), videoId, video.rewardCents, now)
+  await supabase.from('watches').insert({
+    wallet_address: walletAddress.toLowerCase(),
+    video_id: videoId,
+    reward_cents: video.rewardCents,
+    watched_at: new Date().toISOString(),
+  })
 
-  const totalRow = db
-    .prepare(
-      `SELECT COALESCE(SUM(reward_cents), 0) AS total
-       FROM watches
-       WHERE wallet_address = ? AND claimed = 0`,
-    )
-    .get(walletAddress.toLowerCase()) as { total: number }
+  const { data: allPending } = await supabase
+    .from('watches')
+    .select('reward_cents')
+    .eq('wallet_address', walletAddress.toLowerCase())
+    .eq('claimed', false)
+
+  const totalPendingCents = (allPending ?? []).reduce(
+    (sum, r) => sum + (r.reward_cents ?? 0),
+    0,
+  )
 
   return NextResponse.json({
     alreadyClaimed: false,
     rewardCents: video.rewardCents,
-    totalPendingCents: totalRow.total,
+    totalPendingCents,
   })
 }
