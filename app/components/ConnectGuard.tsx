@@ -4,6 +4,11 @@ import { useEffect } from 'react'
 import { useMiniPay } from '@/hooks/useMiniPay'
 import { useTranslation } from '@/lib/i18n'
 
+/**
+ * ConnectGuard - Wrapper component ensuring wallet connection
+ * Handles MiniPay auto-connection, loading states, and fallback UI
+ * Only renders children when wallet is properly connected
+ */
 export function ConnectGuard({ children }: { children: React.ReactNode }) {
   const { isConnected, isMiniPay, isConnecting, connectMiniPay } = useMiniPay()
   const { t } = useTranslation()
