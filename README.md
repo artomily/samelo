@@ -1,20 +1,30 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Samelo - Decentralized Video Rewards Platform
+
+A Next.js application for earning rewards by watching videos on the Celo network.
+
+## Features
+
+- Watch verified video content
+- Earn rewards in stablecoins
+- Connect with MiniPay wallet
+- Track earnings history
+- Multi-language support (English, Spanish, Swahili)
 
 ## Getting Started
 
-First, run the development server:
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
