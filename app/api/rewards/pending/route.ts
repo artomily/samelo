@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getDb } from '@/lib/db'
+import { getServiceSupabase } from '@/lib/supabase'
 import { isAddress } from 'viem'
 
 export async function GET(request: NextRequest) {
@@ -12,27 +12,25 @@ export async function GET(request: NextRequest) {
     )
   }
 
-  const db = getDb()
+  const supabase = getServiceSupabase()
 
-  const totalRow = db
-    .prepare(
-      `SELECT COALESCE(SUM(reward_cents), 0) AS total
-       FROM watches
-       WHERE wallet_address = ? AND claimed = 0`,
-    )
-    .get(wallet.toLowerCase()) as { total: number }
+  const { data: rows } = await supabase
+    .from('watches')
+    .select('video_id, reward_cents')
+    .eq('wallet_address', wallet.toLowerCase())
+    .eq('claimed', false)
 
-  const perVideo = db
-    .prepare(
-      `SELECT video_id, SUM(reward_cents) AS cents
-       FROM watches
-       WHERE wallet_address = ? AND claimed = 0
-       GROUP BY video_id`,
-    )
-    .all(wallet.toLowerCase()) as { video_id: string; cents: number }[]
+  const totalCents = (rows ?? []).reduce((sum, r) => sum + (r.reward_cents ?? 0), 0)
 
-  return NextResponse.json({
-    totalCents: totalRow.total,
-    perVideo,
-  })
+  // Group by video_id
+  const byVideo = new Map<string, number>()
+  for (const r of rows ?? []) {
+    byVideo.set(r.video_id, (byVideo.get(r.video_id) ?? 0) + (r.reward_cents ?? 0))
+  }
+  const perVideo = Array.from(byVideo.entries()).map(([video_id, cents]) => ({
+    video_id,
+    cents,
+  }))
+
+  return NextResponse.json({ totalCents, perVideo })
 }
