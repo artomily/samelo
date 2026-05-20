@@ -3,6 +3,10 @@
 import { useTranslation } from '@/lib/i18n'
 import { LanguagePicker } from '@/app/components/LanguagePicker'
 
+/**
+ * EarningsHeader - Sticky header for earnings page
+ * Shows page title and language selector
+ */
 export function EarningsHeader() {
   const { t } = useTranslation()
 
