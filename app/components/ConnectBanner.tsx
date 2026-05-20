@@ -5,6 +5,11 @@ import { useTranslation } from '@/lib/i18n'
 import { useMiniPay } from '@/hooks/useMiniPay'
 import { cn } from '@/lib/utils'
 
+/**
+ * ConnectBanner - Prompts user to connect wallet when disconnected
+ * Hidden when wallet is already connected
+ * Includes link to open MiniPay app
+ */
 export function ConnectBanner({ className }: { className?: string }) {
   const { isConnected } = useMiniPay()
   const { t } = useTranslation()
