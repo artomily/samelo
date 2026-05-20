@@ -64,6 +64,11 @@ body {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
+/* Nav clearance: BottomNav height (56px) + home bar safe area */
+.pb-nav {
+  padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px));
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;
