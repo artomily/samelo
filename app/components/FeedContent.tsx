@@ -133,46 +133,46 @@ export default function FeedContent() {
   return (
     <div className="flex min-h-dvh flex-col bg-bg">
       {/* Header */}
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-bg/95 px-7 py-3.5 backdrop-blur-sm">
+      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-bg/95 px-4 py-3 backdrop-blur-sm sm:px-7 sm:py-3.5">
         <div>
-          <p className="text-[15px] font-medium text-primary">Good morning 👋</p>
-          <p className="mt-0.5 text-[12px] text-muted">You have {listVideos.length} videos ready to watch today</p>
+          <p className="text-[14px] font-medium text-primary sm:text-[15px]">Good morning 👋</p>
+          <p className="mt-0.5 hidden text-[12px] text-muted sm:block">You have {listVideos.length} videos ready today</p>
         </div>
-        <div className="flex items-center gap-2 rounded-lg border border-border bg-surface px-3.5 py-2 text-xs text-muted">
+        <div className="flex items-center gap-1.5 rounded-lg border border-border bg-surface px-2.5 py-1.5 text-xs text-muted sm:gap-2 sm:px-3.5 sm:py-2">
           <span className="h-1.75 w-1.75 rounded-full bg-green-500" />
           <WalletBadge />
         </div>
       </header>
 
-      <div className="w-full px-7 py-5 pb-28">
+      <div className="w-full px-4 py-4 pb-28 sm:px-7 sm:py-5">
         <ConnectBanner className="mb-5" />
 
         {/* 4-col Metrics */}
-        <div className="mb-5 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-          <div className="rounded-xl border border-accent/30 bg-card p-4">
-            <p className="mb-1.5 text-[11px] text-muted">Total earned</p>
-            <p className="text-xl font-medium tabular-nums text-gold">${(pendingCents / 100).toFixed(2)}</p>
+        <div className="mb-4 grid grid-cols-2 gap-2 sm:mb-5 sm:gap-2.5 sm:grid-cols-4">
+          <div className="rounded-xl border border-accent/30 bg-card p-3 sm:p-4">
+            <p className="mb-1 text-[11px] text-muted">Total earned</p>
+            <p className="text-lg font-medium tabular-nums text-gold sm:text-xl">${(pendingCents / 100).toFixed(2)}</p>
             <p className="mt-0.5 text-[11px] text-green-500">↑ today</p>
           </div>
-          <div className="rounded-xl border border-border bg-card p-4">
-            <p className="mb-1.5 text-[11px] text-muted">Pending points</p>
-            <p className="text-xl font-medium tabular-nums text-primary">{pendingCents}</p>
+          <div className="rounded-xl border border-border bg-card p-3 sm:p-4">
+            <p className="mb-1 text-[11px] text-muted">Pending pts</p>
+            <p className="text-lg font-medium tabular-nums text-primary sm:text-xl">{pendingCents}</p>
             <p className="mt-0.5 text-[11px] text-green-500">↑ {earnedIds.size * 10} today</p>
           </div>
-          <div className="rounded-xl border border-border bg-card p-4">
-            <p className="mb-1.5 text-[11px] text-muted">Deployed on-chain</p>
-            <p className="text-xl font-medium tabular-nums text-primary">0</p>
-            <p className="mt-0.5 text-[11px] text-muted">Deploy when ready</p>
+          <div className="rounded-xl border border-border bg-card p-3 sm:p-4">
+            <p className="mb-1 text-[11px] text-muted">On-chain</p>
+            <p className="text-lg font-medium tabular-nums text-primary sm:text-xl">0</p>
+            <p className="mt-0.5 text-[11px] text-muted">Deploy ready</p>
           </div>
-          <div className="rounded-xl border border-border bg-card p-4">
-            <p className="mb-1.5 text-[11px] text-muted">Referrals</p>
-            <p className="text-xl font-medium tabular-nums text-primary">0</p>
+          <div className="rounded-xl border border-border bg-card p-3 sm:p-4">
+            <p className="mb-1 text-[11px] text-muted">Referrals</p>
+            <p className="text-lg font-medium tabular-nums text-primary sm:text-xl">0</p>
             <p className="mt-0.5 text-[11px] text-green-500">Invite friends</p>
           </div>
         </div>
 
         {/* 2-col main layout */}
-        <div className="grid gap-3.5 md:grid-cols-[1fr_300px]">
+        <div className="grid gap-3 md:grid-cols-[1fr_300px] sm:gap-3.5">
           {/* LEFT: video list + streak */}
           <div className="rounded-xl border border-border bg-card p-4">
             <div className="mb-3.5 flex items-center justify-between">
@@ -209,7 +209,7 @@ export default function FeedContent() {
                 >
                   <button
                     onClick={() => handleSelect(video.id)}
-                    className="flex h-9 w-13 shrink-0 items-center justify-center rounded-md border border-accent/30 bg-surface"
+                    className="flex h-8 w-10 shrink-0 items-center justify-center rounded-md border border-accent/30 bg-surface sm:h-9 sm:w-13"
                   >
                     <Play size={14} className="text-accent" />
                   </button>
