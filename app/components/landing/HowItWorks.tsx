@@ -1,101 +1,81 @@
 'use client'
 
-import { AnimatedGroup } from '@/app/components/ui/animated-group'
+import { Smartphone, Play, Zap, Gift } from 'lucide-react'
 
 const STEPS = [
   {
     number: '01',
-    emoji: '▶️',
-    title: 'Watch a video',
-    description:
-      'Open Semelo and start watching. Any video on the feed qualifies — your watch time is tracked automatically.',
-    color: 'border-accent/30 bg-accent/5',
-    numberColor: 'text-accent',
+    Icon: Smartphone,
+    title: 'Open in MiniPay',
+    description: 'Launch Samelo inside MiniPay — no wallet setup, no downloads, no KYC.',
   },
   {
     number: '02',
-    emoji: '💰',
-    title: 'Earn cUSD',
-    description:
-      'For every minute watched, cUSD accumulates in your account. No minimum threshold.',
-    color: 'border-gold/30 bg-gold/5',
-    numberColor: 'text-gold',
+    Icon: Play,
+    title: 'Watch content',
+    description: 'Watch any video in the feed. Every completed video earns you pending points.',
   },
   {
     number: '03',
-    emoji: '⛓️',
-    title: 'Claim on-chain',
-    description:
-      'Hit claim anytime. Your earnings are transferred on-chain to your MiniPay wallet instantly.',
-    color: 'border-border bg-surface',
-    numberColor: 'text-muted',
+    Icon: Zap,
+    title: 'Deploy points',
+    description: 'Batch your off-chain points and deploy them to the Celo blockchain in one tap.',
+  },
+  {
+    number: '04',
+    Icon: Gift,
+    title: 'Claim rewards',
+    description: 'Convert deployed points to real cUSD and withdraw straight to your wallet.',
   },
 ]
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="px-5 py-20">
-      <div className="mx-auto max-w-4xl">
-        <AnimatedGroup preset="blur-slide" className="mb-12 text-center">
+    <section id="how-it-works" className="border-b border-border px-7 py-13">
+      <div className="mx-auto max-w-5xl">
+        {/* Header */}
+        <div className="mb-12 text-center">
           <p className="text-xs font-medium uppercase tracking-widest text-accent">How it works</p>
           <h2 className="mt-2 text-2xl font-bold text-primary sm:text-3xl">
-            3 steps to earning
+            4 steps to your first payout
           </h2>
-        </AnimatedGroup>
-
-        {/* Mobile: vertical stack with connector */}
-        <div className="relative flex flex-col gap-0 md:hidden">
-          {STEPS.map((step, i) => (
-            <div key={step.number} className="relative flex gap-4">
-              {/* Connector line */}
-              {i < STEPS.length - 1 && (
-                <div className="absolute left-5 top-10 h-full w-px border-l-2 border-dashed border-border" />
-              )}
-
-              {/* Number circle */}
-              <div
-                className={`relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border text-xs font-bold ${step.color} ${step.numberColor}`}
-              >
-                {step.number}
-              </div>
-
-              {/* Content */}
-              <div className="pb-10">
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">{step.emoji}</span>
-                  <h3 className="text-sm font-semibold text-primary">{step.title}</h3>
-                </div>
-                <p className="mt-1.5 text-xs leading-relaxed text-muted">{step.description}</p>
-              </div>
-            </div>
-          ))}
         </div>
 
-        {/* Desktop: 3 columns */}
-        <AnimatedGroup
-          preset="blur-slide"
-          className="hidden grid-cols-3 gap-4 md:grid"
-        >
-          {STEPS.map((step) => (
-            <div
-              key={step.number}
-              className={`flex flex-col gap-4 rounded-2xl border p-5 ${step.color}`}
-            >
-              <div
-                className={`flex h-9 w-9 items-center justify-center rounded-full border text-xs font-bold ${step.color} ${step.numberColor}`}
-              >
-                {step.number}
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xl">{step.emoji}</span>
-                  <h3 className="text-sm font-semibold text-primary">{step.title}</h3>
+        {/* Steps grid */}
+        <div className="relative grid gap-4 md:grid-cols-4 md:gap-0">
+          {STEPS.map((step, i) => {
+            const isLast = i === STEPS.length - 1
+            return (
+              <div key={step.number} className="relative flex flex-col items-start md:items-center md:text-center">
+                {/* Desktop connector arrow */}
+                {!isLast && (
+                  <div className="absolute right-0 top-5 hidden translate-x-1/2 -translate-y-1/2 text-border md:block">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                      <path d="M4 10h12M12 5l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-muted/30"/>
+                    </svg>
+                  </div>
+                )}
+
+                {/* Mobile connector */}
+                {!isLast && (
+                  <div className="absolute left-5 top-10 h-full w-px bg-border md:hidden" />
+                )}
+
+                {/* Card */}
+                <div className="relative z-10 flex w-full flex-row gap-4 rounded-xl border border-border bg-card p-4 md:flex-col md:gap-3 md:rounded-none md:border-0 md:bg-transparent md:p-5">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-accent/20 bg-accent/8">
+                    <step.Icon size={18} className="text-accent" />
+                  </div>
+                  <div>
+                    <p className="mb-1 text-[11px] font-bold tracking-widest text-accent">{step.number}</p>
+                    <h3 className="text-sm font-semibold text-primary">{step.title}</h3>
+                    <p className="mt-1.5 text-xs leading-relaxed text-muted">{step.description}</p>
+                  </div>
                 </div>
-                <p className="mt-2 text-xs leading-relaxed text-muted">{step.description}</p>
               </div>
-            </div>
-          ))}
-        </AnimatedGroup>
+            )
+          })}
+        </div>
       </div>
     </section>
   )
