@@ -20,7 +20,7 @@ export function HomeScreen() {
       <header className="flex items-center justify-between border-b border-border px-4 py-3">
         <div className="flex items-center gap-2">
           <span className="h-2.5 w-2.5 rounded-full bg-accent" />
-          <span className="text-lg font-bold tracking-tight">Semelo</span>
+          <span className="text-lg font-bold tracking-tight">Samelo</span>
         </div>
         <WalletBadge />
       </header>
