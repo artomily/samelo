@@ -1,17 +1,27 @@
 @import "tailwindcss";
 
 :root {
-  /* Semelo brand tokens */
-  --bg: #0A0A0A;
-  --surface: #141414;
-  --card: #1E1E1E;
-  --accent: #E11D1D;
-  --accent-hover: #C91919;
-  --gold: #F87171;
-  --text-primary: #F5F5F5;
-  --text-muted: #888888;
-  --border: #2A2A2A;
-  --danger: #EF4444;
+  /* ── Samelo Galaxy Brand Tokens ── */
+  --bg: #030303;
+  --surface: #080808;
+  --card: #0d0d0d;
+  --card-elevated: #111111;
+
+  /* Accent: Neon Lime Green (from logo) */
+  --accent: #c8f135;
+  --accent-hover: #d4f84d;
+  --accent-dim: rgba(200, 241, 53, 0.10);
+  --accent-glow: rgba(200, 241, 53, 0.25);
+  --accent-glow-strong: rgba(200, 241, 53, 0.45);
+
+  /* Semantic */
+  --text-primary: #f0f0f0;
+  --text-muted: #555555;
+  --text-dim: #333333;
+  --border: rgba(200, 241, 53, 0.12);
+  --border-dim: rgba(255, 255, 255, 0.06);
+  --danger: #ef4444;
+  --gold: #c8f135;
 
   /* Legacy aliases */
   --background: var(--bg);
@@ -31,8 +41,9 @@
   --color-muted: var(--text-muted);
   --color-border: var(--border);
   --color-danger: var(--danger);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-space-grotesk);
+  --font-display: var(--font-orbitron);
+  --font-mono: var(--font-space-grotesk);
 }
 
 *,
@@ -50,34 +61,115 @@ body {
 }
 
 body {
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-space-grotesk), 'Space Grotesk', system-ui, sans-serif;
 }
 
-/* Hide scrollbar on mobile while preserving scrollability */
+/* ── Typography ── */
+.font-display {
+  font-family: var(--font-orbitron), 'Orbitron', monospace;
+}
+
+/* ── Scrollbar ── */
 ::-webkit-scrollbar {
   width: 0;
   height: 0;
 }
 
-/* Safe-area bottom padding for notched phones */
+/* ── Safe areas ── */
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
-
-/* Nav clearance: BottomNav height (56px) + home bar safe area */
 .pb-nav {
   padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px));
 }
 
+/* ── Glass card utility ── */
+.glass-card {
+  background: rgba(13, 13, 13, 0.8);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+.glass-card-strong {
+  background: rgba(8, 8, 8, 0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(200, 241, 53, 0.18);
+  border-radius: 16px;
+}
+
+/* ── Neon glow utilities ── */
+.glow {
+  box-shadow: 0 0 20px var(--accent-glow), 0 0 60px var(--accent-dim);
+}
+
+.glow-text {
+  text-shadow: 0 0 20px var(--accent-glow), 0 0 40px var(--accent-dim);
+}
+
+.glow-border {
+  border: 1px solid var(--accent);
+  box-shadow: 0 0 12px var(--accent-glow), inset 0 0 12px var(--accent-dim);
+}
+
+.glow-border-sm {
+  border: 1px solid rgba(200, 241, 53, 0.4);
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+/* ── Neon button ── */
+.btn-neon {
+  background: var(--accent);
+  color: #030303;
+  font-family: var(--font-orbitron), monospace;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+  box-shadow: 0 0 20px var(--accent-glow), 0 4px 32px var(--accent-dim);
+}
+
+.btn-neon:hover {
+  background: var(--accent-hover);
+  box-shadow: 0 0 32px var(--accent-glow-strong), 0 8px 40px var(--accent-glow);
+  transform: translateY(-1px);
+}
+
+.btn-neon:active {
+  transform: scale(0.97);
+}
+
+/* ── Scan line overlay (subtle CRT effect) ── */
+.scanlines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* ── Cosmic grid background ── */
+.cosmic-grid {
+  background-image:
+    linear-gradient(rgba(200, 241, 53, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200, 241, 53, 0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* ── Keyframes ── */
+
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes ticker {
@@ -88,4 +180,78 @@ body {
 @keyframes ticker-reverse {
   from { transform: translateX(-50%); }
   to   { transform: translateX(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-12px); }
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50%       { transform: translateY(-20px) rotate(2deg); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.5; box-shadow: 0 0 12px var(--accent-glow); }
+  50%       { opacity: 1;   box-shadow: 0 0 32px var(--accent-glow-strong), 0 0 64px var(--accent-glow); }
+}
+
+@keyframes glow-pulse-text {
+  0%, 100% { text-shadow: 0 0 8px var(--accent-glow); }
+  50%       { text-shadow: 0 0 28px var(--accent-glow-strong), 0 0 48px var(--accent-glow); }
+}
+
+@keyframes orbit {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes orbit-reverse {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(-360deg); }
+}
+
+@keyframes star-twinkle {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50%       { opacity: 1;   transform: scale(1.4); }
+}
+
+@keyframes particle-rise {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-80px) scale(0.3); }
+}
+
+@keyframes scan-h {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100vw); }
+}
+
+@keyframes emerge {
+  from { opacity: 0; transform: scale(0.92) translateY(16px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ── Animation utilities ── */
+.animate-float       { animation: float 4s ease-in-out infinite; }
+.animate-float-slow  { animation: float-slow 8s ease-in-out infinite; }
+.animate-glow-pulse  { animation: glow-pulse 3s ease-in-out infinite; }
+.animate-orbit       { animation: orbit 12s linear infinite; }
+.animate-orbit-slow  { animation: orbit 30s linear infinite; }
+.animate-orbit-rev   { animation: orbit-reverse 20s linear infinite; }
+.animate-emerge      { animation: emerge 0.5s ease-out forwards; }
+
+/* ── Gradient text ── */
+.text-gradient {
+  background: linear-gradient(135deg, #c8f135 0%, #8ef03a 40%, #c8f135 80%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-subtle {
+  background: linear-gradient(135deg, #f0f0f0 0%, #c8f135 60%, #f0f0f0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
