@@ -36,12 +36,17 @@ function StreakRow({ watchedToday }: { watchedToday: boolean }) {
         return (
           <div
             key={day}
-            className={[
-              'flex h-6 flex-1 items-center justify-center rounded-md text-[10px]',
-              done
-                ? 'border border-accent/30 bg-accent/10 text-gold'
-                : 'border border-border bg-surface text-muted',
-            ].join(' ')}
+            className="flex h-6 flex-1 items-center justify-center rounded-md font-display text-[9px] uppercase tracking-wider transition-all"
+            style={done ? {
+              border: '1px solid rgba(200,241,53,0.3)',
+              background: 'rgba(200,241,53,0.08)',
+              color: '#c8f135',
+              boxShadow: '0 0 6px rgba(200,241,53,0.15)',
+            } : {
+              border: '1px solid rgba(200,241,53,0.08)',
+              background: 'rgba(200,241,53,0.02)',
+              color: 'rgba(200,241,53,0.25)',
+            }}
           >
             {day}
           </div>
@@ -131,15 +136,25 @@ export default function FeedContent() {
   const listVideos = MOCK_VIDEOS.filter((v) => v.id !== activeId)
 
   return (
-    <div className="flex min-h-dvh flex-col bg-bg">
+    <div className="flex min-h-dvh flex-col bg-[#030303]">
       {/* Header */}
-      <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-bg/95 px-4 py-3 backdrop-blur-sm sm:px-7 sm:py-3.5">
+      <header
+        className="sticky top-0 z-30 flex items-center justify-between border-b border-[rgba(200,241,53,0.10)] px-4 py-3 sm:px-7 sm:py-3.5"
+        style={{ background: 'rgba(3,3,3,0.92)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
+      >
         <div>
-          <p className="text-[14px] font-medium text-primary sm:text-[15px]">Good morning 👋</p>
-          <p className="mt-0.5 hidden text-[12px] text-muted sm:block">You have {listVideos.length} videos ready today</p>
+          <p
+            className="font-display text-[13px] font-black uppercase tracking-[0.15em] text-primary sm:text-[14px]"
+            style={{ textShadow: '0 0 10px rgba(200,241,53,0.2)' }}
+          >
+            Mission Control
+          </p>
+          <p className="mt-0.5 hidden text-[11px] text-muted sm:block">{listVideos.length} transmissions queued</p>
         </div>
-        <div className="flex items-center gap-1.5 rounded-lg border border-border bg-surface px-2.5 py-1.5 text-xs text-muted sm:gap-2 sm:px-3.5 sm:py-2">
-          <span className="h-1.75 w-1.75 rounded-full bg-green-500" />
+        <div
+          className="flex items-center gap-1.5 rounded-lg border border-[rgba(200,241,53,0.15)] bg-[rgba(200,241,53,0.04)] px-2.5 py-1.5 text-xs text-muted sm:gap-2 sm:px-3.5 sm:py-2"
+        >
+          <span className="h-1.5 w-1.5 rounded-full bg-accent" style={{ boxShadow: '0 0 6px rgba(200,241,53,0.8)' }} />
           <WalletBadge />
         </div>
       </header>
@@ -149,35 +164,35 @@ export default function FeedContent() {
 
         {/* 4-col Metrics */}
         <div className="mb-4 grid grid-cols-2 gap-2 sm:mb-5 sm:gap-2.5 sm:grid-cols-4">
-          <div className="rounded-xl border border-accent/30 bg-card p-3 sm:p-4">
-            <p className="mb-1 text-[11px] text-muted">Total earned</p>
-            <p className="text-lg font-medium tabular-nums text-gold sm:text-xl">${(pendingCents / 100).toFixed(2)}</p>
-            <p className="mt-0.5 text-[11px] text-green-500">↑ today</p>
+          <div className="glass-card p-3 sm:p-4" style={{ borderColor: 'rgba(200,241,53,0.25)', boxShadow: '0 0 16px rgba(200,241,53,0.06)' }}>
+            <p className="mb-1 font-display text-[9px] uppercase tracking-widest text-muted">Total earned</p>
+            <p className="font-display text-lg font-black tabular-nums text-accent sm:text-xl" style={{ textShadow: '0 0 10px rgba(200,241,53,0.35)' }}>${(pendingCents / 100).toFixed(2)}</p>
+            <p className="mt-0.5 text-[10px] text-accent/60">↑ today</p>
           </div>
-          <div className="rounded-xl border border-border bg-card p-3 sm:p-4">
-            <p className="mb-1 text-[11px] text-muted">Pending pts</p>
-            <p className="text-lg font-medium tabular-nums text-primary sm:text-xl">{pendingCents}</p>
-            <p className="mt-0.5 text-[11px] text-green-500">↑ {earnedIds.size * 10} today</p>
+          <div className="glass-card p-3 sm:p-4">
+            <p className="mb-1 font-display text-[9px] uppercase tracking-widest text-muted">Pending pts</p>
+            <p className="font-display text-lg font-black tabular-nums text-primary sm:text-xl">{pendingCents}</p>
+            <p className="mt-0.5 text-[10px] text-accent/60">↑ {earnedIds.size * 10} today</p>
           </div>
-          <div className="rounded-xl border border-border bg-card p-3 sm:p-4">
-            <p className="mb-1 text-[11px] text-muted">On-chain</p>
-            <p className="text-lg font-medium tabular-nums text-primary sm:text-xl">0</p>
-            <p className="mt-0.5 text-[11px] text-muted">Deploy ready</p>
+          <div className="glass-card p-3 sm:p-4">
+            <p className="mb-1 font-display text-[9px] uppercase tracking-widest text-muted">On-chain</p>
+            <p className="font-display text-lg font-black tabular-nums text-primary sm:text-xl">0</p>
+            <p className="mt-0.5 text-[10px] text-muted">Deploy ready</p>
           </div>
-          <div className="rounded-xl border border-border bg-card p-3 sm:p-4">
-            <p className="mb-1 text-[11px] text-muted">Referrals</p>
-            <p className="text-lg font-medium tabular-nums text-primary sm:text-xl">0</p>
-            <p className="mt-0.5 text-[11px] text-green-500">Invite friends</p>
+          <div className="glass-card p-3 sm:p-4">
+            <p className="mb-1 font-display text-[9px] uppercase tracking-widest text-muted">Referrals</p>
+            <p className="font-display text-lg font-black tabular-nums text-primary sm:text-xl">0</p>
+            <p className="mt-0.5 text-[10px] text-accent/60">Invite friends</p>
           </div>
         </div>
 
         {/* 2-col main layout */}
         <div className="grid gap-3 md:grid-cols-[1fr_300px] sm:gap-3.5">
           {/* LEFT: video list + streak */}
-          <div className="rounded-xl border border-border bg-card p-4">
+          <div className="glass-card p-4">
             <div className="mb-3.5 flex items-center justify-between">
-              <p className="text-[13px] font-medium text-primary">Today&apos;s content</p>
-              <span className="text-[11px] text-muted">{MOCK_VIDEOS.length} available</span>
+              <p className="font-display text-[11px] font-bold uppercase tracking-[0.12em] text-primary" style={{ textShadow: '0 0 8px rgba(200,241,53,0.2)' }}>Today&apos;s Transmissions</p>
+              <span className="font-display text-[9px] uppercase tracking-widest text-muted">{MOCK_VIDEOS.length} queued</span>
             </div>
 
             {/* Active player */}
@@ -204,12 +219,13 @@ export default function FeedContent() {
                   key={video.id}
                   className={[
                     'flex items-center gap-3 py-2.5',
-                    i < MOCK_VIDEOS.length - 1 ? 'border-b border-border' : '',
+                    i < MOCK_VIDEOS.length - 1 ? 'border-b border-[rgba(200,241,53,0.07)]' : '',
                   ].join(' ')}
                 >
                   <button
                     onClick={() => handleSelect(video.id)}
-                    className="flex h-8 w-10 shrink-0 items-center justify-center rounded-md border border-accent/30 bg-surface sm:h-9 sm:w-13"
+                    className="flex h-8 w-10 shrink-0 items-center justify-center rounded-md border border-[rgba(200,241,53,0.2)] bg-[rgba(200,241,53,0.06)] transition-all hover:border-[rgba(200,241,53,0.4)] sm:h-9 sm:w-13"
+                    style={{ boxShadow: '0 0 8px rgba(200,241,53,0.08)' }}
                   >
                     <Play size={14} className="text-accent" />
                   </button>
@@ -217,13 +233,13 @@ export default function FeedContent() {
                     <p className="truncate text-[12px] font-medium text-primary">{video.title}</p>
                     <p className="text-[11px] text-muted">{video.sponsor} · {video.durationSeconds}s</p>
                   </div>
-                  <span className="shrink-0 text-[12px] font-medium text-gold">+${(video.rewardCents / 100).toFixed(2)}</span>
+                  <span className="shrink-0 font-display text-[11px] font-bold text-accent" style={{ textShadow: '0 0 8px rgba(200,241,53,0.4)' }}>+${(video.rewardCents / 100).toFixed(2)}</span>
                   {earnedIds.has(video.id) ? (
-                    <span className="shrink-0 rounded-md bg-accent/15 px-3 py-1.25 text-[11px] font-medium text-accent">Done</span>
+                    <span className="shrink-0 rounded-md border border-[rgba(200,241,53,0.25)] bg-[rgba(200,241,53,0.08)] px-3 py-1 font-display text-[9px] font-bold uppercase tracking-wider text-accent">Done</span>
                   ) : (
                     <button
                       onClick={() => handleSelect(video.id)}
-                      className="shrink-0 rounded-md bg-accent px-3 py-1.25 text-[11px] font-medium text-white"
+                      className="shrink-0 btn-neon px-3 py-1 text-[10px]"
                     >
                       Watch
                     </button>
@@ -233,9 +249,9 @@ export default function FeedContent() {
             </div>
 
             {/* Streak */}
-            <div className="mt-4 border-t border-border pt-4">
+            <div className="mt-4 border-t border-[rgba(200,241,53,0.08)] pt-4">
               <div className="mb-2 flex items-center justify-between">
-                <p className="text-[13px] font-medium text-primary">Daily streak</p>
+                <p className="font-display text-[11px] font-bold uppercase tracking-[0.12em] text-primary">Daily streak</p>
                 <StreakBadge watchedToday={earnedIds.size > 0} />
               </div>
               <StreakRow watchedToday={earnedIds.size > 0} />
@@ -245,11 +261,11 @@ export default function FeedContent() {
           {/* RIGHT: points + activity */}
           <div className="flex flex-col gap-3.5">
             {/* Points deploy card */}
-            <div className="rounded-xl border border-border bg-card p-4">
-              <p className="mb-3.5 text-[13px] font-medium text-primary">Points to deploy</p>
-              <div className="mb-3.5 rounded-xl border border-accent/30 bg-surface p-4 text-center">
-                <p className="text-3xl font-medium tabular-nums text-gold">{pendingCents}</p>
-                <p className="mt-0.5 text-[11px] text-muted">pending off-chain points</p>
+            <div className="glass-card p-4" style={{ borderColor: 'rgba(200,241,53,0.2)' }}>
+              <p className="mb-3.5 font-display text-[11px] font-bold uppercase tracking-[0.12em] text-primary" style={{ textShadow: '0 0 8px rgba(200,241,53,0.2)' }}>Points to Deploy</p>
+              <div className="mb-3.5 rounded-xl border border-[rgba(200,241,53,0.2)] bg-[rgba(200,241,53,0.04)] p-4 text-center">
+                <p className="font-display text-3xl font-black tabular-nums text-accent" style={{ textShadow: '0 0 16px rgba(200,241,53,0.5)' }}>{pendingCents}</p>
+                <p className="mt-0.5 font-display text-[9px] uppercase tracking-widest text-muted">pending off-chain pts</p>
               </div>
               {address ? (
                 <ClaimButton pendingCents={pendingCents} onClaimed={handleClaimed} />
@@ -258,46 +274,46 @@ export default function FeedContent() {
                   Deploy Onchain
                 </button>
               )}
-              <p className="mt-2.5 text-center text-[11px] text-muted">Next deployment available soon</p>
+              <p className="mt-2.5 text-center font-display text-[9px] uppercase tracking-widest text-muted/50">Next deployment available soon</p>
             </div>
 
             {/* Recent activity */}
-            <div className="rounded-xl border border-border bg-card p-4">
-              <p className="mb-3.5 text-[13px] font-medium text-primary">Recent activity</p>
-              <div className="flex flex-col text-[12px]">
+            <div className="glass-card p-4">
+              <p className="mb-3.5 font-display text-[11px] font-bold uppercase tracking-[0.12em] text-primary" style={{ textShadow: '0 0 8px rgba(200,241,53,0.2)' }}>Recent Activity</p>
+              <div className="flex flex-col text-[11px]">
                 {earnedIds.size > 0 ? (
                   <>
                     {[...earnedIds].map((id) => {
                       const v = MOCK_VIDEOS.find((x) => x.id === id)
                       return v ? (
-                        <div key={id} className="flex justify-between border-b border-border py-1.5 text-muted last:border-0">
+                        <div key={id} className="flex justify-between border-b border-[rgba(200,241,53,0.07)] py-1.5 text-muted last:border-0">
                           <span>Watched video</span>
-                          <span className="font-medium text-gold">+10 pts</span>
+                          <span className="font-display font-bold text-accent">+10 pts</span>
                         </div>
                       ) : null
                     })}
-                    <div className="flex justify-between border-b border-border py-1.5 text-muted last:border-0">
+                    <div className="flex justify-between border-b border-[rgba(200,241,53,0.07)] py-1.5 text-muted last:border-0">
                       <span>Daily check-in</span>
-                      <span className="font-medium text-gold">+5 pts</span>
+                      <span className="font-display font-bold text-accent">+5 pts</span>
                     </div>
                   </>
                 ) : (
                   <>
-                    <div className="flex justify-between border-b border-border py-1.5 text-muted">
+                    <div className="flex justify-between border-b border-[rgba(200,241,53,0.07)] py-1.5 text-muted">
                       <span>Daily check-in</span>
-                      <span className="font-medium text-gold">+5 pts</span>
+                      <span className="font-display font-bold text-accent">+5 pts</span>
                     </div>
-                    <div className="flex justify-between border-b border-border py-1.5 text-muted">
+                    <div className="flex justify-between border-b border-[rgba(200,241,53,0.07)] py-1.5 text-muted">
                       <span>Referral confirmed</span>
-                      <span className="font-medium text-gold">+50 pts</span>
+                      <span className="font-display font-bold text-accent">+50 pts</span>
                     </div>
-                    <div className="flex justify-between border-b border-border py-1.5 text-muted">
+                    <div className="flex justify-between border-b border-[rgba(200,241,53,0.07)] py-1.5 text-muted">
                       <span>Streak bonus</span>
-                      <span className="font-medium text-gold">+25 pts</span>
+                      <span className="font-display font-bold text-accent">+25 pts</span>
                     </div>
                     <div className="flex justify-between py-1.5 text-muted">
                       <span>Watch a video</span>
-                      <span className="font-medium text-gold">+10 pts</span>
+                      <span className="font-display font-bold text-accent">+10 pts</span>
                     </div>
                   </>
                 )}
