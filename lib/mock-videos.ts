@@ -51,9 +51,9 @@ export const MOCK_VIDEOS: Video[] = [
   },
   {
     id: 'v5',
-    title: 'Earn while you learn — Semelo',
-    sponsor: 'Semelo',
-    thumbnailUrl: 'https://placehold.co/640x360/111827/FBCC5C?text=Semelo',
+    title: 'Earn while you learn — Samelo',
+    sponsor: 'Samelo',
+    thumbnailUrl: 'https://placehold.co/640x360/111827/FBCC5C?text=Samelo',
     videoUrl:
       'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4',
     durationSeconds: 40,
