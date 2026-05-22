@@ -3,7 +3,7 @@ import fs from 'fs'
 import path from 'path'
 
 const DATA_DIR = path.join(process.cwd(), 'data')
-const DB_PATH = path.join(DATA_DIR, 'semelo.db')
+const DB_PATH = path.join(DATA_DIR, 'samelo.db')
 
 let _db: Database.Database | null = null
 
