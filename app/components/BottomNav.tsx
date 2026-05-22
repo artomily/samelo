@@ -85,7 +85,10 @@ export function BottomNav() {
   // Keep nav visible everywhere
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-border bg-surface pb-safe">
+    <nav
+      className="fixed bottom-0 left-0 right-0 z-40 border-t border-[rgba(200,241,53,0.10)] pb-safe"
+      style={{ background: 'rgba(3,3,3,0.92)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}
+    >
       <div className="flex items-stretch">
         {tabs.map((tab) => {
           const active =
@@ -96,12 +99,23 @@ export function BottomNav() {
               key={tab.href}
               href={tab.href}
               className={cn(
-                'flex flex-1 flex-col items-center justify-center gap-1 py-3 text-[10px] font-medium transition-colors',
-                active ? 'text-accent' : 'text-muted',
+                'relative flex flex-1 flex-col items-center justify-center gap-1 py-3 text-[10px] font-medium transition-colors',
+                active ? 'text-accent' : 'text-muted hover:text-primary',
               )}
             >
+              {active && (
+                <span
+                  className="absolute top-0 left-1/2 h-[2px] w-8 -translate-x-1/2 rounded-full bg-accent"
+                  style={{ boxShadow: '0 0 8px rgba(200,241,53,0.8)' }}
+                />
+              )}
               {tab.icon(active)}
-              {t(tab.labelKey)}
+              <span
+                className="font-display text-[9px] uppercase tracking-widest"
+                style={active ? { textShadow: '0 0 8px rgba(200,241,53,0.4)' } : {}}
+              >
+                {t(tab.labelKey)}
+              </span>
             </Link>
           )
         })}
