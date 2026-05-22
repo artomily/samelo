@@ -9,7 +9,7 @@ export type Locale = 'en' | 'sw' | 'es'
 export type TranslationKey = keyof typeof en
 
 const DICTIONARIES: Record<Locale, typeof en> = { en, sw, es }
-const STORAGE_KEY = 'semelo_locale'
+const STORAGE_KEY = 'samelo_locale'
 const SUPPORTED: Locale[] = ['en', 'sw', 'es']
 
 function detectLocale(): Locale {
