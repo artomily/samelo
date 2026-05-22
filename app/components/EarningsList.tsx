@@ -89,8 +89,8 @@ export function EarningsList() {
   if (items.length === 0) {
     return (
       <div className="flex flex-col items-center gap-2 py-16 text-center">
-        <span className="text-3xl">🎬</span>
-        <p className="text-sm font-medium">{t('noEarnings')}</p>
+        <span className="font-display text-3xl text-accent" style={{ textShadow: '0 0 16px rgba(200,241,53,0.4)' }}>&#x25B6;</span>
+        <p className="text-sm font-semibold">{t('noEarnings')}</p>
         <p className="text-xs text-muted">{t('noEarningsDesc')}</p>
       </div>
     )
@@ -112,7 +112,7 @@ export function EarningsList() {
           return (
             <div
               key={item.id}
-              className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3"
+              className="glass-card flex items-center gap-3 px-4 py-3 transition-all hover:border-[rgba(200,241,53,0.2)]"
             >
               <div className="flex-1 min-w-0">
                 <p className="truncate text-sm font-medium">
@@ -121,13 +121,15 @@ export function EarningsList() {
                 <p className="text-xs text-muted">{formatDate(item.watched_at)}</p>
               </div>
               <div className="flex flex-col items-end gap-1">
-                <span className="text-sm font-bold text-gold">
+                <span
+                  className="font-display text-sm font-black text-accent"
+                  style={{ textShadow: '0 0 8px rgba(200,241,53,0.4)' }}
+                >
                   +${(item.reward_cents / 100).toFixed(2)}
                 </span>
                 <span
-                  className={`text-[10px] font-semibold ${
-                    item.claimed ? 'text-muted' : 'text-accent'
-                  }`}
+                  className="font-display text-[9px] uppercase tracking-widest"
+                  style={item.claimed ? { color: 'rgba(200,241,53,0.25)' } : { color: '#c8f135', textShadow: '0 0 6px rgba(200,241,53,0.3)' }}
                 >
                   {item.claimed ? 'Claimed' : 'Pending'}
                 </span>
@@ -142,7 +144,7 @@ export function EarningsList() {
         <button
           onClick={() => fetchPage(nextCursor)}
           disabled={loading}
-          className="w-full rounded-xl border border-border py-2.5 text-sm font-medium text-muted transition hover:border-accent hover:text-accent disabled:opacity-50"
+          className="w-full rounded-xl border border-[rgba(200,241,53,0.12)] py-2.5 font-display text-[11px] uppercase tracking-widest text-muted transition hover:border-[rgba(200,241,53,0.3)] hover:text-accent disabled:opacity-50"
         >
           {loading ? t('loading') : t('loadMore')}
         </button>
@@ -163,12 +165,11 @@ function StatPill({
   dim?: boolean
 }) {
   return (
-    <div className="flex flex-col gap-0.5 rounded-xl border border-border bg-surface px-3 py-2.5">
-      <span className="text-[10px] text-muted">{label}</span>
+    <div className="glass-card flex flex-col gap-0.5 px-3 py-2.5 transition-all hover:border-[rgba(200,241,53,0.2)]">
+      <span className="font-display text-[9px] uppercase tracking-widest text-muted">{label}</span>
       <span
-        className={`text-sm font-bold ${
-          accent ? 'text-accent' : dim ? 'text-muted' : 'text-fg'
-        }`}
+        className="font-display text-sm font-black"
+        style={accent ? { color: '#c8f135', textShadow: '0 0 8px rgba(200,241,53,0.4)' } : dim ? { color: 'rgba(200,241,53,0.25)' } : { color: '#f0f0f0' }}
       >
         ${(cents / 100).toFixed(2)}
       </span>
