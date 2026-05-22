@@ -28,15 +28,21 @@ export function Navbar() {
     <nav className="fixed inset-x-0 top-0 z-50 w-full">
       <div
         className={cn(
-          'mx-auto flex max-w-5xl items-center justify-between px-6 py-3.5 transition-all duration-300',
+          'mx-auto flex max-w-5xl items-center justify-between px-6 py-3.5 transition-all duration-500',
           isScrolled
-            ? 'border-b border-border bg-bg/95 backdrop-blur-lg'
+            ? 'border-b border-[rgba(200,241,53,0.12)] bg-[rgba(3,3,3,0.88)] backdrop-blur-xl'
             : 'bg-transparent'
         )}
       >
         {/* Logo */}
-        <Link href="/" className="text-[17px] font-medium tracking-tight text-primary" onClick={closeMenu}>
-          Sem<span className="text-accent">elo</span>
+        <Link href="/" className="flex items-center gap-2 group" onClick={closeMenu}>
+          <div className="relative flex h-7 w-7 items-center justify-center">
+            <div className="absolute inset-0 rounded-full bg-accent opacity-20 blur-md group-hover:opacity-40 transition-opacity" />
+            <span className="relative font-display text-sm font-black text-accent" style={{ textShadow: '0 0 16px rgba(200,241,53,0.6)' }}>S</span>
+          </div>
+          <span className="font-display text-[15px] font-bold tracking-widest text-primary uppercase">
+            Sem<span className="text-accent" style={{ textShadow: '0 0 12px rgba(200,241,53,0.5)' }}>elo</span>
+          </span>
         </Link>
 
         {/* Desktop links */}
@@ -45,7 +51,7 @@ export function Navbar() {
             <li key={link.href}>
               <a
                 href={link.href}
-                className="text-muted transition-colors hover:text-primary"
+                className="text-muted transition-all duration-200 hover:text-accent hover:drop-shadow-[0_0_8px_rgba(200,241,53,0.6)] tracking-wide"
                 onClick={closeMenu}
               >
                 {link.label}
@@ -57,32 +63,19 @@ export function Navbar() {
         {/* Right slot */}
         <div className="flex items-center gap-3">
           <Link
-            href="/home"
-            className="hidden rounded-lg bg-accent px-4 py-2 text-[13px] font-medium text-white transition-colors hover:bg-accent-hover lg:inline-flex"
+            href="/watch"
+            className="hidden btn-neon px-4 py-2 text-[12px] font-bold uppercase tracking-widest lg:inline-flex items-center justify-center"
           >
             Open in MiniPay
           </Link>
 
-          {/* Hamburger */}
           <button
             onClick={() => setMenuOpen((v) => !v)}
-            className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-border bg-surface lg:hidden"
+            className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[rgba(200,241,53,0.15)] bg-[rgba(200,241,53,0.05)] lg:hidden"
             aria-label="Toggle menu"
           >
-            <Menu
-              size={17}
-              className={cn(
-                'absolute transition-all duration-200',
-                menuOpen ? 'scale-0 opacity-0' : 'scale-100 opacity-100'
-              )}
-            />
-            <X
-              size={17}
-              className={cn(
-                'absolute transition-all duration-200',
-                menuOpen ? 'scale-100 opacity-100' : 'scale-0 opacity-0'
-              )}
-            />
+            <Menu size={17} className={cn('absolute text-accent transition-all duration-200', menuOpen ? 'scale-0 opacity-0' : 'scale-100 opacity-100')} />
+            <X size={17} className={cn('absolute text-accent transition-all duration-200', menuOpen ? 'scale-100 opacity-100' : 'scale-0 opacity-0')} />
           </button>
         </div>
       </div>
@@ -90,7 +83,7 @@ export function Navbar() {
       {/* Mobile panel */}
       <div
         className={cn(
-          'overflow-hidden border-b border-border bg-bg/98 backdrop-blur-lg transition-all duration-300 lg:hidden',
+          'overflow-hidden border-b border-[rgba(200,241,53,0.12)] bg-[rgba(3,3,3,0.96)] backdrop-blur-xl transition-all duration-300 lg:hidden',
           menuOpen ? 'max-h-80 py-4 opacity-100' : 'max-h-0 py-0 opacity-0'
         )}
       >
@@ -99,7 +92,7 @@ export function Navbar() {
             <li key={link.href}>
               <a
                 href={link.href}
-                className="block rounded-lg px-3 py-2.5 text-[13px] text-muted transition-colors hover:bg-card hover:text-primary"
+                className="block rounded-lg px-3 py-2.5 text-[13px] text-muted transition-colors hover:bg-[rgba(200,241,53,0.06)] hover:text-accent"
                 onClick={closeMenu}
               >
                 {link.label}
@@ -107,11 +100,11 @@ export function Navbar() {
             </li>
           ))}
         </ul>
-        <div className="mt-3 border-t border-border px-6 pt-3">
+        <div className="mt-3 border-t border-[rgba(200,241,53,0.1)] px-6 pt-3">
           <Link
-            href="/home"
+            href="/watch"
             onClick={closeMenu}
-            className="block w-full rounded-lg bg-accent py-2.5 text-center text-[13px] font-medium text-white transition-colors hover:bg-accent-hover"
+            className="btn-neon block w-full py-2.5 text-center text-[12px] font-bold uppercase tracking-widest"
           >
             Open in MiniPay
           </Link>
