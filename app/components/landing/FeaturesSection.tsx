@@ -1,85 +1,79 @@
 'use client'
 
 import { Coins, Shield, Bolt, Users, BarChart2, MapPin } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { motion } from 'framer-motion'
 
 const FEATURES = [
   {
     Icon: Coins,
-    title: 'Real yield model',
-    description:
-      'Every dollar of ad revenue is routed on-chain. You earn from actual monetisation, not from a reward pool that could run dry.',
+    title: 'Real Yield Engine',
+    description: 'Every dollar of ad revenue is routed on-chain. You earn from actual monetisation, not from a pool that runs dry.',
     accent: true,
   },
   {
     Icon: Shield,
-    title: 'On-chain transparency',
-    description:
-      'All payouts are verifiable on Celo. Anyone can audit the contract — no black-box earnings.',
+    title: 'On-Chain Transparency',
+    description: 'All payouts are verifiable on Celo. Anyone can audit the contract — no black-box earnings.',
   },
   {
     Icon: Bolt,
-    title: 'MiniPay native',
-    description:
-      'Built for MiniPay from day one. No external wallet required, no seed phrases, instant UX.',
+    title: 'MiniPay Native',
+    description: 'Built for MiniPay from day one. No external wallet, no seed phrases, instant UX.',
   },
   {
     Icon: Users,
-    title: 'Referral rewards',
-    description:
-      'Invite friends and earn a percentage of their watch rewards forever. Your network compounds.',
+    title: 'Referral Network',
+    description: 'Invite explorers and earn a percentage of their watch rewards forever. Your network compounds.',
   },
   {
     Icon: BarChart2,
-    title: 'Points system',
-    description:
-      'Accumulate off-chain points as you watch, then deploy them to the blockchain in batches to save gas.',
+    title: 'Points Systems',
+    description: 'Accumulate off-chain points as you watch, then deploy them to Celo in batches to save gas.',
   },
   {
     Icon: MapPin,
-    title: 'Emerging market first',
-    description:
-      'Designed for low-bandwidth networks and cUSD stability. Works everywhere MiniPay works.',
+    title: 'Galaxy First',
+    description: 'Designed for low-bandwidth networks and cUSD stability. Works everywhere MiniPay works.',
   },
 ]
 
 export function FeaturesSection() {
   return (
-    <section id="features" className="border-b border-border px-7 py-13">
+    <section id="features" className="relative overflow-hidden border-b border-[rgba(200,241,53,0.08)] px-5 py-20">
       <div className="mx-auto max-w-5xl">
-        {/* Header */}
         <div className="mb-12 text-center">
-          <p className="text-xs font-medium uppercase tracking-widest text-accent">Why Samelo</p>
-          <h2 className="mt-2 text-2xl font-bold text-primary sm:text-3xl">
+          <p className="font-display text-[10px] font-bold uppercase tracking-[0.2em] text-accent"
+            style={{ textShadow: '0 0 12px rgba(200,241,53,0.4)' }}
+          >
+            Why Samelo
+          </p>
+          <h2 className="mt-3 font-display text-2xl font-black tracking-tight text-primary sm:text-3xl">
             Built different, by design
           </h2>
         </div>
 
-        {/* 6-card grid */}
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {FEATURES.map((feat) => (
-            <div
+          {FEATURES.map((feat, i) => (
+            <motion.div
               key={feat.title}
-              className={cn(
-                'rounded-xl border p-5 transition-colors',
-                feat.accent
-                  ? 'border-accent/30 bg-accent/5'
-                  : 'border-border bg-card hover:border-border/80 hover:bg-card/80'
-              )}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.45, delay: i * 0.07 }}
+              className="group glass-card p-5 transition-all duration-300 hover:border-[rgba(200,241,53,0.3)] hover:-translate-y-0.5"
+              style={{
+                boxShadow: feat.accent ? '0 0 24px rgba(200,241,53,0.06), inset 0 0 24px rgba(200,241,53,0.03)' : 'none',
+                borderColor: feat.accent ? 'rgba(200,241,53,0.25)' : undefined,
+              }}
             >
               <div
-                className={cn(
-                  'mb-4 flex h-9 w-9 items-center justify-center rounded-lg',
-                  feat.accent
-                    ? 'bg-accent/15 text-accent'
-                    : 'bg-surface text-muted'
-                )}
+                className="mb-4 flex h-9 w-9 items-center justify-center rounded-xl border border-[rgba(200,241,53,0.2)] bg-[rgba(200,241,53,0.06)] transition-all group-hover:shadow-[0_0_16px_rgba(200,241,53,0.2)]"
               >
-                <feat.Icon size={16} />
+                <feat.Icon size={16} className="text-accent" />
               </div>
               <h3 className="mb-1.5 text-sm font-semibold text-primary">{feat.title}</h3>
               <p className="text-xs leading-relaxed text-muted">{feat.description}</p>
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
