@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServiceSupabase } from '@/lib/supabase'
-import { isAddress, keccak256, encodePacked, randomBytes } from 'viem'
+import { isAddress, keccak256, encodePacked } from 'viem'
+import { randomBytes } from 'crypto'
 import { privateKeyToAccount } from 'viem/accounts'
 
 /**
