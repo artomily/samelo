@@ -1,4 +1,4 @@
-// ABI for SemeloRewardPool contract — keep in sync with contracts/SemeloRewardPool.sol
+// ABI for SameloRewardPool contract — keep in sync with contracts/SameloRewardPool.sol
 
 export const REWARD_POOL_ABI = [
   {
