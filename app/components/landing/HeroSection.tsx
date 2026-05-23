@@ -141,51 +141,6 @@ export function HeroSection() {
         </motion.div>
       </div>
 
-      {/* Holographic video mock */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.9, delay: 0.4 }}
-        className="relative z-10 mt-14 animate-float"
-      >
-        <div
-          className="glass-card-strong relative overflow-hidden"
-          style={{
-            width: 'min(340px, 90vw)',
-            aspectRatio: '16/9',
-            boxShadow: '0 0 40px rgba(200,241,53,0.12), 0 32px 64px rgba(0,0,0,0.6)',
-          }}
-        >
-          {/* Fake video content */}
-          <div className="absolute inset-0 bg-linear-to-br from-[rgba(200,241,53,0.05)] to-transparent" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div
-              className="flex h-14 w-14 items-center justify-center rounded-full border border-[rgba(200,241,53,0.4)] bg-[rgba(200,241,53,0.1)] animate-glow-pulse"
-              style={{ boxShadow: '0 0 24px rgba(200,241,53,0.3)' }}
-            >
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <path d="M7 5l8 5-8 5V5z" fill="#c8f135" />
-              </svg>
-            </div>
-          </div>
-          {/* HUD overlay */}
-          <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
-            <span className="font-display text-[8px] font-bold uppercase tracking-widest text-accent/70">SAMELO · LIVE FEED</span>
-            <span className="font-display text-[8px] font-bold text-accent">+5p</span>
-          </div>
-          {/* Progress bar */}
-          <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[rgba(200,241,53,0.1)]">
-            <motion.div
-              className="h-full bg-accent"
-              style={{ boxShadow: '0 0 8px rgba(200,241,53,0.8)' }}
-              initial={{ width: '0%' }}
-              animate={{ width: '68%' }}
-              transition={{ duration: 2, delay: 1 }}
-            />
-          </div>
-        </div>
-      </motion.div>
-
       {/* Stats */}
       <motion.div
         initial={{ opacity: 0 }}
