@@ -149,6 +149,15 @@ export default function FeedContent() {
 
   const { swap: swapToMelo, status: swapStatus, reset: resetSwap } = useSwapToMelo()
 
+  useEffect(() => {
+    if (swapStatus === 'success') {
+      setPendingPoints(0)
+      setEarnedIds(new Set())
+      toast('Points swapped to $MELO!', 'success')
+      resetSwap()
+    }
+  }, [swapStatus, resetSwap])
+
   const listVideos = videos.filter((v) => v.id !== activeId)
 
   return (
@@ -315,15 +324,9 @@ export default function FeedContent() {
                 <>
                   <ClaimButton pendingCents={pendingPoints} onClaimed={handleClaimed} />
                   <button
-                    onClick={async () => {
+                    onClick={() => {
                       if (pendingPoints <= 0) return
-                      await swapToMelo(pendingPoints)
-                      if (swapStatus === 'success') {
-                        setPendingPoints(0)
-                        setEarnedIds(new Set())
-                        toast('Points swapped to $MELO!', 'success')
-                        resetSwap()
-                      }
+                      void swapToMelo(pendingPoints)
                     }}
                     disabled={pendingPoints <= 0 || swapStatus === 'pending' || swapStatus === 'confirming'}
                     className="mt-2 w-full rounded-lg border border-[rgba(200,241,53,0.3)] bg-[rgba(200,241,53,0.08)] py-2.5 text-[13px] font-bold text-accent transition-all hover:enabled:border-[rgba(200,241,53,0.5)] hover:enabled:bg-[rgba(200,241,53,0.14)] disabled:cursor-not-allowed disabled:opacity-50"

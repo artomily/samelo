@@ -57,7 +57,7 @@ export function BottomNav() {
             >
               {active && (
                 <span
-                  className="absolute top-0 left-1/2 h-[2px] w-8 -translate-x-1/2 rounded-full bg-accent"
+                  className="absolute top-0 left-1/2 h-0.5 w-8 -translate-x-1/2 rounded-full bg-accent"
                   style={{ boxShadow: '0 0 8px rgba(200,241,53,0.8)' }}
                 />
               )}

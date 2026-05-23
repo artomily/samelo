@@ -53,7 +53,8 @@ function loadYTApi(onReady: () => void) {
 
 function ytSrc(url: string): string {
   try {
-    const u = new URL(url)
+    // IFrame API requires youtube.com (not youtube-nocookie.com)
+    const u = new URL(url.replace('youtube-nocookie.com', 'youtube.com'))
     u.searchParams.set('enablejsapi', '1')
     u.searchParams.set('origin', window.location.origin)
     return u.toString()
@@ -93,7 +94,7 @@ export function VideoPlayer({ video, onEarned }: VideoPlayerProps) {
     function startTick(player: YTPlayer) {
       if (tickRef.current) clearInterval(tickRef.current)
       tickRef.current = setInterval(() => {
-        // Only count seconds when the player reports state=1 (PLAYING)
+        // Only count when player reports PLAYING (state === 1)
         if (player.getPlayerState() === 1) {
           accRef.current += 1
           handleTimeUpdate(accRef.current)
@@ -102,9 +103,7 @@ export function VideoPlayer({ video, onEarned }: VideoPlayerProps) {
     }
 
     function init() {
-      const el = iframeRef.current
-      if (!el || !window.YT?.Player) return
-      el.id = iframeId
+      if (!iframeRef.current || !window.YT?.Player) return
       const p = new window.YT.Player(iframeId, {
         events: {
           onReady: (e) => {
@@ -119,8 +118,9 @@ export function VideoPlayer({ video, onEarned }: VideoPlayerProps) {
     loadYTApi(init)
 
     return () => {
+      // Only clear the interval — do NOT call destroy() as it removes
+      // the iframe element from the DOM, breaking React's ref.
       if (tickRef.current) { clearInterval(tickRef.current); tickRef.current = null }
-      try { playerRef.current?.destroy() } catch { /* ignore */ }
       playerRef.current = null
     }
   }, [isYT, video.id, handleTimeUpdate])
@@ -159,6 +159,7 @@ export function VideoPlayer({ video, onEarned }: VideoPlayerProps) {
       {isYT ? (
         <iframe
           ref={iframeRef}
+          id={`yt-${video.id}`}
           src={ytSrc(video.videoUrl)}
           title={video.title}
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

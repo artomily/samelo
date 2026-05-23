@@ -1,10 +1,16 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
+import dynamic from 'next/dynamic'
 import { useVideos } from '@/hooks/useVideos'
 import { useState, useCallback } from 'react'
 import { Skeleton } from '@/app/components/Skeleton'
+import { toast } from '@/app/components/Toast'
+
+const VideoPlayer = dynamic(
+  () => import('@/app/components/VideoPlayer').then((m) => ({ default: m.VideoPlayer })),
+  { ssr: false, loading: () => <Skeleton className="aspect-video w-full rounded-xl" /> },
+)
 
 function formatDuration(sec: number): string {
   const m = Math.floor(sec / 60)
@@ -15,6 +21,7 @@ function formatDuration(sec: number): string {
 export default function WatchPage() {
   const { videos, loading } = useVideos()
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [earnedIds, setEarnedIds] = useState<Set<string>>(new Set())
 
   const selectedIdx = selectedId ? videos.findIndex((v) => v.id === selectedId) : -1
   const selected = selectedIdx >= 0 ? videos[selectedIdx] : null
@@ -28,6 +35,12 @@ export default function WatchPage() {
   const goPrev = useCallback(() => {
     if (hasPrev) setSelectedId(videos[selectedIdx - 1]!.id)
   }, [hasPrev, selectedIdx, videos])
+
+  const handleEarned = useCallback((rewardPoints: number) => {
+    if (!selectedId || earnedIds.has(selectedId)) return
+    setEarnedIds((prev) => new Set(prev).add(selectedId))
+    toast(`+${rewardPoints} points earned!`, 'success')
+  }, [selectedId, earnedIds])
 
   return (
     <div className="flex min-h-dvh flex-col bg-[#030303]">
@@ -65,23 +78,8 @@ export default function WatchPage() {
                 <span className="font-mono text-[9px] opacity-60">ID: {selectedId}</span>
               </div>
 
-              {/* Thumbnail */}
-              <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-black">
-                <Image
-                  src={selected.thumbnailUrl}
-                  alt={selected.title}
-                  fill
-                  className="object-cover"
-                  unoptimized
-                />
-                {/* Reward badge */}
-                <span
-                  className="absolute right-3 top-3 rounded-md border border-[rgba(200,241,53,0.4)] bg-[rgba(3,3,3,0.85)] px-2 py-0.5 font-display text-[10px] font-bold text-accent"
-                  style={{ textShadow: '0 0 8px rgba(200,241,53,0.6)' }}
-                >
-                  +{selected.rewardPoints}p
-                </span>
-              </div>
+              {/* Video Player */}
+              <VideoPlayer key={selectedId!} video={selected} onEarned={handleEarned} />
 
               {/* Info */}
               <div>

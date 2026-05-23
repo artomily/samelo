@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useAccount } from 'wagmi'
-import { MOCK_VIDEOS } from '@/lib/mock-videos'
 import { Skeleton } from '@/app/components/Skeleton'
 import { useTranslation } from '@/lib/i18n'
+import type { Video } from '@/lib/mock-videos'
 
 /**
  * EarningsList - Displays user's earning history with pagination
@@ -27,8 +27,6 @@ interface HistoryResponse {
   totalClaimedCents: number
 }
 
-const VIDEO_MAP = Object.fromEntries(MOCK_VIDEOS.map((v) => [v.id, v]))
-
 function formatDate(epochSeconds: number): string {
   const d = new Date(epochSeconds * 1000)
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
@@ -42,6 +40,19 @@ export function EarningsList() {
   const [loading, setLoading] = useState(false)
   const [totals, setTotals] = useState({ earned: 0, claimed: 0 })
   const [initialized, setInitialized] = useState(false)
+  const [videoMap, setVideoMap] = useState<Record<string, Video>>({})
+
+  // Load video titles once for the label lookup
+  useEffect(() => {
+    fetch('/api/videos')
+      .then((r) => r.json())
+      .then((d: { videos?: Video[] }) => {
+        if (d.videos) {
+          setVideoMap(Object.fromEntries(d.videos.map((v) => [v.id, v])))
+        }
+      })
+      .catch(() => {})
+  }, [])
 
   const fetchPage = useCallback(
     async (cursor: number) => {
@@ -108,7 +119,7 @@ export function EarningsList() {
       {/* History list */}
       <div className="space-y-2">
         {items.map((item) => {
-          const video = VIDEO_MAP[item.video_id]
+          const video = videoMap[item.video_id]
           return (
             <div
               key={item.id}

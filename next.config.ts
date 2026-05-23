@@ -13,11 +13,12 @@ const securityHeaders = [
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'", // required by Next.js
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.youtube.com https://s.ytimg.com", // Next.js + YT IFrame API
       "style-src 'self' 'unsafe-inline'",
       "img-src 'self' data: blob: https:",
       "media-src 'self' blob: https:",
-      "connect-src 'self' https://forno.celo.org wss://forno.celo.org https://*.celo.org",
+      "frame-src https://www.youtube.com https://www.youtube-nocookie.com",
+      "connect-src 'self' https://forno.celo.org wss://forno.celo.org https://*.celo.org https://www.youtube.com",
       "frame-ancestors 'self' https://*.minipay.app https://*.opera.com",
       "font-src 'self' https://fonts.gstatic.com",
     ].join("; "),
