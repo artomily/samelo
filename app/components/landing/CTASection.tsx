@@ -27,15 +27,15 @@ export function CTASection() {
         <p className="font-display text-[10px] font-bold uppercase tracking-[0.2em] text-accent"
           style={{ textShadow: '0 0 12px rgba(200,241,53,0.5)' }}
         >
-          Initiate launch sequence
+          Start earning today
         </p>
 
         <h2 className="font-display text-3xl font-black tracking-tight text-primary sm:text-4xl">
-          Ready to join the galaxy?
+          Ready to earn cUSD?
         </h2>
 
         <p className="max-w-[34ch] text-sm leading-relaxed text-muted">
-          Thousands of explorers are already mining rewards. Your mission starts now.
+          Join thousands of users already earning cUSD. Start watching today.
         </p>
 
         <Link
@@ -43,7 +43,7 @@ export function CTASection() {
           className="btn-neon mt-4 inline-flex items-center gap-2 px-10 py-4 text-[13px]"
         >
           <span className="h-1.5 w-1.5 rounded-full bg-[#030303] animate-pulse" />
-          Launch Mission
+          Start Watching
         </Link>
 
         <p className="text-[11px] text-muted/50">No sign-up required · Live on Celo</p>
