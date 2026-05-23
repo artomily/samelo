@@ -388,7 +388,7 @@ export default function FeedContent() {
               </div>
 
               {/* Streak */}
-              <div className="mt-4 border-t border-[rgba(200,241,53,0.08)] pt-4">
+              {/* <div className="mt-4 border-t border-[rgba(200,241,53,0.08)] pt-4">
                 <div className="mb-2 flex items-center justify-between">
                   <p className="font-display text-[11px] font-bold uppercase tracking-[0.12em] text-primary">
                     Daily streak
@@ -396,7 +396,7 @@ export default function FeedContent() {
                   <StreakBadge watchedToday={earnedIds.size > 0} />
                 </div>
                 <StreakRow watchedToday={earnedIds.size > 0} />
-              </div>
+              </div> */}
             </div>
 
             {/* RIGHT: points + activity */}
@@ -443,7 +443,7 @@ export default function FeedContent() {
               </div>
 
               {/* Recent activity */}
-              <div className="glass-card p-4">
+              {/* <div className="glass-card p-4">
                 <p
                   className="mb-3.5 font-display text-[11px] font-bold uppercase tracking-[0.12em] text-primary"
                   style={{ textShadow: "0 0 8px rgba(200,241,53,0.2)" }}
@@ -503,7 +503,7 @@ export default function FeedContent() {
                     </>
                   )}
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
