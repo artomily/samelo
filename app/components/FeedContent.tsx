@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { useAccount } from 'wagmi'
-import { MOCK_VIDEOS } from '@/lib/mock-videos'
+import { useVideos } from '@/hooks/useVideos'
 import dynamic from 'next/dynamic'
 import { Skeleton } from '@/app/components/Skeleton'
 import { WalletBadge } from '@/app/components/WalletBadge'
@@ -65,12 +65,13 @@ function StreakBadge({ watchedToday }: { watchedToday: boolean }) {
 
 export default function FeedContent() {
   const { address } = useAccount()
+  const { videos } = useVideos()
   const [activeId, setActiveId] = useState<string | null>(null)
-  const [pendingCents, setPendingCents] = useState(0)
+  const [pendingPoints, setPendingPoints] = useState(0)
   const [earnedIds, setEarnedIds] = useState<Set<string>>(new Set())
   const watchTokenRef = useRef<string | null>(null)
 
-  const activeVideo = activeId ? MOCK_VIDEOS.find((v) => v.id === activeId) ?? null : null
+  const activeVideo = activeId ? videos.find((v) => v.id === activeId) ?? null : null
 
   useEffect(() => {
     if (!address || !activeId) return
@@ -88,7 +89,7 @@ export default function FeedContent() {
     fetch(`/api/rewards/pending?walletAddress=${address}`)
       .then((r) => r.json())
       .then((d: { totalCents?: number }) => {
-        if (typeof d.totalCents === 'number') setPendingCents(d.totalCents)
+        if (typeof d.totalCents === 'number') setPendingPoints(d.totalCents)
       })
       .catch(() => {})
   }, [address])
@@ -101,11 +102,11 @@ export default function FeedContent() {
   }, [])
 
   const handleEarned = useCallback(
-    async (rewardCents: number) => {
+    async (rewardPoints: number) => {
       if (!activeId || earnedIds.has(activeId)) return
       setEarnedIds((prev) => new Set(prev).add(activeId))
-      setPendingCents((prev) => prev + rewardCents)
-      toast(`+$${(rewardCents / 100).toFixed(2)} cUSD earned!`, 'success')
+      setPendingPoints((prev) => prev + rewardPoints)
+      toast(`+${rewardPoints} points earned!`, 'success')
       if (!address || !watchTokenRef.current) return
       try {
         const res = await fetch('/api/watch/complete', {
@@ -119,7 +120,7 @@ export default function FeedContent() {
         })
         if (res.ok) {
           const data = (await res.json()) as { totalPendingCents?: number }
-          if (typeof data.totalPendingCents === 'number') setPendingCents(data.totalPendingCents)
+          if (typeof data.totalPendingCents === 'number') setPendingPoints(data.totalPendingCents)
         }
       } catch {
         // optimistic update stands
@@ -129,11 +130,11 @@ export default function FeedContent() {
   )
 
   const handleClaimed = useCallback(() => {
-    setPendingCents(0)
+    setPendingPoints(0)
     setEarnedIds(new Set())
   }, [])
 
-  const listVideos = MOCK_VIDEOS.filter((v) => v.id !== activeId)
+  const listVideos = videos.filter((v) => v.id !== activeId)
 
   return (
     <div className="flex min-h-dvh flex-col bg-[#030303]">
@@ -147,9 +148,9 @@ export default function FeedContent() {
             className="font-display text-[13px] font-black uppercase tracking-[0.15em] text-primary sm:text-[14px]"
             style={{ textShadow: '0 0 10px rgba(200,241,53,0.2)' }}
           >
-            Mission Control
+            Home
           </p>
-          <p className="mt-0.5 hidden text-[11px] text-muted sm:block">{listVideos.length} transmissions queued</p>
+          <p className="mt-0.5 hidden text-[11px] text-muted sm:block">{listVideos.length} videos ready</p>
         </div>
         <div
           className="flex items-center gap-1.5 rounded-lg border border-[rgba(200,241,53,0.15)] bg-[rgba(200,241,53,0.04)] px-2.5 py-1.5 text-xs text-muted sm:gap-2 sm:px-3.5 sm:py-2"
@@ -166,12 +167,12 @@ export default function FeedContent() {
         <div className="mb-4 grid grid-cols-2 gap-2 sm:mb-5 sm:gap-2.5 sm:grid-cols-4">
           <div className="glass-card p-3 sm:p-4" style={{ borderColor: 'rgba(200,241,53,0.25)', boxShadow: '0 0 16px rgba(200,241,53,0.06)' }}>
             <p className="mb-1 font-display text-[9px] uppercase tracking-widest text-muted">Total earned</p>
-            <p className="font-display text-lg font-black tabular-nums text-accent sm:text-xl" style={{ textShadow: '0 0 10px rgba(200,241,53,0.35)' }}>${(pendingCents / 100).toFixed(2)}</p>
+            <p className="font-display text-lg font-black tabular-nums text-accent sm:text-xl" style={{ textShadow: '0 0 10px rgba(200,241,53,0.35)' }}>{pendingPoints}p</p>
             <p className="mt-0.5 text-[10px] text-accent/60">↑ today</p>
           </div>
           <div className="glass-card p-3 sm:p-4">
             <p className="mb-1 font-display text-[9px] uppercase tracking-widest text-muted">Pending pts</p>
-            <p className="font-display text-lg font-black tabular-nums text-primary sm:text-xl">{pendingCents}</p>
+            <p className="font-display text-lg font-black tabular-nums text-primary sm:text-xl">{pendingPoints}</p>
             <p className="mt-0.5 text-[10px] text-accent/60">↑ {earnedIds.size * 10} today</p>
           </div>
           <div className="glass-card p-3 sm:p-4">
@@ -192,7 +193,7 @@ export default function FeedContent() {
           <div className="glass-card p-4">
             <div className="mb-3.5 flex items-center justify-between">
               <p className="font-display text-[11px] font-bold uppercase tracking-[0.12em] text-primary" style={{ textShadow: '0 0 8px rgba(200,241,53,0.2)' }}>Today&apos;s Transmissions</p>
-              <span className="font-display text-[9px] uppercase tracking-widest text-muted">{MOCK_VIDEOS.length} queued</span>
+              <span className="font-display text-[9px] uppercase tracking-widest text-muted">{videos.length} queued</span>
             </div>
 
             {/* Active player */}
@@ -214,12 +215,12 @@ export default function FeedContent() {
 
             {/* Video rows */}
             <div className="flex flex-col">
-              {MOCK_VIDEOS.map((video, i) => (
+              {videos.map((video, i) => (
                 <div
                   key={video.id}
                   className={[
                     'flex items-center gap-3 py-2.5',
-                    i < MOCK_VIDEOS.length - 1 ? 'border-b border-[rgba(200,241,53,0.07)]' : '',
+                    i < videos.length - 1 ? 'border-b border-[rgba(200,241,53,0.07)]' : '',
                   ].join(' ')}
                 >
                   <button
@@ -233,7 +234,7 @@ export default function FeedContent() {
                     <p className="truncate text-[12px] font-medium text-primary">{video.title}</p>
                     <p className="text-[11px] text-muted">{video.sponsor} · {video.durationSeconds}s</p>
                   </div>
-                  <span className="shrink-0 font-display text-[11px] font-bold text-accent" style={{ textShadow: '0 0 8px rgba(200,241,53,0.4)' }}>+${(video.rewardCents / 100).toFixed(2)}</span>
+                  <span className="shrink-0 font-display text-[11px] font-bold text-accent" style={{ textShadow: '0 0 8px rgba(200,241,53,0.4)' }}>+{video.rewardPoints}p</span>
                   {earnedIds.has(video.id) ? (
                     <span className="shrink-0 rounded-md border border-[rgba(200,241,53,0.25)] bg-[rgba(200,241,53,0.08)] px-3 py-1 font-display text-[9px] font-bold uppercase tracking-wider text-accent">Done</span>
                   ) : (
@@ -264,11 +265,11 @@ export default function FeedContent() {
             <div className="glass-card p-4" style={{ borderColor: 'rgba(200,241,53,0.2)' }}>
               <p className="mb-3.5 font-display text-[11px] font-bold uppercase tracking-[0.12em] text-primary" style={{ textShadow: '0 0 8px rgba(200,241,53,0.2)' }}>Points to Deploy</p>
               <div className="mb-3.5 rounded-xl border border-[rgba(200,241,53,0.2)] bg-[rgba(200,241,53,0.04)] p-4 text-center">
-                <p className="font-display text-3xl font-black tabular-nums text-accent" style={{ textShadow: '0 0 16px rgba(200,241,53,0.5)' }}>{pendingCents}</p>
+                <p className="font-display text-3xl font-black tabular-nums text-accent" style={{ textShadow: '0 0 16px rgba(200,241,53,0.5)' }}>{pendingPoints}</p>
                 <p className="mt-0.5 font-display text-[9px] uppercase tracking-widest text-muted">pending off-chain pts</p>
               </div>
               {address ? (
-                <ClaimButton pendingCents={pendingCents} onClaimed={handleClaimed} />
+                <ClaimButton pendingCents={pendingPoints} onClaimed={handleClaimed} />
               ) : (
                 <button disabled className="w-full rounded-lg bg-accent/40 py-2.5 text-[13px] font-medium text-white/50">
                   Deploy Onchain
@@ -284,7 +285,7 @@ export default function FeedContent() {
                 {earnedIds.size > 0 ? (
                   <>
                     {[...earnedIds].map((id) => {
-                      const v = MOCK_VIDEOS.find((x) => x.id === id)
+                      const v = videos.find((x) => x.id === id)
                       return v ? (
                         <div key={id} className="flex justify-between border-b border-[rgba(200,241,53,0.07)] py-1.5 text-muted last:border-0">
                           <span>Watched video</span>
