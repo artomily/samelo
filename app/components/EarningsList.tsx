@@ -110,7 +110,7 @@ export function EarningsList() {
   return (
     <div className="space-y-5">
       {/* Summary row */}
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         <StatPill label={t('totalEarned')} cents={totals.earned} />
         <StatPill label={t('claimedLabel')} cents={totals.claimed} accent={false} dim />
         <StatPill label={t('pending')} cents={pending} accent />

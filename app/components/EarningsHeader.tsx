@@ -7,7 +7,7 @@ export function EarningsHeader() {
 
   return (
     <header
-      className="sticky top-0 z-30 flex items-center justify-start border-b border-[rgba(200,241,53,0.10)] px-4 py-3"
+      className="sticky top-0 z-30 flex items-center justify-start border-b border-[rgba(200,241,53,0.10)] px-4 py-3 sm:px-7 sm:py-3.5"
       style={{ background: 'rgba(3,3,3,0.92)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
     >
       <h1

@@ -158,7 +158,7 @@ export default function SwapPage() {
   return (
     <div className="flex min-h-dvh flex-col bg-[#030303]">
       <header
-        className="sticky top-0 z-30 flex items-center gap-3 border-b border-[rgba(200,241,53,0.10)] px-4 py-3"
+        className="sticky top-0 z-30 flex items-center gap-3 border-b border-[rgba(200,241,53,0.10)] px-4 py-3 sm:px-7 sm:py-3.5"
         style={{
           background: "rgba(3,3,3,0.92)",
           backdropFilter: "blur(16px)",
@@ -301,14 +301,12 @@ function MeloTab({
 
   return (
     <>
-      <div className="grid grid-cols-1">
-        <BalanceCard
-          label="Pending Points"
-          value={String(supabasePoints)}
-          unit="pts"
-          accent
-        />
-      </div>
+      <BalanceCard
+        label="Pending Points"
+        value={String(supabasePoints)}
+        unit="pts"
+        accent
+      />
 
       <div
         className="rounded-2xl border border-[rgba(200,241,53,0.18)] bg-[#0d0d0d] p-5"
@@ -337,7 +335,7 @@ function MeloTab({
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-2 mb-4">
+        <div className="grid grid-cols-2 gap-2 mb-4 sm:grid-cols-3 md:grid-cols-4">
           {REDEMPTION_OPTIONS.map((opt, i) => {
             const canAfford = effectivePoints >= opt.points;
             const isSelected = selectedIndex === i;
@@ -464,14 +462,12 @@ function CeloTab({
 
   return (
     <>
-      <div className="grid grid-cols-1">
-        <BalanceCard
-          label="Pending Points"
-          value={String(supabasePoints)}
-          unit="pts"
-          accent
-        />
-      </div>
+      <BalanceCard
+        label="Pending Points"
+        value={String(supabasePoints)}
+        unit="pts"
+        accent
+      />
 
       <div
         className="rounded-2xl border border-[rgba(200,241,53,0.18)] bg-[#0d0d0d] p-5"

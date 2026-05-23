@@ -46,7 +46,7 @@ export default function WatchPage() {
     <div className="flex min-h-dvh flex-col bg-[#030303]">
       {/* Header */}
       <header
-        className="sticky top-0 z-30 flex items-center justify-between border-b border-[rgba(200,241,53,0.10)] px-4 py-3"
+        className="sticky top-0 z-30 flex items-center justify-between border-b border-[rgba(200,241,53,0.10)] px-4 py-3 sm:px-7 sm:py-3.5"
         style={{ background: 'rgba(3,3,3,0.92)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
       >
         <div>
@@ -67,11 +67,12 @@ export default function WatchPage() {
       </header>
 
       {/* Main content */}
-      <div className="grid gap-4 px-4 py-4 pb-28 md:grid-cols-[1fr_300px] sm:gap-5 sm:px-7">
-        {/* LEFT: Selected video or empty state */}
-        <div>
-          {selected ? (
-            <div className="glass-card p-4 space-y-4">
+      <div className="w-full px-4 py-4 pb-28 sm:px-7 sm:py-5">
+        <div className="grid gap-3 md:grid-cols-[1fr_300px] sm:gap-3.5">
+          {/* LEFT: Selected video or empty state */}
+          <div>
+            {selected ? (
+              <div className="glass-card p-4 space-y-4">
               {/* Video counter */}
               <div className="flex items-center justify-between text-[10px] text-muted border-b border-[rgba(200,241,53,0.08)] pb-3">
                 <span className="font-display font-bold text-accent">Video {selectedIdx + 1} of {videos.length}</span>
@@ -148,6 +149,7 @@ export default function WatchPage() {
                 ))}
           </div>
         </div>
+      </div>
       </div>
     </div>
   )
