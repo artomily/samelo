@@ -37,7 +37,7 @@ export function VideoCard({ video, isActive, onSelect }: VideoCardProps) {
           className="absolute bottom-2 right-2 rounded-full border border-[rgba(200,241,53,0.3)] bg-black/80 px-2.5 py-1 font-display text-[11px] font-bold text-accent backdrop-blur-sm"
           style={{ boxShadow: '0 0 8px rgba(200,241,53,0.25)' }}
         >
-          +${(video.rewardCents / 100).toFixed(2)}
+          +{video.rewardPoints}p
         </div>
       </div>
 
