@@ -2,78 +2,30 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { Home, PlayCircle, TrendingUp, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useTranslation, type TranslationKey } from '@/lib/i18n'
 
-/**
- * BottomNav - Mobile-first navigation bar
- * Shows home, watch, earnings, and profile tabs with icons
- * Active tab highlighted with accent color
- */
 const tabs: { href: string; labelKey: TranslationKey; icon: (active: boolean) => React.ReactNode }[] = [
   {
     href: '/home',
     labelKey: 'home',
-    icon: (active: boolean) => (
-      <svg
-        viewBox="0 0 24 24"
-        fill={active ? 'currentColor' : 'none'}
-        stroke="currentColor"
-        strokeWidth={1.8}
-        className="h-6 w-6"
-      >
-        <path d="M3 12L12 3l9 9" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M9 21V12h6v9" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    ),
+    icon: (active: boolean) => <Home size={22} strokeWidth={active ? 2.5 : 1.5} />,
   },
   {
     href: '/watch',
     labelKey: 'watch',
-    icon: (active: boolean) => (
-      <svg
-        viewBox="0 0 24 24"
-        fill={active ? 'currentColor' : 'none'}
-        stroke="currentColor"
-        strokeWidth={1.8}
-        className="h-6 w-6"
-      >
-        <circle cx="12" cy="12" r="10" />
-        <polygon fill="currentColor" points="10,8 16,12 10,16" />
-      </svg>
-    ),
+    icon: (active: boolean) => <PlayCircle size={22} strokeWidth={active ? 2.5 : 1.5} />,
   },
   {
     href: '/earnings',
     labelKey: 'earnings',
-    icon: (active: boolean) => (
-      <svg
-        viewBox="0 0 24 24"
-        fill={active ? 'currentColor' : 'none'}
-        stroke="currentColor"
-        strokeWidth={1.8}
-        className="h-6 w-6"
-      >
-        <rect x="3" y="3" width="18" height="18" rx="3" />
-        <path d="M8 12h8M8 8h5M8 16h6" strokeLinecap="round" />
-      </svg>
-    ),
+    icon: (active: boolean) => <TrendingUp size={22} strokeWidth={active ? 2.5 : 1.5} />,
   },
   {
     href: '/profile',
     labelKey: 'profile',
-    icon: (active: boolean) => (
-      <svg
-        viewBox="0 0 24 24"
-        fill={active ? 'currentColor' : 'none'}
-        stroke="currentColor"
-        strokeWidth={1.8}
-        className="h-6 w-6"
-      >
-        <circle cx="12" cy="8" r="4" />
-        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" strokeLinecap="round" />
-      </svg>
-    ),
+    icon: (active: boolean) => <User size={22} strokeWidth={active ? 2.5 : 1.5} />,
   },
 ]
 
