@@ -36,10 +36,9 @@ import "../src/SameloSwap.sol";
  *   TESTNET               — true = use Sepolia CELO token, default false
  */
 contract DeployFull is Script {
-    // Mainnet: 0x471EcE3750Da237f93B8E339c536989b8978a438
-    // Alfajores / Sepolia testnet: 0xF194afDf50B03e69Bd7D057c1Aa9e10c9954E4C9
+    // Celo Sepolia (L2): CELO ERC-20 is at the same address as mainnet
     address constant CELO_TOKEN_MAINNET = 0x471EcE3750Da237f93B8E339c536989b8978a438;
-    address constant CELO_TOKEN_TESTNET = 0xF194afDf50B03e69Bd7D057c1Aa9e10c9954E4C9;
+    address constant CELO_TOKEN_TESTNET = 0x471EcE3750Da237f93B8E339c536989b8978a438;
 
     SameloTreasury public treasury;
     SameloSwap public swap;
@@ -75,7 +74,7 @@ contract DeployFull is Script {
         console.log("Oracle:          ", oracle);
         console.log("Distributor:     ", distributor);
         console.log("Reserve Ratio:   ", reserveRatioBps, "bps");
-        console.log("Points→CELO Rate:", pointsToCELORate, "wei/pt");
+        console.log("Points -> CELO Rate:", pointsToCELORate, "wei/pt");
         console.log("Min Swap Points: ", minSwapPoints);
         console.log("Max Swap Points: ", maxSwapPoints);
         console.log("Swap Cooldown:   ", swapCooldown, "seconds");
