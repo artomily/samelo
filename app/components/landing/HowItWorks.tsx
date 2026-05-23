@@ -1,106 +1,246 @@
 'use client'
 
-import { Smartphone, Play, Zap, Gift } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { useState } from 'react'
+import { Smartphone, Play, Coins, ArrowLeftRight, ChevronDown } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 const STEPS = [
   {
     number: '01',
     Icon: Smartphone,
     title: 'Open in MiniPay',
-    description: 'Launch Samelo inside MiniPay — no wallet setup, no downloads, no KYC.',
+    description:
+      'Launch Samelo inside MiniPay. No wallet setup, no downloads, no seed phrases — tap and go.',
+    detail: 'Built natively for Opera MiniPay on Celo. Zero friction onboarding. No KYC required — just open and start earning.',
   },
   {
     number: '02',
     Icon: Play,
     title: 'Watch Videos',
-    description: 'Browse your video feed. Every completed video earns you points.',
+    description:
+      'Browse your feed and watch short videos. Earn 5–200 points per video depending on length.',
+    detail: 'Shorter clips earn less. Long-form earns more. Fair rewards for real attention — every second you watch counts toward your next payout.',
   },
   {
     number: '03',
-    Icon: Zap,
-    title: 'Deploy Points',
-    description: 'Batch your off-chain points and deploy them to the Celo blockchain in one tap.',
+    Icon: Coins,
+    title: 'Earn Points',
+    description:
+      'Points accumulate as you watch. Every 1,000 points is worth 1 $MELOUSD — a Celo stablecoin.',
+    detail: 'Track your balance in real-time. The more you watch, the faster you stack. No withdrawal minimums, no hidden fees.',
   },
   {
     number: '04',
-    Icon: Gift,
-    title: 'Claim Rewards',
-    description: 'Convert deployed points to real cUSD and withdraw straight to your MiniPay wallet.',
+    Icon: ArrowLeftRight,
+    title: 'Swap to $MELO',
+    description:
+      'Choose from 8 preset tiers and swap your points for $MELOUSD in a single on-chain transaction.',
+    detail: 'No gas hacks. No complex math. Pick a tier, sign once, get $MELO. From 1K to 250K points — 8 tiers to match your balance.',
   },
 ]
 
-export function HowItWorks() {
+const REDEMPTION_TIERS = [
+  { pts: '1K', melo: '1' },
+  { pts: '2.5K', melo: '2.5' },
+  { pts: '5K', melo: '5' },
+  { pts: '10K', melo: '10' },
+  { pts: '25K', melo: '25' },
+  { pts: '50K', melo: '50' },
+  { pts: '100K', melo: '100' },
+  { pts: '250K', melo: '250' },
+]
+
+function RedemptionPreview() {
   return (
-    <section id="how-it-works" className="relative overflow-hidden border-b border-[rgba(200,241,53,0.08)] px-5 py-20">
-      {/* Background glow */}
+    <motion.div
+      initial={{ opacity: 0, scale: 0.92 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay: 0.4 }}
+      className="mx-auto mt-14 max-w-5xl overflow-hidden rounded-2xl border border-[rgba(200,241,53,0.12)] bg-[#060606] p-5"
+      style={{ boxShadow: '0 0 40px rgba(200,241,53,0.05)' }}
+    >
+      <div className="mb-4 flex items-center justify-between">
+        <span className="font-display text-[10px] font-bold uppercase tracking-[0.2em] text-accent/70">
+          Swap Points → $MELOUSD
+        </span>
+        <span className="rounded-full border border-[rgba(200,241,53,0.15)] bg-[rgba(200,241,53,0.05)] px-2.5 py-0.5 font-display text-[9px] uppercase tracking-wider text-accent/60">
+          1K pts = 1 MELO
+        </span>
+      </div>
+
+      <div className="grid grid-cols-4 gap-2">
+        {REDEMPTION_TIERS.map((tier) => (
+          <div
+            key={tier.pts}
+            className="flex flex-col items-center rounded-xl border border-[rgba(200,241,53,0.1)] bg-[rgba(200,241,53,0.025)] px-2 py-3 text-center transition-all hover:border-[rgba(200,241,53,0.25)] hover:bg-[rgba(200,241,53,0.05)]"
+          >
+            <span className="font-display text-sm font-black text-accent">
+              {tier.melo}
+            </span>
+            <span className="font-display text-[9px] uppercase tracking-wider text-white">
+              MELO
+            </span>
+            <span className="mt-1 font-display text-[9px] text-white">
+              {tier.pts} pts
+            </span>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-3 text-center">
+        <span className="font-display text-[9px] uppercase tracking-[0.15em] text-white">
+          8 preset tiers · one-click swap
+        </span>
+      </div>
+    </motion.div>
+  )
+}
+
+export function HowItWorks() {
+  const [expanded, setExpanded] = useState<number | null>(null)
+
+  return (
+    <section
+      id="how-it-works"
+      className="relative overflow-hidden border-b border-[rgba(200,241,53,0.08)] px-5 py-20 md:py-28"
+    >
       <div
         className="pointer-events-none absolute inset-0"
-        style={{ background: 'radial-gradient(ellipse 50% 60% at 50% 50%, rgba(200,241,53,0.04) 0%, transparent 70%)' }}
+        style={{
+          background:
+            'radial-gradient(ellipse 50% 60% at 50% 0%, rgba(200,241,53,0.05) 0%, transparent 70%)',
+        }}
       />
 
       <div className="mx-auto max-w-5xl">
-        {/* Header */}
-        <div className="mb-14 text-center">
-          <p className="font-display text-[10px] font-bold uppercase tracking-[0.2em] text-accent"
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="mb-14 text-center"
+        >
+          <p
+            className="font-display text-[10px] font-bold uppercase tracking-[0.2em] text-accent"
             style={{ textShadow: '0 0 12px rgba(200,241,53,0.4)' }}
           >
             How it works
           </p>
           <h2 className="mt-3 font-display text-2xl font-black tracking-tight text-primary sm:text-3xl">
-            4 steps to your first reward
+            Watch. Earn. Swap.
           </h2>
-        </div>
+          <p className="mx-auto mt-3 max-w-[42ch] text-sm leading-relaxed text-muted">
+            No KYC, no gas tricks. Watch videos, stack points, and swap for{' '}
+            <span className="text-accent">$MELOUSD</span> right inside MiniPay.
+          </p>
+        </motion.div>
 
-        {/* Steps grid */}
-        <div className="relative grid gap-4 md:grid-cols-4 md:gap-0">
+        {/* Grid of clickable cards */}
+        <div className="grid gap-4 sm:grid-cols-2">
           {STEPS.map((step, i) => {
-            const isLast = i === STEPS.length - 1
+            const isOpen = expanded === i
+            const StepIcon = step.Icon
+
             return (
-              <motion.div
+              <motion.button
                 key={step.number}
                 initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="relative flex flex-col items-start md:items-center md:text-center"
+                transition={{ duration: 0.45, delay: i * 0.08 }}
+                onClick={() => setExpanded(isOpen ? null : i)}
+                className="group relative flex w-full flex-col text-left rounded-2xl border p-6 transition-all duration-300 cursor-pointer"
+                style={
+                  isOpen
+                    ? {
+                        borderColor: 'rgba(200,241,53,0.35)',
+                        background: 'rgba(200,241,53,0.06)',
+                        boxShadow: '0 0 32px rgba(200,241,53,0.1)',
+                      }
+                    : {
+                        borderColor: 'rgba(200,241,53,0.1)',
+                        background: 'rgba(200,241,53,0.015)',
+                      }
+                }
               >
-                {/* Connector line (desktop) */}
-                {!isLast && (
-                  <div className="absolute right-0 top-5 hidden translate-x-1/2 md:block">
-                    <svg width="24" height="2" viewBox="0 0 24 2" fill="none">
-                      <line x1="0" y1="1" x2="24" y2="1" stroke="rgba(200,241,53,0.25)" strokeWidth="1" strokeDasharray="3 3" />
-                    </svg>
-                  </div>
-                )}
+                {/* Hover overlay */}
+                <div className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                  style={{
+                    background:
+                      'radial-gradient(ellipse at 30% 20%, rgba(200,241,53,0.04) 0%, transparent 60%)',
+                  }}
+                />
 
-                {/* Connector line (mobile) */}
-                {!isLast && (
-                  <div className="absolute left-5 top-12 h-full w-px bg-gradient-to-b from-[rgba(200,241,53,0.25)] to-transparent md:hidden" />
-                )}
-
-                {/* Card */}
-                <div
-                  className="glass-card relative z-10 flex w-full flex-row gap-4 p-4 transition-all duration-300 hover:border-[rgba(200,241,53,0.3)] md:flex-col md:gap-3 md:rounded-none md:border-0 md:bg-transparent md:shadow-none md:p-5"
-                  style={{ boxShadow: 'none' }}
-                >
+                <div className="relative z-10 flex items-start gap-4">
                   {/* Icon */}
                   <div
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[rgba(200,241,53,0.25)] bg-[rgba(200,241,53,0.06)]"
-                    style={{ boxShadow: '0 0 16px rgba(200,241,53,0.1)' }}
+                    className="flex h-14 w-14 shrink-0 flex-col items-center justify-center gap-0.5 rounded-xl border transition-all duration-300"
+                    style={
+                      isOpen
+                        ? {
+                            borderColor: 'rgba(200,241,53,0.4)',
+                            background: 'rgba(200,241,53,0.1)',
+                            boxShadow: '0 0 24px rgba(200,241,53,0.18)',
+                          }
+                        : {
+                            borderColor: 'rgba(200,241,53,0.18)',
+                            background: 'rgba(200,241,53,0.05)',
+                            boxShadow: '0 0 16px rgba(200,241,53,0.06)',
+                          }
+                    }
                   >
-                    <step.Icon size={18} className="text-accent" />
+                    <StepIcon size={20} className="text-accent" />
+                    <span className="font-display text-[9px] font-black text-accent/50">
+                      {step.number}
+                    </span>
                   </div>
-                  <div>
-                    <p className="mb-1 font-display text-[10px] font-bold uppercase tracking-[0.15em] text-accent">{step.number}</p>
-                    <h3 className="text-sm font-semibold text-primary">{step.title}</h3>
-                    <p className="mt-1.5 text-xs leading-relaxed text-muted">{step.description}</p>
+
+                  <div className="min-w-0 flex-1 pt-1">
+                    <h3 className="font-display text-base font-bold text-primary sm:text-lg">
+                      {step.title}
+                    </h3>
+                    <p className="mt-1.5 text-sm leading-relaxed text-muted">
+                      {step.description}
+                    </p>
+
+                    {/* Expandable detail */}
+                    <AnimatePresence initial={false}>
+                      {isOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.3, ease: 'easeInOut' }}
+                          className="overflow-hidden"
+                        >
+                          <p className="mt-3 text-sm leading-relaxed text-muted/50 border-t border-[rgba(200,241,53,0.08)] pt-3">
+                            {step.detail}
+                          </p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
+
+                  {/* Expand chevron */}
+                  <motion.div
+                    animate={{ rotate: isOpen ? 180 : 0 }}
+                    transition={{ duration: 0.25 }}
+                    className="shrink-0 pt-2"
+                  >
+                    <ChevronDown
+                      size={16}
+                      className="text-muted/30 group-hover:text-accent/50 transition-colors"
+                    />
+                  </motion.div>
                 </div>
-              </motion.div>
+              </motion.button>
             )
           })}
         </div>
+
+        {/* Redemption preview */}
+        <RedemptionPreview />
       </div>
     </section>
   )
