@@ -10,6 +10,7 @@ import { ClaimButton } from '@/app/components/ClaimButton'
 import { ConnectBanner } from '@/app/components/ConnectBanner'
 import { toast } from '@/app/components/Toast'
 import { Play } from 'lucide-react'
+import { useSwapToMelo } from '@/hooks/useSwapToMelo'
 
 const VideoPlayer = dynamic(
   () => import('@/app/components/VideoPlayer').then((m) => ({ default: m.VideoPlayer })),
@@ -101,6 +102,18 @@ export default function FeedContent() {
     }, 50)
   }, [])
 
+  const currentVideoIndex = activeId ? videos.findIndex((v) => v.id === activeId) : -1
+  const hasNext = currentVideoIndex >= 0 && currentVideoIndex < videos.length - 1
+  const hasPrev = currentVideoIndex > 0
+
+  const goToPrev = useCallback(() => {
+    if (hasPrev) handleSelect(videos[currentVideoIndex - 1]!.id)
+  }, [hasPrev, currentVideoIndex, videos, handleSelect])
+
+  const goToNext = useCallback(() => {
+    if (hasNext) handleSelect(videos[currentVideoIndex + 1]!.id)
+  }, [hasNext, currentVideoIndex, videos, handleSelect])
+
   const handleEarned = useCallback(
     async (rewardPoints: number) => {
       if (!activeId || earnedIds.has(activeId)) return
@@ -133,6 +146,8 @@ export default function FeedContent() {
     setPendingPoints(0)
     setEarnedIds(new Set())
   }, [])
+
+  const { swap: swapToMelo, status: swapStatus, reset: resetSwap } = useSwapToMelo()
 
   const listVideos = videos.filter((v) => v.id !== activeId)
 
@@ -199,16 +214,44 @@ export default function FeedContent() {
             {/* Active player */}
             {activeVideo && (
               <div id="player-area" className="mb-4 scroll-mt-20">
+                {/* Video counter */}
+                <div className="mb-2 flex items-center justify-between text-[10px] text-muted">
+                  <span className="font-display font-bold text-accent">Video {currentVideoIndex + 1} of {videos.length}</span>
+                  <span className="font-mono text-[9px] opacity-60">ID: {activeId}</span>
+                </div>
+
+                {/* Player */}
                 <VideoPlayer key={activeId!} video={activeVideo} onEarned={handleEarned} />
+
+                {/* Video info + earned status */}
                 <div className="mt-2 flex items-center justify-between">
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <p className="truncate text-[12px] font-medium text-primary">{activeVideo.title}</p>
                     <p className="text-[11px] text-muted">{activeVideo.sponsor}</p>
                   </div>
                   {earnedIds.has(activeId!) && (
-                    <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold text-accent">Earned ✓</span>
+                    <span className="ml-2 shrink-0 rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold text-accent">Earned ✓</span>
                   )}
                 </div>
+
+                {/* Navigation buttons */}
+                <div className="mt-3 flex gap-2">
+                  <button
+                    onClick={goToPrev}
+                    disabled={!hasPrev}
+                    className="flex-1 rounded-lg border border-[rgba(200,241,53,0.2)] bg-[rgba(200,241,53,0.06)] px-3 py-2 text-xs font-bold uppercase tracking-wider text-accent transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:enabled:border-[rgba(200,241,53,0.4)]"
+                  >
+                    ← Previous
+                  </button>
+                  <button
+                    onClick={goToNext}
+                    disabled={!hasNext}
+                    className="flex-1 rounded-lg border border-[rgba(200,241,53,0.2)] bg-[rgba(200,241,53,0.06)] px-3 py-2 text-xs font-bold uppercase tracking-wider text-accent transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:enabled:border-[rgba(200,241,53,0.4)]"
+                  >
+                    Next →
+                  </button>
+                </div>
+
                 <div className="my-3 h-px bg-border" />
               </div>
             )}
@@ -269,7 +312,28 @@ export default function FeedContent() {
                 <p className="mt-0.5 font-display text-[9px] uppercase tracking-widest text-muted">pending off-chain pts</p>
               </div>
               {address ? (
-                <ClaimButton pendingCents={pendingPoints} onClaimed={handleClaimed} />
+                <>
+                  <ClaimButton pendingCents={pendingPoints} onClaimed={handleClaimed} />
+                  <button
+                    onClick={async () => {
+                      if (pendingPoints <= 0) return
+                      await swapToMelo(pendingPoints)
+                      if (swapStatus === 'success') {
+                        setPendingPoints(0)
+                        setEarnedIds(new Set())
+                        toast('Points swapped to $MELO!', 'success')
+                        resetSwap()
+                      }
+                    }}
+                    disabled={pendingPoints <= 0 || swapStatus === 'pending' || swapStatus === 'confirming'}
+                    className="mt-2 w-full rounded-lg border border-[rgba(200,241,53,0.3)] bg-[rgba(200,241,53,0.08)] py-2.5 text-[13px] font-bold text-accent transition-all hover:enabled:border-[rgba(200,241,53,0.5)] hover:enabled:bg-[rgba(200,241,53,0.14)] disabled:cursor-not-allowed disabled:opacity-50"
+                    style={{ letterSpacing: '0.04em' }}
+                  >
+                    {swapStatus === 'pending' ? 'Confirm in wallet…' :
+                     swapStatus === 'confirming' ? 'Swapping…' :
+                     `Swap ${pendingPoints}pts → $MELO`}
+                  </button>
+                </>
               ) : (
                 <button disabled className="w-full rounded-lg bg-accent/40 py-2.5 text-[13px] font-medium text-white/50">
                   Deploy Onchain
