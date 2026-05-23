@@ -104,7 +104,7 @@ export function BentoFeatures() {
             className="font-display text-[10px] font-bold uppercase tracking-[0.2em] text-accent"
             style={{ textShadow: '0 0 12px rgba(200,241,53,0.4)' }}
           >
-            Mission Modules
+            Features
           </p>
           <h2 className="mt-3 font-display text-2xl font-black tracking-tight text-primary sm:text-3xl">
             Everything you need to earn
