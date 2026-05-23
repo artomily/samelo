@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useWatchSession } from '@/hooks/useWatchSession'
 import type { Video } from '@/lib/mock-videos'
 
@@ -74,6 +74,10 @@ export function VideoPlayer({ video, onEarned }: VideoPlayerProps) {
   // HTML5 skip detection
   const prevVidRef = useRef<number | null>(null)
   const prevWallRef = useRef<number | null>(null)
+  const debugReadyState = useState(false)
+  const debugGenState = useState(0)
+  const [debugReady, setDebugReady] = debugReadyState
+  const [debugGen, setDebugGen] = debugGenState
 
   const handleComplete = useCallback(() => {
     onEarned(video.rewardPoints)
@@ -101,6 +105,9 @@ export function VideoPlayer({ video, onEarned }: VideoPlayerProps) {
     let prevWallTime: number | null = null
 
     let playerReady = false
+    let playerGen = 0
+    setDebugReady(false)
+    setDebugGen(0)
 
     function startTick() {
       if (tickRef.current) clearInterval(tickRef.current)
@@ -108,7 +115,9 @@ export function VideoPlayer({ video, onEarned }: VideoPlayerProps) {
         const player = playerRef.current
         if (!player || !playerReady) return
         try {
-          if (player.getPlayerState() !== window.YT.PlayerState.PLAYING) {
+          const state = player.getPlayerState()
+          // state === 1 means YT.PlayerState.PLAYING
+          if (state !== 1) {
             prevVideoTime = null
             prevWallTime = null
             return
@@ -134,15 +143,28 @@ export function VideoPlayer({ video, onEarned }: VideoPlayerProps) {
 
     function init() {
       if (!iframeRef.current || !window.YT?.Player) return
+      const gen = ++playerGen
+      setDebugGen(gen)
       playerRef.current = new window.YT.Player(iframeId, {
         events: {
           onReady: (e: { target: YTPlayer }) => {
+            if (gen !== playerGen) return // stale callback from React Strict Mode
             playerRef.current = e.target
             playerReady = true
+            setDebugReady(true)
             startTick()
           },
         },
       })
+
+      // Fallback: if onReady doesn't fire within 5s, force-start anyway
+      setTimeout(() => {
+        if (gen === playerGen && !playerReady) {
+          playerReady = true
+          setDebugReady(true)
+          startTick()
+        }
+      }, 5000)
     }
 
     loadYTApi(init)
@@ -184,99 +206,94 @@ export function VideoPlayer({ video, onEarned }: VideoPlayerProps) {
   )
 
   return (
-    <div className="relative w-full overflow-hidden rounded-2xl bg-black">
-      {isYT ? (
-        <iframe
-          ref={iframeRef}
-          id={`yt-${video.id}`}
-          src={ytSrc(video.videoUrl)}
-          title={video.title}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          className="aspect-video w-full border-0"
-        />
-      ) : (
-        <video
-          ref={videoRef}
-          src={video.videoUrl}
-          poster={video.thumbnailUrl}
-          controls
-          playsInline
-          preload="metadata"
-          className="aspect-video w-full object-cover"
-          onTimeUpdate={(e) =>
-            handleHtml5Update((e.target as HTMLVideoElement).currentTime)
-          }
-        />
-      )}
-
-      {/* Progress overlay — top of video */}
-      <div className="pointer-events-none absolute left-0 right-0 top-0">
-        {completed ? (
-          <div
-            className="h-1.5 w-full"
-            style={{ background: '#c8f135', boxShadow: '0 0 12px rgba(200,241,53,1)' }}
+    <div className="w-full overflow-hidden rounded-2xl bg-black">
+      <div className="relative w-full">
+        {isYT ? (
+          <iframe
+            ref={iframeRef}
+            id={`yt-${video.id}`}
+            src={ytSrc(video.videoUrl)}
+            title={video.title}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="aspect-video w-full border-0"
           />
         ) : (
-          <>
-            {/* Bar track */}
-            <div className="h-1.5 w-full bg-black/40">
-              <div
-                className="relative h-full transition-all duration-500"
-                style={{
-                  width: `${progress * 100}%`,
-                  background: 'linear-gradient(to right, rgba(200,241,53,0.6), #c8f135)',
-                  boxShadow: '0 0 8px rgba(200,241,53,0.7)',
-                }}
-              >
-                {progress > 0.02 && (
-                  <span
-                    className="absolute right-0 top-1/2 h-3 w-3 -translate-y-1/2 translate-x-1/2 rounded-full bg-accent"
-                    style={{ boxShadow: '0 0 8px rgba(200,241,53,1), 0 0 3px rgba(200,241,53,1)' }}
-                  />
-                )}
-              </div>
-            </div>
-            {/* Label row */}
-            <div
-              className="flex items-center justify-between px-3 pb-2 pt-1"
-              style={{ background: 'linear-gradient(to bottom, rgba(3,3,3,0.75) 0%, transparent 100%)' }}
-            >
-              <span
-                className="font-display text-[10px] font-bold text-accent"
-                style={{ textShadow: '0 0 6px rgba(200,241,53,0.8)' }}
-              >
-                {Math.round(progress * 100)}% watched
-              </span>
-              {remaining > 0 ? (
-                <span className="text-[10px] text-white/55">
-                  {remaining}s left to earn
-                </span>
-              ) : (
-                <span
-                  className="animate-pulse font-display text-[10px] font-bold text-accent"
-                  style={{ textShadow: '0 0 6px rgba(200,241,53,0.8)' }}
-                >
-                  Almost there!
-                </span>
-              )}
-            </div>
-          </>
+          <video
+            ref={videoRef}
+            src={video.videoUrl}
+            poster={video.thumbnailUrl}
+            controls
+            playsInline
+            preload="metadata"
+            className="aspect-video w-full object-cover"
+            onTimeUpdate={(e) =>
+              handleHtml5Update((e.target as HTMLVideoElement).currentTime)
+            }
+          />
+        )}
+
+        {/* Reward badge — shown only when complete */}
+        {completed && (
+          <div
+            className="absolute right-3 top-3 flex items-center gap-1.5 rounded-full border border-accent/40 bg-bg/90 px-3 py-1 font-display text-[11px] font-bold text-accent"
+            style={{ boxShadow: '0 0 12px rgba(200,241,53,0.4)' }}
+          >
+            <svg viewBox="0 0 16 16" className="h-3 w-3 shrink-0">
+              <path d="M13.5 4.5L6.5 11.5L2.5 7.5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+            </svg>
+            +{video.rewardPoints}p earned
+          </div>
         )}
       </div>
 
-      {/* Reward badge — shown only when complete */}
-      {completed && (
-        <div
-          className="absolute right-3 top-3 flex items-center gap-1.5 rounded-full border border-accent/40 bg-bg/90 px-3 py-1 font-display text-[11px] font-bold text-accent"
-          style={{ boxShadow: '0 0 12px rgba(200,241,53,0.4)' }}
-        >
-          <svg viewBox="0 0 16 16" className="h-3 w-3 shrink-0">
-            <path d="M13.5 4.5L6.5 11.5L2.5 7.5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-          </svg>
-          +{video.rewardPoints}p earned
-        </div>
-      )}
+      {/* Progress bar — below video */}
+      <div className="px-3 pb-3 pt-2">
+        {completed ? (
+          <div className="flex items-center gap-3">
+            <div
+              className="h-2 flex-1 rounded-full"
+              style={{ background: '#c8f135', boxShadow: '0 0 12px rgba(200,241,53,1)' }}
+            />
+            <span
+              className="shrink-0 font-display text-[11px] font-bold text-accent"
+              style={{ textShadow: '0 0 6px rgba(200,241,53,0.8)' }}
+            >
+              100% watched
+            </span>
+          </div>
+        ) : (
+          <div className="space-y-1.5">
+            <div className="h-2 w-full overflow-hidden rounded-full bg-white/10">
+              <div
+                className="h-full rounded-full transition-all duration-500"
+                style={{
+                  width: `${Math.max(progress * 100, 2)}%`,
+                  background: 'linear-gradient(to right, rgba(200,241,53,0.6), #c8f135)',
+                  boxShadow: '0 0 8px rgba(200,241,53,0.6)',
+                }}
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="font-display text-[11px] font-bold text-accent/80">
+                {Math.round(progress * 100)}% watched
+              </span>
+              {remaining > 0 ? (
+                <span className="text-[11px] text-white/40">
+                  ~{remaining}s to earn
+                </span>
+              ) : (
+                <span className="animate-pulse font-display text-[11px] font-bold text-accent">
+                  Keep watching…
+                </span>
+              )}
+            </div>
+            <div className="text-[9px] text-muted/30 tabular-nums">
+              debug: {watchedSeconds.toFixed(1)}s / {safeDuration}s &middot; ready:{String(debugReady)} &middot; gen:{debugGen}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
