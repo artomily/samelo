@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import { Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -36,13 +37,14 @@ export function Navbar() {
       >
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group" onClick={closeMenu}>
-          <div className="relative flex h-7 w-7 items-center justify-center">
-            <div className="absolute inset-0 rounded-full bg-accent opacity-20 blur-md group-hover:opacity-40 transition-opacity" />
-            <span className="relative font-display text-sm font-black text-accent" style={{ textShadow: '0 0 16px rgba(200,241,53,0.6)' }}>S</span>
-          </div>
-          <span className="font-display text-[15px] font-bold tracking-widest text-primary uppercase">
-            Sem<span className="text-accent" style={{ textShadow: '0 0 12px rgba(200,241,53,0.5)' }}>elo</span>
-          </span>
+          <Image
+            src="/logo-text.png"
+            alt="Semelo"
+            height={28}
+            width={112}
+            className="drop-shadow-[0_0_12px_rgba(200,241,53,0.35)]"
+            style={{ filter: 'brightness(0) saturate(100%) invert(83%) sepia(45%) saturate(700%) hue-rotate(26deg) brightness(105%)' }}
+          />
         </Link>
 
         {/* Desktop links */}
