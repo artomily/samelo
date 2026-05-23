@@ -18,7 +18,7 @@ const securityHeaders = [
       "img-src 'self' data: blob: https:",
       "media-src 'self' blob: https:",
       "frame-src https://www.youtube.com https://www.youtube-nocookie.com",
-      "connect-src 'self' https://forno.celo.org wss://forno.celo.org https://*.celo.org https://www.youtube.com",
+      "connect-src 'self' https://forno.celo.org wss://forno.celo.org https://*.celo.org https://*.drpc.org wss://*.drpc.org https://*.supabase.co https://www.youtube.com",
       "frame-ancestors 'self' https://*.minipay.app https://*.opera.com",
       "font-src 'self' https://fonts.gstatic.com",
     ].join("; "),
