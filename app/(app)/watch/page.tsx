@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useVideos } from '@/hooks/useVideos'
+import { useState, useCallback } from 'react'
 import { Skeleton } from '@/app/components/Skeleton'
 
 function formatDuration(sec: number): string {
@@ -13,6 +14,20 @@ function formatDuration(sec: number): string {
 
 export default function WatchPage() {
   const { videos, loading } = useVideos()
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+
+  const selectedIdx = selectedId ? videos.findIndex((v) => v.id === selectedId) : -1
+  const selected = selectedIdx >= 0 ? videos[selectedIdx] : null
+  const hasNext = selectedIdx >= 0 && selectedIdx < videos.length - 1
+  const hasPrev = selectedIdx > 0
+
+  const goNext = useCallback(() => {
+    if (hasNext) setSelectedId(videos[selectedIdx + 1]!.id)
+  }, [hasNext, selectedIdx, videos])
+
+  const goPrev = useCallback(() => {
+    if (hasPrev) setSelectedId(videos[selectedIdx - 1]!.id)
+  }, [hasPrev, selectedIdx, videos])
 
   return (
     <div className="flex min-h-dvh flex-col bg-[#030303]">
@@ -34,65 +49,107 @@ export default function WatchPage() {
           href="/home"
           className="btn-neon inline-flex items-center justify-center px-3 py-1.5 text-[11px] font-bold uppercase tracking-widest"
         >
-          Watch Now
+          Close
         </Link>
       </header>
 
-      {/* Video grid */}
-      <div className="grid grid-cols-1 gap-3 px-4 py-4 pb-28 sm:grid-cols-2 lg:grid-cols-3">
-        {loading
-          ? Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="glass-card overflow-hidden">
-                <Skeleton className="aspect-video w-full" />
-                <div className="p-3 space-y-2">
-                  <Skeleton className="h-4 w-3/4 rounded" />
-                  <Skeleton className="h-3 w-1/2 rounded" />
-                  <Skeleton className="h-8 w-full rounded-lg" />
-                </div>
+      {/* Main content */}
+      <div className="grid gap-4 px-4 py-4 pb-28 md:grid-cols-[1fr_320px] sm:gap-5 sm:px-7">
+        {/* LEFT: Selected video or empty state */}
+        <div>
+          {selected ? (
+            <div className="glass-card p-4 space-y-4">
+              {/* Video counter */}
+              <div className="flex items-center justify-between text-[10px] text-muted border-b border-[rgba(200,241,53,0.08)] pb-3">
+                <span className="font-display font-bold text-accent">Video {selectedIdx + 1} of {videos.length}</span>
+                <span className="font-mono text-[9px] opacity-60">ID: {selectedId}</span>
               </div>
-            ))
-          : videos.map((video) => (
-              <div
-                key={video.id}
-                className="glass-card overflow-hidden transition-all duration-200 hover:border-[rgba(200,241,53,0.3)]"
-              >
-                {/* Thumbnail */}
-                <div className="relative aspect-video w-full overflow-hidden bg-[rgba(200,241,53,0.03)]">
-                  <Image
-                    src={video.thumbnailUrl}
-                    alt={video.title}
-                    fill
-                    className="object-cover"
-                    unoptimized
-                  />
-                  {/* Reward badge */}
-                  <span
-                    className="absolute right-2 top-2 rounded-md border border-[rgba(200,241,53,0.4)] bg-[rgba(3,3,3,0.85)] px-2 py-0.5 font-display text-[10px] font-bold text-accent"
-                    style={{ textShadow: '0 0 8px rgba(200,241,53,0.6)' }}
-                  >
-                    +{video.rewardPoints}p
-                  </span>
-                  {/* Duration badge */}
-                  <span className="absolute bottom-2 right-2 rounded bg-[rgba(3,3,3,0.75)] px-1.5 py-0.5 font-display text-[9px] text-muted">
-                    {formatDuration(video.durationSeconds)}
-                  </span>
-                </div>
 
-                {/* Info */}
-                <div className="p-3">
-                  <p className="mb-0.5 line-clamp-2 text-[13px] font-semibold leading-snug text-primary">
-                    {video.title}
-                  </p>
-                  <p className="mb-3 text-[11px] text-muted">{video.sponsor}</p>
-                  <Link
-                    href="/home"
-                    className="btn-neon inline-flex w-full items-center justify-center py-2 text-[11px] font-bold uppercase tracking-widest"
-                  >
-                    Watch &amp; Earn
-                  </Link>
-                </div>
+              {/* Thumbnail */}
+              <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-black">
+                <Image
+                  src={selected.thumbnailUrl}
+                  alt={selected.title}
+                  fill
+                  className="object-cover"
+                  unoptimized
+                />
+                {/* Reward badge */}
+                <span
+                  className="absolute right-3 top-3 rounded-md border border-[rgba(200,241,53,0.4)] bg-[rgba(3,3,3,0.85)] px-2 py-0.5 font-display text-[10px] font-bold text-accent"
+                  style={{ textShadow: '0 0 8px rgba(200,241,53,0.6)' }}
+                >
+                  +{selected.rewardPoints}p
+                </span>
               </div>
-            ))}
+
+              {/* Info */}
+              <div>
+                <h2 className="text-sm font-bold text-primary mb-1">{selected.title}</h2>
+                <p className="text-[11px] text-muted">{selected.sponsor} · {formatDuration(selected.durationSeconds)}</p>
+              </div>
+
+              {/* Navigation */}
+              <div className="flex gap-2">
+                <button
+                  onClick={goPrev}
+                  disabled={!hasPrev}
+                  className="flex-1 rounded-lg border border-[rgba(200,241,53,0.2)] bg-[rgba(200,241,53,0.06)] px-3 py-2.5 text-xs font-bold uppercase tracking-wider text-accent transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:enabled:border-[rgba(200,241,53,0.4)]"
+                >
+                  ← Previous
+                </button>
+                <button
+                  onClick={goNext}
+                  disabled={!hasNext}
+                  className="flex-1 rounded-lg border border-[rgba(200,241,53,0.2)] bg-[rgba(200,241,53,0.06)] px-3 py-2.5 text-xs font-bold uppercase tracking-wider text-accent transition-all disabled:opacity-40 disabled:cursor-not-allowed hover:enabled:border-[rgba(200,241,53,0.4)]"
+                >
+                  Next →
+                </button>
+              </div>
+
+              <div className="text-[11px] text-muted text-center pt-2 border-t border-[rgba(200,241,53,0.08)]">
+                Watch to earn {selected.rewardPoints} points
+              </div>
+            </div>
+          ) : (
+            <div className="glass-card p-8 text-center space-y-3">
+              <p className="text-muted text-sm">Select a video to begin</p>
+            </div>
+          )}
+        </div>
+
+        {/* RIGHT: Video list */}
+        <div className="glass-card p-4 h-fit">
+          <p className="mb-3 font-display text-[11px] font-bold uppercase tracking-[0.12em] text-primary" style={{ textShadow: '0 0 8px rgba(200,241,53,0.2)' }}>
+            Queue
+          </p>
+
+          <div className="flex flex-col gap-2">
+            {loading
+              ? Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="space-y-2 p-2">
+                    <Skeleton className="h-8 w-full rounded" />
+                    <Skeleton className="h-3 w-2/3 rounded" />
+                  </div>
+                ))
+              : videos.map((video, idx) => (
+                  <button
+                    key={video.id}
+                    onClick={() => setSelectedId(video.id)}
+                    className={[
+                      'text-left rounded-lg p-2.5 transition-all text-[10px]',
+                      selectedId === video.id
+                        ? 'border border-[rgba(200,241,53,0.35)] bg-[rgba(200,241,53,0.08)] shadow-[0_0_12px_rgba(200,241,53,0.15)]'
+                        : 'border border-[rgba(200,241,53,0.1)] hover:border-[rgba(200,241,53,0.2)]'
+                    ].join(' ')}
+                  >
+                    <p className="font-bold text-primary truncate">{idx + 1}. {video.title}</p>
+                    <p className="text-muted mt-0.5">{video.sponsor} · {formatDuration(video.durationSeconds)}</p>
+                    <p className="text-accent font-display font-bold mt-1">+{video.rewardPoints}p</p>
+                  </button>
+                ))}
+          </div>
+        </div>
       </div>
     </div>
   )
