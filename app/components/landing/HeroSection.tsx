@@ -7,7 +7,7 @@ import { CosmicBackground } from '@/app/components/ui/CosmicBackground'
 const STATS = [
   { value: '$0.05', label: 'Per video' },
   { value: '24h', label: 'Instant payout' },
-  { value: 'cUSD', label: 'Stablecoin' },
+  { value: 'MELOUSD', label: 'Stablecoin' },
   { value: '0', label: 'Friction' },
 ]
 
@@ -80,7 +80,7 @@ export function HeroSection() {
             ease: 'easeOut',
           }}
         >
-          {p.label} cUSD
+          {p.label} MELOUSD
         </motion.div>
       ))}
 

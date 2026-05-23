@@ -33,7 +33,7 @@ const FEATURES = [
   {
     Icon: MapPin,
     title: 'Galaxy First',
-    description: 'Designed for low-bandwidth networks and cUSD stability. Works everywhere MiniPay works.',
+    description: 'Designed for low-bandwidth networks and MELOUSD stability. Works everywhere MiniPay works.',
   },
 ]
 

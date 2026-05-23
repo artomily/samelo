@@ -17,7 +17,7 @@ export function WalletBadge() {
       <span className="font-mono text-xs text-muted">{short}</span>
       <span className="font-semibold text-primary">
         {isLoading ? '…' : `$${balance}`}{' '}
-        <span className="text-xs font-normal text-muted">cUSD</span>
+        <span className="text-xs font-normal text-muted">MELOUSD</span>
       </span>
     </div>
   )

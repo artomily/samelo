@@ -31,11 +31,11 @@ export function CTASection() {
         </p>
 
         <h2 className="font-display text-3xl font-black tracking-tight text-primary sm:text-4xl">
-          Ready to earn cUSD?
+          Ready to earn $MELOUSD?
         </h2>
 
         <p className="max-w-[34ch] text-sm leading-relaxed text-muted">
-          Join thousands of users already earning cUSD. Start watching today.
+          Join thousands of users already earning $MELOUSD. Start watching today.
         </p>
 
         <Link

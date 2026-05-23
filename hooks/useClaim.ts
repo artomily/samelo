@@ -36,7 +36,7 @@ export function useClaim(onSuccess?: () => void) {
         body: JSON.stringify({ walletAddress: address, txHash }),
       }).catch(() => {})
       onSuccess?.()
-      toast('Claimed! cUSD is in your wallet', 'success')
+      toast('Claimed! MELOUSD is in your wallet', 'success')
     }
   }, [isSuccess, txHash, address, onSuccess])
 
@@ -67,7 +67,7 @@ export function useClaim(onSuccess?: () => void) {
 
         setIsFetching(false)
         setTxHash(data.txHash as `0x${string}` | undefined)
-        toast('Claimed! cUSD is in your wallet', 'success')
+        toast('Claimed! MELOUSD is in your wallet', 'success')
         onSuccess?.()
         return
       }

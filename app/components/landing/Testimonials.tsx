@@ -7,7 +7,7 @@ const TESTIMONIALS = [
     initials: 'AK',
     name: 'Amara K.',
     location: 'Lagos, Nigeria',
-    quote: 'I earn cUSD every morning before work. It takes five minutes and the money lands in MiniPay the same day. This is the first Web3 app that actually pays.',
+    quote: 'I earn $MELOUSD every morning before work. It takes five minutes and the money lands in MiniPay the same day. This is the first Web3 app that actually pays.',
   },
   {
     initials: 'RD',
