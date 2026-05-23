@@ -25,7 +25,7 @@ function buttonLabel(status: ClaimStatus): string {
     case 'error':
       return 'Retry Claim'
     default:
-      return 'Claim cUSD'
+      return 'Claim CELO'
   }
 }
 
@@ -53,7 +53,7 @@ export function ClaimButton({ pendingCents, onClaimed }: ClaimButtonProps) {
   const isBusy =
     status === 'fetching' || status === 'pending' || status === 'confirming'
   const hasEarnings = pendingCents > 0
-  const dollars = (pendingCents / 100).toFixed(2)
+  const points = pendingCents
 
   return (
     <div className="flex flex-col items-center gap-2">
@@ -78,7 +78,7 @@ export function ClaimButton({ pendingCents, onClaimed }: ClaimButtonProps) {
         {buttonLabel(status)}
         {hasEarnings && status === 'idle' && (
           <span className="ml-1 rounded-full border border-[rgba(0,0,0,0.3)] bg-black/30 px-2 py-0.5 text-[10px]">
-            ${dollars}
+            {points}p
           </span>
         )}
       </button>
