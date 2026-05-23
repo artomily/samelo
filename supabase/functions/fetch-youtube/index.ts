@@ -6,8 +6,18 @@ const YOUTUBE_API_BASE = 'https://www.googleapis.com/youtube/v3'
 // CONFIGURATION — fill these in before deploying
 // ─────────────────────────────────────────────────────────────────────────────
 const DEFAULT_PLAYLIST_ID = 'YOUR_PLAYLIST_ID_HERE'
-const DEFAULT_REWARD_POINTS = 1    // reward per completed video in points
 const DEFAULT_MAX_RESULTS = 50    // max videos per playlist fetch (1–50)
+
+function calculateRewardPoints(durationSeconds: number): number {
+  if (durationSeconds <= 30) return 5
+  if (durationSeconds <= 120) return 10
+  if (durationSeconds <= 300) return 25
+  if (durationSeconds <= 600) return 50
+  if (durationSeconds <= 1200) return 75
+  if (durationSeconds <= 1800) return 100
+  if (durationSeconds <= 3600) return 150
+  return 200
+}
 // ─────────────────────────────────────────────────────────────────────────────
 
 interface PlaylistItem {
@@ -125,14 +135,16 @@ Deno.serve(async (req) => {
     const thumbnail =
       thumbnails.high?.url ?? thumbnails.medium?.url ?? thumbnails.default?.url ?? null
 
+    const durationSeconds = detail ? parseDuration(detail.contentDetails.duration) : 0
+
     return {
       id: videoId,
       title: detail?.snippet.title ?? '(unknown)',
       description: (detail?.snippet.description ?? '').slice(0, 500),
       thumbnail_url: thumbnail,
       channel_title: detail?.snippet.channelTitle ?? null,
-      duration_seconds: detail ? parseDuration(detail.contentDetails.duration) : 0,
-      reward_cents: DEFAULT_REWARD_POINTS,
+      duration_seconds: durationSeconds,
+      reward_cents: calculateRewardPoints(durationSeconds),
       playlist_id: playlistId,
       active: true,
       fetched_at: new Date().toISOString(),

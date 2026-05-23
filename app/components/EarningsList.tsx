@@ -136,7 +136,7 @@ export function EarningsList() {
                   className="font-display text-sm font-black text-accent"
                   style={{ textShadow: '0 0 8px rgba(200,241,53,0.4)' }}
                 >
-                  +${(item.reward_cents / 100).toFixed(2)}
+                  +${(item.reward_cents / 1000).toFixed(2)}
                 </span>
                 <span
                   className="font-display text-[9px] uppercase tracking-widest"
@@ -182,7 +182,7 @@ function StatPill({
         className="font-display text-sm font-black"
         style={accent ? { color: '#c8f135', textShadow: '0 0 8px rgba(200,241,53,0.4)' } : dim ? { color: 'rgba(200,241,53,0.25)' } : { color: '#f0f0f0' }}
       >
-        ${(cents / 100).toFixed(2)}
+        ${(cents / 1000).toFixed(2)}
       </span>
     </div>
   )

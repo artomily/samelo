@@ -26,8 +26,9 @@ contract SameloPoints is Ownable, ReentrancyGuard {
     uint256 public totalPointsRedeemed;
 
     IERC20  public meloToken;
-    /// @dev MELO amount per point, scaled by 1e18. Default: 1 MELO per point.
-    uint256 public meloRate = 1e18;
+    /// @dev MELO amount per point, scaled by 1e18.
+    ///      Rate: 1000 points = 1 $MELOUSD  →  meloRate = 1e33
+    uint256 public meloRate = 1_000_000_000_000_000_000_000_000_000_000_000;
 
     // ── Events ────────────────────────────────────────────────────────────────
     event PointsEarned(
