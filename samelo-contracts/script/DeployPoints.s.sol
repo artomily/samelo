@@ -20,13 +20,14 @@ import {SameloPoints} from "../src/SameloPoints.sol";
 contract DeployPoints is Script {
     function run() public {
         uint256 deployerPk = vm.envUint("PRIVATE_KEY");
+        address deployer    = vm.addr(deployerPk);
         vm.startBroadcast(deployerPk);
 
         console.log("-----------------------------------------------------------");
         console.log("Deploying SameloPoints");
         console.log("-----------------------------------------------------------");
 
-        SameloPoints pts = new SameloPoints();
+        SameloPoints pts = new SameloPoints(deployer);
 
         console.log("[SUCCESS] SameloPoints deployed:", address(pts));
         console.log("  POINTS_PER_EARN :", pts.POINTS_PER_EARN());
