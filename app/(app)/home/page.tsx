@@ -1,12 +1,5 @@
-'use client'
-
-import { ConnectGuard } from '@/app/components/ConnectGuard'
-import { HomeScreen } from '@/app/components/HomeScreen'
+import FeedContent from '@/app/components/FeedContent'
 
 export default function HomePage() {
-  return (
-    <ConnectGuard>
-      <HomeScreen />
-    </ConnectGuard>
-  )
+  return <FeedContent />
 }
