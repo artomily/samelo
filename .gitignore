@@ -54,3 +54,8 @@ next-env.d.ts
 # Foundry build artifacts and cache
 samelo-contracts/out/
 samelo-contracts/cache/
+samelo-contracts/broadcast/
+
+# Deployment records
+.deployment.testnet.json
+.deployment.mainnet.json
