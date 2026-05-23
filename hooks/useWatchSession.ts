@@ -27,21 +27,23 @@ export function useWatchSession(
   })
   const completedRef = useRef(false)
 
+  const safeDuration = durationSeconds > 0 ? durationSeconds : 300 // fallback 5 min if DB returns 0
+
   const handleTimeUpdate = useCallback(
     (currentTime: number) => {
       setState((prev) => ({ ...prev, watchedSeconds: currentTime }))
 
-      const ratio = currentTime / durationSeconds
+      const ratio = currentTime / safeDuration
       if (!completedRef.current && ratio >= completionThreshold) {
         completedRef.current = true
         setState((prev) => ({ ...prev, completed: true }))
         onComplete?.(videoId)
       }
     },
-    [videoId, durationSeconds, completionThreshold, onComplete],
+    [videoId, safeDuration, completionThreshold, onComplete],
   )
 
-  const progress = Math.min(state.watchedSeconds / durationSeconds, 1)
+  const progress = Math.min(state.watchedSeconds / safeDuration, 1)
 
   return { ...state, progress, handleTimeUpdate }
 }

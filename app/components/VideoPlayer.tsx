@@ -29,6 +29,7 @@ declare global {
 
 interface YTPlayer {
   getPlayerState(): number
+  getCurrentTime(): number
   destroy(): void
 }
 
@@ -78,10 +79,15 @@ export function VideoPlayer({ video, onEarned }: VideoPlayerProps) {
     onEarned(video.rewardPoints)
   }, [video.rewardPoints, onEarned])
 
-  const { progress, completed, handleTimeUpdate } = useWatchSession(video.id, {
+  const { progress, completed, watchedSeconds, handleTimeUpdate } = useWatchSession(video.id, {
     durationSeconds: video.durationSeconds,
     onComplete: handleComplete,
   })
+
+  // Seconds remaining until the 80% completion threshold
+  const safeDuration = video.durationSeconds > 0 ? video.durationSeconds : 300
+  const targetSeconds = safeDuration * 0.8
+  const remaining = Math.max(0, Math.ceil(targetSeconds - watchedSeconds))
 
   const isYT = isYouTubeUrl(video.videoUrl)
 
@@ -91,28 +97,56 @@ export function VideoPlayer({ video, onEarned }: VideoPlayerProps) {
     accRef.current = 0
     const iframeId = `yt-${video.id}`
 
-    function startTick(player: YTPlayer) {
+    // Delta-based skip detection (same algorithm as HTML5 path)
+    // Uses closure vars — survive across ticks without needing refs
+    let prevVideoTime: number | null = null
+    let prevWallTime: number | null = null
+
+    function startTick() {
       if (tickRef.current) clearInterval(tickRef.current)
       tickRef.current = setInterval(() => {
-        // Only count when player reports PLAYING (state === 1)
-        if (player.getPlayerState() === 1) {
-          accRef.current += 1
-          handleTimeUpdate(accRef.current)
+        const player = playerRef.current
+        if (!player) return
+        try {
+          // Only accumulate while PLAYING (state === 1)
+          if (player.getPlayerState() !== 1) {
+            // Reset deltas so the next play doesn't create a false jump
+            prevVideoTime = null
+            prevWallTime = null
+            return
+          }
+          const currentVideoTime = player.getCurrentTime()
+          const now = Date.now()
+          if (prevVideoTime !== null && prevWallTime !== null) {
+            const videoDelta = currentVideoTime - prevVideoTime
+            const wallDelta = (now - prevWallTime) / 1000
+            // Reject jumps > 2.5× wall-clock (catches manual seeking)
+            const maxOk = Math.max(wallDelta * 2.5, 2.5)
+            if (videoDelta > 0 && videoDelta <= maxOk) {
+              accRef.current += videoDelta
+              handleTimeUpdate(accRef.current)
+            }
+          }
+          prevVideoTime = currentVideoTime
+          prevWallTime = now
+        } catch {
+          // player not yet fully initialised — skip this tick
         }
-      }, 1000)
+      }, 500)
     }
 
     function init() {
       if (!iframeRef.current || !window.YT?.Player) return
       const p = new window.YT.Player(iframeId, {
         events: {
-          onReady: (e) => {
-            playerRef.current = e.target
-            startTick(e.target)
-          },
+          // onReady just confirms the player reference is live
+          onReady: (e) => { playerRef.current = e.target },
         },
       })
+      // Assign immediately so tick can start; methods throw until ready
+      // (caught by try/catch in the interval) — no need to wait for onReady
       playerRef.current = p
+      startTick()
     }
 
     loadYTApi(init)
@@ -122,6 +156,8 @@ export function VideoPlayer({ video, onEarned }: VideoPlayerProps) {
       // the iframe element from the DOM, breaking React's ref.
       if (tickRef.current) { clearInterval(tickRef.current); tickRef.current = null }
       playerRef.current = null
+      prevVideoTime = null
+      prevWallTime = null
     }
   }, [isYT, video.id, handleTimeUpdate])
 
@@ -181,21 +217,73 @@ export function VideoPlayer({ video, onEarned }: VideoPlayerProps) {
         />
       )}
 
-      {/* Progress bar */}
-      <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
-        <div
-          className="h-full bg-accent transition-all duration-500"
-          style={{ width: `${progress * 100}%` }}
-        />
+      {/* Progress overlay */}
+      <div className="pointer-events-none absolute bottom-0 left-0 right-0">
+        {completed ? (
+          /* Full bar when done */
+          <div
+            className="h-1.5 w-full"
+            style={{ background: '#c8f135', boxShadow: '0 0 12px rgba(200,241,53,1)' }}
+          />
+        ) : (
+          <>
+            {/* Label row */}
+            <div
+              className="flex items-center justify-between px-3 pb-1.5 pt-4"
+              style={{ background: 'linear-gradient(to top, rgba(3,3,3,0.75) 0%, transparent 100%)' }}
+            >
+              <span
+                className="font-display text-[10px] font-bold text-accent"
+                style={{ textShadow: '0 0 6px rgba(200,241,53,0.8)' }}
+              >
+                {Math.round(progress * 100)}% watched
+              </span>
+              {remaining > 0 ? (
+                <span className="text-[10px] text-white/55">
+                  {remaining}s left to earn
+                </span>
+              ) : (
+                <span
+                  className="animate-pulse font-display text-[10px] font-bold text-accent"
+                  style={{ textShadow: '0 0 6px rgba(200,241,53,0.8)' }}
+                >
+                  Almost there!
+                </span>
+              )}
+            </div>
+            {/* Bar track */}
+            <div className="h-1.5 w-full bg-black/40">
+              <div
+                className="relative h-full transition-all duration-500"
+                style={{
+                  width: `${progress * 100}%`,
+                  background: 'linear-gradient(to right, rgba(200,241,53,0.6), #c8f135)',
+                  boxShadow: '0 0 8px rgba(200,241,53,0.7)',
+                }}
+              >
+                {/* Glowing head dot */}
+                {progress > 0.02 && (
+                  <span
+                    className="absolute right-0 top-1/2 h-3 w-3 -translate-y-1/2 translate-x-1/2 rounded-full bg-accent"
+                    style={{ boxShadow: '0 0 8px rgba(200,241,53,1), 0 0 3px rgba(200,241,53,1)' }}
+                  />
+                )}
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
-      {/* Completion badge */}
+      {/* Reward badge — shown only when complete */}
       {completed && (
-        <div className="absolute right-3 top-3 flex items-center gap-1.5 rounded-full bg-accent px-3 py-1 text-xs font-bold text-bg">
-          <svg viewBox="0 0 16 16" fill="currentColor" className="h-3.5 w-3.5">
-            <path d="M13.5 4.5L6.5 11.5L2.5 7.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none" />
+        <div
+          className="absolute right-3 top-3 flex items-center gap-1.5 rounded-full border border-accent/40 bg-bg/90 px-3 py-1 font-display text-[11px] font-bold text-accent"
+          style={{ boxShadow: '0 0 12px rgba(200,241,53,0.4)' }}
+        >
+          <svg viewBox="0 0 16 16" className="h-3 w-3 shrink-0">
+            <path d="M13.5 4.5L6.5 11.5L2.5 7.5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
           </svg>
-          Earned!
+          +{video.rewardPoints}p earned
         </div>
       )}
     </div>
