@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { Orbitron, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/app/providers";
@@ -25,11 +26,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const heads = await headers();
+  const cookie = heads.get("cookie");
   return (
     <html
       lang="en"
@@ -42,7 +45,7 @@ export default function RootLayout({
         <link rel="icon" href="/logo.png" />
       </head>
       <body className="min-h-dvh bg-bg text-primary">
-        <Providers>
+        <Providers cookie={cookie}>
           <main>{children}</main>
           <ToastProvider />
         </Providers>
