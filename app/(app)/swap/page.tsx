@@ -179,7 +179,7 @@ export default function SwapPage() {
         </h1>
       </header>
 
-      <div className="mx-auto w-full max-w-sm px-4 py-6 pb-28 space-y-5">
+      <div className="w-full px-4 py-4 pb-28 sm:px-7 sm:py-5 space-y-5">
         {!address ? (
           <ConnectBanner />
         ) : (

@@ -34,10 +34,10 @@ export default function EarningsPage() {
   }, [])
 
   return (
-    <div className="flex min-h-dvh flex-col bg-bg">
+    <div className="flex min-h-dvh flex-col bg-[#030303]">
       <EarningsHeader />
 
-      <div className="mx-auto w-full max-w-lg space-y-4 px-4 py-5 pb-24">
+      <div className="w-full px-4 py-4 pb-28 sm:px-7 sm:py-5">
         <EarnPointsButton onEarned={handleEarned} />
 
         {/* Pending points card */}

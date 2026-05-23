@@ -67,7 +67,7 @@ export default function WatchPage() {
       </header>
 
       {/* Main content */}
-      <div className="grid gap-4 px-4 py-4 pb-28 md:grid-cols-[1fr_320px] sm:gap-5 sm:px-7">
+      <div className="grid gap-4 px-4 py-4 pb-28 md:grid-cols-[1fr_300px] sm:gap-5 sm:px-7">
         {/* LEFT: Selected video or empty state */}
         <div>
           {selected ? (
