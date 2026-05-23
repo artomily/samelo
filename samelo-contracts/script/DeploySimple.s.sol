@@ -19,10 +19,9 @@ import "../src/SameloTreasurySimple.sol";
  *   RESERVE_RATIO_BPS - e.g., 1000 (10%)
  */
 contract DeploySimple is Script {
-    // Mainnet:  0x471EcE3750Da237f93B8E339c536989b8978a438
-    // Sepolia testnet: 0xF194afDf50B03e69Bd7D057c1Aa9e10c9954E4C9
+    // Celo Sepolia (L2): CELO ERC-20 is at the same address as mainnet
     address constant CELO_TOKEN_MAINNET  = 0x471EcE3750Da237f93B8E339c536989b8978a438;
-    address constant CELO_TOKEN_TESTNET  = 0xF194afDf50B03e69Bd7D057c1Aa9e10c9954E4C9;
+    address constant CELO_TOKEN_TESTNET  = 0x471EcE3750Da237f93B8E339c536989b8978a438;
 
     SameloTreasurySimple public treasury;
 
