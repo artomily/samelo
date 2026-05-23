@@ -1,5 +1,8 @@
 import { BottomNav } from '@/app/components/BottomNav'
 
+
+
+
 export default function AppLayout({
   children,
 }: Readonly<{
