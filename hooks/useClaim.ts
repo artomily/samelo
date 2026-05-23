@@ -29,11 +29,16 @@ export function useClaim(onSuccess?: () => void) {
   })
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isSuccess && txHash && address) {
+      fetch('/api/rewards/confirm-claim', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ walletAddress: address, txHash }),
+      }).catch(() => {})
       onSuccess?.()
-      toast('Claimed! CELO is in your wallet', 'success')
+      toast('Claimed! cUSD is in your wallet', 'success')
     }
-  }, [isSuccess, onSuccess])
+  }, [isSuccess, txHash, address, onSuccess])
 
   const claim = useCallback(async () => {
     if (!address) return
@@ -62,7 +67,7 @@ export function useClaim(onSuccess?: () => void) {
 
         setIsFetching(false)
         setTxHash(data.txHash as `0x${string}` | undefined)
-        toast('Claimed! CELO is in your wallet', 'success')
+        toast('Claimed! cUSD is in your wallet', 'success')
         onSuccess?.()
         return
       }
