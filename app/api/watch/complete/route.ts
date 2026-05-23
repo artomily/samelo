@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServiceSupabase } from '@/lib/supabase'
 import { verifyWatchToken } from '@/lib/watchToken'
-import { MOCK_VIDEOS } from '@/lib/mock-videos'
 import { isAddress } from 'viem'
 
 const RATE_LIMIT_WINDOW_MS = 24 * 60 * 60 * 1000 // 24 hours
@@ -43,13 +42,29 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // Verify video exists
-  const video = MOCK_VIDEOS.find((v) => v.id === videoId)
-  if (!video) {
+  const supabase = getServiceSupabase()
+
+  // Verify video exists in Supabase
+  const { data: videoRow } = await supabase
+    .from('videos')
+    .select('reward_cents')
+    .eq('id', videoId)
+    .single()
+
+  if (!videoRow) {
     return NextResponse.json({ error: 'Unknown video' }, { status: 404 })
   }
 
-  const supabase = getServiceSupabase()
+  const rewardPoints = videoRow.reward_cents as number
+
+  // Ensure profile row exists (required by FK before inserting watch)
+  await supabase
+    .from('profiles')
+    .upsert(
+      { wallet_address: walletAddress.toLowerCase() },
+      { onConflict: 'wallet_address', ignoreDuplicates: true },
+    )
+
   const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MS).toISOString()
 
   // Rate-limit: 1 reward per wallet per video per 24 h
@@ -81,7 +96,7 @@ export async function POST(request: NextRequest) {
   await supabase.from('watches').insert({
     wallet_address: walletAddress.toLowerCase(),
     video_id: videoId,
-    reward_cents: video.rewardCents,
+    reward_cents: rewardPoints,
     watched_at: new Date().toISOString(),
   })
 
@@ -98,7 +113,7 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json({
     alreadyClaimed: false,
-    rewardCents: video.rewardCents,
+    rewardPoints,
     totalPendingCents,
   })
 }
