@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 
 const FOOTER_LINKS = [
   { href: '#', label: 'Docs' },
@@ -13,11 +14,14 @@ export function Footer() {
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-4 sm:flex-row sm:justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-1.5">
-          <span
-            className="font-display text-[15px] font-black uppercase tracking-widest text-primary"
-          >
-            Sem<span className="text-accent" style={{ textShadow: '0 0 10px rgba(200,241,53,0.5)' }}>elo</span>
-          </span>
+          <Image
+            src="/logo-text.png"
+            alt="Semelo"
+            height={20}
+            width={80}
+            className="opacity-90 drop-shadow-[0_0_8px_rgba(200,241,53,0.3)]"
+            style={{ filter: 'brightness(0) saturate(100%) invert(83%) sepia(45%) saturate(700%) hue-rotate(26deg) brightness(105%)' }}
+          />
         </Link>
 
         {/* Links */}
