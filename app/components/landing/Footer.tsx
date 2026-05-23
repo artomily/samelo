@@ -4,8 +4,11 @@ import Image from 'next/image'
 const FOOTER_LINKS = [
   { href: '#', label: 'Docs' },
   { href: '#', label: 'Contract' },
-  { href: 'https://twitter.com', label: 'Twitter' },
-  { href: 'https://t.me', label: 'Telegram' },
+  { href: 'https://twitter.com/samelo', label: 'Twitter' },
+  { href: 'https://t.me/samelo', label: 'Telegram' },
+  { href: 'https://github.com/artomily/samelo', label: 'GitHub' },
+  { href: '#', label: 'Privacy' },
+  { href: '#', label: 'Terms' }
 ]
 
 export function Footer() {
@@ -15,7 +18,7 @@ export function Footer() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-1.5">
           <Image
-            src="/logo-text.png"
+            src="/logo.png"
             alt="Semelo"
             height={20}
             width={80}

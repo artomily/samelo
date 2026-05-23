@@ -38,7 +38,7 @@ export function Navbar() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group" onClick={closeMenu}>
           <Image
-            src="/logo-text.png"
+            src="/logo.png"
             alt="Semelo"
             height={28}
             width={112}
@@ -68,7 +68,7 @@ export function Navbar() {
             href="/watch"
             className="hidden btn-neon px-4 py-2 text-[12px] font-bold uppercase tracking-widest lg:inline-flex items-center justify-center"
           >
-            Open in MiniPay
+            Launch App
           </Link>
 
           <button
@@ -108,7 +108,7 @@ export function Navbar() {
             onClick={closeMenu}
             className="btn-neon block w-full py-2.5 text-center text-[12px] font-bold uppercase tracking-widest"
           >
-            Open in MiniPay
+            Launch App
           </Link>
         </div>
       </div>
