@@ -39,7 +39,7 @@ export function HomeScreen() {
               `$${balance}`
             )}
           </div>
-          <div className="text-sm text-muted">total earned (cUSD)</div>
+          <div className="text-sm text-muted">total earned (points)</div>
         </div>
 
         {/* Stats card */}
@@ -71,7 +71,7 @@ export function HomeScreen() {
 
         <p className="max-w-xs text-xs leading-relaxed text-muted">
           Turn your attention into income. Watch short videos and earn real
-          cUSD — backed by ad revenue, not promises.
+          CELO — backed by ad revenue, not promises.
         </p>
       </main>
     </div>
