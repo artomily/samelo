@@ -105,11 +105,8 @@ export function HeroSection() {
           className="font-display max-w-[18ch] text-4xl font-black leading-[1.1] tracking-tight sm:text-5xl lg:text-[60px]"
           style={{ textShadow: '0 0 40px rgba(200,241,53,0.15)' }}
         >
-          Explore the{' '}
-          <span className="text-gradient">Galaxy.</span>
-          <br />
-          <span className="text-primary/90">Mine your</span>{' '}
-          <span className="text-gradient">Rewards.</span>
+          Watch Videos.{' '}
+          <span className="text-gradient">Earn Points.</span>
         </motion.h1>
 
         {/* Sub */}
@@ -119,7 +116,7 @@ export function HeroSection() {
           transition={{ duration: 0.7, delay: 0.2 }}
           className="max-w-[38ch] text-sm leading-relaxed text-muted sm:text-base"
         >
-          Watch content across the Samelo galaxy. Every mission completed routes real cUSD directly into your MiniPay wallet.
+          Watch short videos and earn points — pay out to CELO on your MiniPay wallet. No tricks, no waiting.
         </motion.p>
 
         {/* CTAs */}
@@ -133,7 +130,7 @@ export function HeroSection() {
             href="/watch"
             className="btn-neon inline-flex items-center justify-center px-8 py-3.5 text-[13px]"
           >
-            Launch Mission
+            Start Watching
           </Link>
           <a
             href="#how-it-works"
@@ -174,7 +171,7 @@ export function HeroSection() {
           {/* HUD overlay */}
           <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
             <span className="font-display text-[8px] font-bold uppercase tracking-widest text-accent/70">SAMELO · LIVE FEED</span>
-            <span className="font-display text-[8px] font-bold text-accent">+0.05 cUSD</span>
+            <span className="font-display text-[8px] font-bold text-accent">+5p</span>
           </div>
           {/* Progress bar */}
           <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-[rgba(200,241,53,0.1)]">
