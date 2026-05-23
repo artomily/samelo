@@ -6,7 +6,7 @@ create table if not exists videos (
   thumbnail_url    text,
   channel_title    text,
   duration_seconds int         not null default 0,
-  reward_cents     int         not null default 1,
+  reward_cents     int         not null default 5,
   playlist_id      text,
   active           boolean     not null default true,
   fetched_at       timestamptz not null default now()

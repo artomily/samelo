@@ -97,20 +97,18 @@ export function VideoPlayer({ video, onEarned }: VideoPlayerProps) {
     accRef.current = 0
     const iframeId = `yt-${video.id}`
 
-    // Delta-based skip detection (same algorithm as HTML5 path)
-    // Uses closure vars — survive across ticks without needing refs
     let prevVideoTime: number | null = null
     let prevWallTime: number | null = null
+
+    let playerReady = false
 
     function startTick() {
       if (tickRef.current) clearInterval(tickRef.current)
       tickRef.current = setInterval(() => {
         const player = playerRef.current
-        if (!player) return
+        if (!player || !playerReady) return
         try {
-          // Only accumulate while PLAYING (state === 1)
-          if (player.getPlayerState() !== 1) {
-            // Reset deltas so the next play doesn't create a false jump
+          if (player.getPlayerState() !== window.YT.PlayerState.PLAYING) {
             prevVideoTime = null
             prevWallTime = null
             return
@@ -120,7 +118,6 @@ export function VideoPlayer({ video, onEarned }: VideoPlayerProps) {
           if (prevVideoTime !== null && prevWallTime !== null) {
             const videoDelta = currentVideoTime - prevVideoTime
             const wallDelta = (now - prevWallTime) / 1000
-            // Reject jumps > 2.5× wall-clock (catches manual seeking)
             const maxOk = Math.max(wallDelta * 2.5, 2.5)
             if (videoDelta > 0 && videoDelta <= maxOk) {
               accRef.current += videoDelta
@@ -130,34 +127,30 @@ export function VideoPlayer({ video, onEarned }: VideoPlayerProps) {
           prevVideoTime = currentVideoTime
           prevWallTime = now
         } catch {
-          // player not yet fully initialised — skip this tick
+          // skip this tick
         }
       }, 500)
     }
 
     function init() {
       if (!iframeRef.current || !window.YT?.Player) return
-      const p = new window.YT.Player(iframeId, {
+      playerRef.current = new window.YT.Player(iframeId, {
         events: {
-          // onReady just confirms the player reference is live
-          onReady: (e) => { playerRef.current = e.target },
+          onReady: (e: { target: YTPlayer }) => {
+            playerRef.current = e.target
+            playerReady = true
+            startTick()
+          },
         },
       })
-      // Assign immediately so tick can start; methods throw until ready
-      // (caught by try/catch in the interval) — no need to wait for onReady
-      playerRef.current = p
-      startTick()
     }
 
     loadYTApi(init)
 
     return () => {
-      // Only clear the interval — do NOT call destroy() as it removes
-      // the iframe element from the DOM, breaking React's ref.
       if (tickRef.current) { clearInterval(tickRef.current); tickRef.current = null }
       playerRef.current = null
-      prevVideoTime = null
-      prevWallTime = null
+      playerReady = false
     }
   }, [isYT, video.id, handleTimeUpdate])
 
@@ -217,20 +210,37 @@ export function VideoPlayer({ video, onEarned }: VideoPlayerProps) {
         />
       )}
 
-      {/* Progress overlay */}
-      <div className="pointer-events-none absolute bottom-0 left-0 right-0">
+      {/* Progress overlay — top of video */}
+      <div className="pointer-events-none absolute left-0 right-0 top-0">
         {completed ? (
-          /* Full bar when done */
           <div
             className="h-1.5 w-full"
             style={{ background: '#c8f135', boxShadow: '0 0 12px rgba(200,241,53,1)' }}
           />
         ) : (
           <>
+            {/* Bar track */}
+            <div className="h-1.5 w-full bg-black/40">
+              <div
+                className="relative h-full transition-all duration-500"
+                style={{
+                  width: `${progress * 100}%`,
+                  background: 'linear-gradient(to right, rgba(200,241,53,0.6), #c8f135)',
+                  boxShadow: '0 0 8px rgba(200,241,53,0.7)',
+                }}
+              >
+                {progress > 0.02 && (
+                  <span
+                    className="absolute right-0 top-1/2 h-3 w-3 -translate-y-1/2 translate-x-1/2 rounded-full bg-accent"
+                    style={{ boxShadow: '0 0 8px rgba(200,241,53,1), 0 0 3px rgba(200,241,53,1)' }}
+                  />
+                )}
+              </div>
+            </div>
             {/* Label row */}
             <div
-              className="flex items-center justify-between px-3 pb-1.5 pt-4"
-              style={{ background: 'linear-gradient(to top, rgba(3,3,3,0.75) 0%, transparent 100%)' }}
+              className="flex items-center justify-between px-3 pb-2 pt-1"
+              style={{ background: 'linear-gradient(to bottom, rgba(3,3,3,0.75) 0%, transparent 100%)' }}
             >
               <span
                 className="font-display text-[10px] font-bold text-accent"
@@ -250,25 +260,6 @@ export function VideoPlayer({ video, onEarned }: VideoPlayerProps) {
                   Almost there!
                 </span>
               )}
-            </div>
-            {/* Bar track */}
-            <div className="h-1.5 w-full bg-black/40">
-              <div
-                className="relative h-full transition-all duration-500"
-                style={{
-                  width: `${progress * 100}%`,
-                  background: 'linear-gradient(to right, rgba(200,241,53,0.6), #c8f135)',
-                  boxShadow: '0 0 8px rgba(200,241,53,0.7)',
-                }}
-              >
-                {/* Glowing head dot */}
-                {progress > 0.02 && (
-                  <span
-                    className="absolute right-0 top-1/2 h-3 w-3 -translate-y-1/2 translate-x-1/2 rounded-full bg-accent"
-                    style={{ boxShadow: '0 0 8px rgba(200,241,53,1), 0 0 3px rgba(200,241,53,1)' }}
-                  />
-                )}
-              </div>
             </div>
           </>
         )}

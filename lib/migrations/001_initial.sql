@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS watches (
   id             UUID        PRIMARY KEY DEFAULT gen_random_uuid(),
   wallet_address TEXT        NOT NULL,
   video_id       TEXT        NOT NULL,
-  reward_cents   INTEGER     NOT NULL DEFAULT 0,
+  reward_cents   INTEGER     NOT NULL DEFAULT 5,
   watched_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   claimed        BOOLEAN     NOT NULL DEFAULT FALSE
 );

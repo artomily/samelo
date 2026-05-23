@@ -197,9 +197,6 @@ export default function FeedContent() {
             >
               Home
             </p>
-            <p className="mt-0.5 hidden text-[11px] text-muted sm:block">
-              {listVideos.length} videos ready
-            </p>
           </div>
           <div className="flex items-center gap-1.5 rounded-lg border border-[rgba(200,241,53,0.15)] bg-[rgba(200,241,53,0.04)] px-2.5 py-1.5 text-xs text-muted sm:gap-2 sm:px-3.5 sm:py-2">
             <span
@@ -432,7 +429,7 @@ export default function FeedContent() {
                     className="mt-2 flex w-full items-center justify-center rounded-lg border border-[rgba(200,241,53,0.3)] bg-[rgba(200,241,53,0.08)] py-2.5 text-[13px] font-bold text-accent transition-all hover:border-[rgba(200,241,53,0.5)] hover:bg-[rgba(200,241,53,0.14)]"
                     style={{ letterSpacing: "0.04em" }}
                   >
-                    Swap {(pendingPoints / 1000).toFixed(1)} $MELOUSD
+                    Swap to $MELOUSD
                   </Link>
                 ) : (
                   <Link

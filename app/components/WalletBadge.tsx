@@ -13,12 +13,11 @@ export function WalletBadge() {
 
   return (
     <div className="flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-sm">
-      <span className="inline-block h-2 w-2 rounded-full bg-accent" />
       <span className="font-mono text-xs text-muted">{short}</span>
-      <span className="font-semibold text-primary">
+      {/* <span className="font-semibold text-primary">
         {isLoading ? '…' : `$${balance}`}{' '}
         <span className="text-xs font-normal text-muted">MELOUSD</span>
-      </span>
+      </span> */}
     </div>
   )
 }
