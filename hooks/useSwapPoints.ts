@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { SWAP_ABI } from '@/lib/swap.abi'
 import { toast } from '@/app/components/Toast'
@@ -28,12 +28,29 @@ export function useSwapPoints(onSuccess?: () => void) {
     query: { enabled: !!txHash },
   })
 
+  const successFiredRef = useRef(false)
+  const lastAmountRef = useRef(0)
+
   useEffect(() => {
-    if (isSuccess) {
+    if (isSuccess && !successFiredRef.current) {
+      successFiredRef.current = true
+
+      // Mark only the swapped amount as consumed
+      if (address && txHash) {
+        fetch('/api/rewards/confirm-claim', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ walletAddress: address, txHash, amount: lastAmountRef.current }),
+        }).catch(() => {})
+      }
+
       onSuccess?.()
       toast('Swap complete! CELO is in your wallet', 'success')
     }
-  }, [isSuccess, onSuccess])
+    if (!isSuccess && !txHash) {
+      successFiredRef.current = false
+    }
+  }, [isSuccess, txHash, address, onSuccess])
 
   /**
    * Request an oracle signature for swapping `pointAmount` points to CELO,
@@ -50,6 +67,7 @@ export function useSwapPoints(onSuccess?: () => void) {
 
       setSwapError(null)
       setIsFetching(true)
+      lastAmountRef.current = pointAmount
 
       try {
         // Get oracle-signed swap authorization
