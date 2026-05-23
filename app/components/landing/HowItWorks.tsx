@@ -8,13 +8,13 @@ const STEPS = [
     number: '01',
     Icon: Smartphone,
     title: 'Open in MiniPay',
-    description: 'Launch Samelo inside MiniPay — no wallet setup, no downloads, no KYC. You are ready for launch.',
+    description: 'Launch Samelo inside MiniPay — no wallet setup, no downloads, no KYC.',
   },
   {
     number: '02',
     Icon: Play,
-    title: 'Watch & Explore',
-    description: 'Navigate your cosmic feed. Every completed video earns you stellar points.',
+    title: 'Watch Videos',
+    description: 'Browse your video feed. Every completed video earns you points.',
   },
   {
     number: '03',
@@ -45,7 +45,7 @@ export function HowItWorks() {
           <p className="font-display text-[10px] font-bold uppercase tracking-[0.2em] text-accent"
             style={{ textShadow: '0 0 12px rgba(200,241,53,0.4)' }}
           >
-            Mission briefing
+            How it works
           </p>
           <h2 className="mt-3 font-display text-2xl font-black tracking-tight text-primary sm:text-3xl">
             4 steps to your first reward
