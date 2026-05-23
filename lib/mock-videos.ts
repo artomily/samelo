@@ -5,7 +5,7 @@ export interface Video {
   thumbnailUrl: string
   videoUrl: string
   durationSeconds: number
-  rewardCents: number // reward in USD cents (e.g. 5 = $0.05)
+  rewardPoints: number // reward in points (e.g. 5 = 5 points)
 }
 
 export const MOCK_VIDEOS: Video[] = [
@@ -17,7 +17,7 @@ export const MOCK_VIDEOS: Video[] = [
     videoUrl:
       'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
     durationSeconds: 60,
-    rewardCents: 5,
+    rewardPoints: 5,
   },
   {
     id: 'v2',
@@ -27,7 +27,7 @@ export const MOCK_VIDEOS: Video[] = [
     videoUrl:
       'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
     durationSeconds: 45,
-    rewardCents: 4,
+    rewardPoints: 4,
   },
   {
     id: 'v3',
@@ -37,7 +37,7 @@ export const MOCK_VIDEOS: Video[] = [
     videoUrl:
       'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
     durationSeconds: 30,
-    rewardCents: 3,
+    rewardPoints: 3,
   },
   {
     id: 'v4',
@@ -47,7 +47,7 @@ export const MOCK_VIDEOS: Video[] = [
     videoUrl:
       'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
     durationSeconds: 50,
-    rewardCents: 5,
+    rewardPoints: 5,
   },
   {
     id: 'v5',
@@ -57,6 +57,6 @@ export const MOCK_VIDEOS: Video[] = [
     videoUrl:
       'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4',
     durationSeconds: 40,
-    rewardCents: 4,
+    rewardPoints: 4,
   },
 ]
