@@ -1,18 +1,13 @@
 'use client'
 
 import { useTranslation } from '@/lib/i18n'
-import { LanguagePicker } from '@/app/components/LanguagePicker'
 
-/**
- * EarningsHeader - Sticky header for earnings page
- * Shows page title and language selector
- */
 export function EarningsHeader() {
   const { t } = useTranslation()
 
   return (
     <header
-      className="sticky top-0 z-30 flex items-center justify-between border-b border-[rgba(200,241,53,0.10)] px-4 py-3"
+      className="sticky top-0 z-30 flex items-center justify-start border-b border-[rgba(200,241,53,0.10)] px-4 py-3"
       style={{ background: 'rgba(3,3,3,0.92)', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
     >
       <h1
@@ -21,7 +16,6 @@ export function EarningsHeader() {
       >
         {t('earnings')}
       </h1>
-      <LanguagePicker />
     </header>
   )
 }
