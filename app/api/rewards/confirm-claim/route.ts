@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const { walletAddress, txHash } = body as Record<string, unknown>
+  const { walletAddress, txHash, amount } = body as Record<string, unknown>
 
   if (typeof walletAddress !== 'string' || typeof txHash !== 'string') {
     return NextResponse.json(
@@ -26,24 +26,34 @@ export async function POST(request: NextRequest) {
   const supabase = getServiceSupabase()
   const wallet = walletAddress.toLowerCase()
 
-  // Sum up all unclaimed watches for this wallet
+  // Sum up all unclaimed watches for this wallet, ordered oldest first
   const { data: unclaimedRows } = await supabase
     .from('watches')
     .select('id, reward_cents')
     .eq('wallet_address', wallet)
     .eq('claimed', false)
+    .order('watched_at', { ascending: true })
 
   const rows = unclaimedRows ?? []
+
+  // If amount specified, only claim up to that amount (partial claim for swaps)
+  const limitAmount = typeof amount === 'number' ? amount : undefined
+  const idsToClaim: number[] = []
+  let claimedTotal = 0
+
+  for (const row of rows) {
+    if (limitAmount !== undefined && claimedTotal >= limitAmount) break
+    idsToClaim.push(row.id as number)
+    claimedTotal += row.reward_cents ?? 0
+  }
+
   const totalCents = rows.reduce((sum, r) => sum + (r.reward_cents ?? 0), 0)
 
-  if (rows.length > 0) {
-    const ids = rows.map((r) => r.id as number)
-
-    // Mark all unclaimed watches as claimed
+  if (idsToClaim.length > 0) {
     await supabase
       .from('watches')
       .update({ claimed: true })
-      .in('id', ids)
+      .in('id', idsToClaim)
   }
 
   // Insert claim record
