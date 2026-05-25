@@ -5,9 +5,9 @@ import { motion } from 'framer-motion'
 import { CosmicBackground } from '@/app/components/ui/CosmicBackground'
 
 const STATS = [
-  { value: '$0.05', label: 'Per video' },
+  { value: '+100pts', label: 'Per video' },
   { value: '24h', label: 'Instant payout' },
-  { value: 'MELOUSD', label: 'Stablecoin' },
+  { value: 'CELO', label: 'Payout token' },
   { value: '0', label: 'Friction' },
 ]
 
@@ -24,7 +24,7 @@ const PARTICLES = Array.from({ length: 8 }, (_, i) => ({
   x: `${10 + (i * 11) % 80}%`,
   delay: i * 0.7,
   duration: 3 + (i % 3),
-  label: ['+0.05', '+0.12', '+0.08', '+0.22', '+0.07', '+0.15', '+0.09', '+0.18'][i],
+  label: ['+50', '+120', '+80', '+220', '+70', '+150', '+90', '+180'][i],
 }))
 
 export function HeroSection() {
@@ -80,7 +80,7 @@ export function HeroSection() {
             ease: 'easeOut',
           }}
         >
-          {p.label} MELOUSD
+          {p.label} pts
         </motion.div>
       ))}
 

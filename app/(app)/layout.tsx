@@ -1,5 +1,5 @@
 import { BottomNav } from '@/app/components/BottomNav'
-
+import { ChainGuard } from '@/app/components/ChainGuard'
 
 
 
@@ -9,9 +9,11 @@ export default function AppLayout({
   children: React.ReactNode
 }>) {
   return (
-    <div className="pb-nav">
-      {children}
-      <BottomNav />
-    </div>
+    <ChainGuard>
+      <div className="pb-nav">
+        {children}
+        <BottomNav />
+      </div>
+    </ChainGuard>
   )
 }

@@ -23,15 +23,21 @@ export function Tokenomics() {
           className="mb-12 text-center"
         >
           <p className="mb-3 font-display text-[11px] font-bold uppercase tracking-[0.2em] text-accent/70">
-            Tokenomics
+            Tokenomics — Coming Soon
           </p>
           <h2 className="font-display text-3xl font-black uppercase tracking-tight text-primary sm:text-4xl">
             $MELO Token
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-sm text-muted">
             100 million MELO — fixed supply, no inflation. Built on Celo for
-            near-zero gas fees and mobile-first access.
+            near-zero gas fees and mobile-first access. Launch details TBA.
           </p>
+          <div className="mt-3">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(200,241,53,0.25)] bg-[rgba(200,241,53,0.08)] px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider text-accent/80">
+              <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
+              Currently earning CELO — $MELO coming soon
+            </span>
+          </div>
         </motion.div>
 
         {/* Supply bar */}
@@ -100,8 +106,8 @@ export function Tokenomics() {
           {[
             { label: 'Total Supply',  value: '100M MELO' },
             { label: 'Network',       value: 'Celo' },
-            { label: 'Rate',          value: '1pt → 1 MELO' },
-            { label: 'Contract',      value: 'Testnet soon' },
+            { label: 'Rate',          value: '1pt → 0.00001 CELO' },
+            { label: 'Contract',      value: 'Mainnet live' },
           ].map((item) => (
             <div key={item.label} className="text-center">
               <p className="font-display text-[9px] uppercase tracking-widest text-muted">

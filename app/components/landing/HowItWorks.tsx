@@ -26,28 +26,28 @@ const STEPS = [
     Icon: Coins,
     title: 'Earn Points',
     description:
-      'Points accumulate as you watch. Every 1,000 points is worth 1 $MELOUSD — a Celo stablecoin.',
-    detail: 'Track your balance in real-time. The more you watch, the faster you stack. No withdrawal minimums, no hidden fees.',
+      'Points accumulate as you watch. Swap your points for CELO — directly to your MiniPay wallet.',
+    detail: 'Track your balance in real-time. The more you watch, the faster you stack. Minimum 500 points to swap, no hidden fees.',
   },
   {
     number: '04',
     Icon: ArrowLeftRight,
-    title: 'Swap to $MELO',
+    title: 'Swap to CELO',
     description:
-      'Choose from 8 preset tiers and swap your points for $MELOUSD in a single on-chain transaction.',
-    detail: 'No gas hacks. No complex math. Pick a tier, sign once, get $MELO. From 1K to 250K points — 8 tiers to match your balance.',
+      'Enter your points amount and swap for CELO in a single on-chain transaction via oracle signature.',
+    detail: 'No gas hacks. No complex math. Enter any amount (min 500 pts), sign once, get CELO sent directly to your wallet.',
   },
 ]
 
 const REDEMPTION_TIERS = [
-  { pts: '1K', melo: '1' },
-  { pts: '2.5K', melo: '2.5' },
-  { pts: '5K', melo: '5' },
-  { pts: '10K', melo: '10' },
-  { pts: '25K', melo: '25' },
-  { pts: '50K', melo: '50' },
-  { pts: '100K', melo: '100' },
-  { pts: '250K', melo: '250' },
+  { pts: '500', melo: '0.005' },
+  { pts: '1K', melo: '0.01' },
+  { pts: '2.5K', melo: '0.025' },
+  { pts: '5K', melo: '0.05' },
+  { pts: '10K', melo: '0.10' },
+  { pts: '25K', melo: '0.25' },
+  { pts: '50K', melo: '0.50' },
+  { pts: '100K', melo: '1.00' },
 ]
 
 function RedemptionPreview() {
@@ -62,10 +62,10 @@ function RedemptionPreview() {
     >
       <div className="mb-4 flex items-center justify-between">
         <span className="font-display text-[10px] font-bold uppercase tracking-[0.2em] text-accent/70">
-          Swap Points → $MELOUSD
+          Swap Points → CELO
         </span>
         <span className="rounded-full border border-[rgba(200,241,53,0.15)] bg-[rgba(200,241,53,0.05)] px-2.5 py-0.5 font-display text-[9px] uppercase tracking-wider text-accent/60">
-          1K pts = 1 MELO
+          1K pts = 0.01 CELO
         </span>
       </div>
 
@@ -78,9 +78,9 @@ function RedemptionPreview() {
             <span className="font-display text-sm font-black text-accent">
               {tier.melo}
             </span>
-            <span className="font-display text-[9px] uppercase tracking-wider text-white">
-              MELO
-            </span>
+              <span className="font-display text-[9px] uppercase tracking-wider text-white">
+                CELO
+              </span>
             <span className="mt-1 font-display text-[9px] text-white">
               {tier.pts} pts
             </span>
@@ -90,7 +90,7 @@ function RedemptionPreview() {
 
       <div className="mt-3 text-center">
         <span className="font-display text-[9px] uppercase tracking-[0.15em] text-white">
-          8 preset tiers · one-click swap
+          Custom amount · one-click swap
         </span>
       </div>
     </motion.div>
@@ -132,7 +132,7 @@ export function HowItWorks() {
           </h2>
           <p className="mx-auto mt-3 max-w-[42ch] text-sm leading-relaxed text-muted">
             No KYC, no gas tricks. Watch videos, stack points, and swap for{' '}
-            <span className="text-accent">$MELOUSD</span> right inside MiniPay.
+            <span className="text-accent">CELO</span> right inside MiniPay.
           </p>
         </motion.div>
 

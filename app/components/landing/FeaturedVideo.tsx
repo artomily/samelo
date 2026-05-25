@@ -38,8 +38,8 @@ export function FeaturedVideo() {
             Watch &amp; Earn Now
           </h2>
           <p className="mx-auto mt-3 max-w-md text-sm text-muted">
-            Connect your wallet, watch sponsored content, and earn $MELO
-            directly to your Celo wallet.
+            Connect your wallet, watch sponsored content, and earn CELO
+            directly to your wallet.
           </p>
         </motion.div>
 

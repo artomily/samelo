@@ -20,7 +20,7 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   title: "Samelo — Watch & Earn",
   description:
-    "Turn your attention into income. Watch short videos and earn real MELOUSD on Celo.",
+    "Turn your attention into income. Watch short videos and earn CELO on Celo.",
   icons: {
     icon: "/logo.png",
   },

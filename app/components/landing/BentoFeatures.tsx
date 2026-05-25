@@ -16,13 +16,11 @@ const ITEMS: BentoItem[] = [
   {
     title: 'Watch & Earn',
     description:
-      'Every second you watch counts. Get rewarded in MELOUSD for genuine engagement — not clicks or shares.',
-    icon: '▶',
-    colSpan: 2,
-    status: 'LIVE',
+      'Every second you watch counts. Get rewarded in CELO for genuine engagement — not clicks or shares.',
+    icon: '\u25B6',
   },
   {
-    title: 'Instant MELOUSD',
+    title: 'Instant CELO',
     description: 'Earnings land in your MiniPay wallet in seconds. No waiting, no minimums.',
     icon: '$',
     status: 'REAL-TIME',

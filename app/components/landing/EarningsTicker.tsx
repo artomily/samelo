@@ -1,12 +1,12 @@
 'use client'
 
 const EARNINGS = [
-  { user: '0x3f…a1', amount: '+0.14 $MELOUSD', video: 'Celo Explained' },
-  { user: '0xa7…2d', amount: '+0.09 $MELOUSD', video: 'Web3 Basics' },
-  { user: '0x11…bc', amount: '+0.22 $MELOUSD', video: 'DeFi 101' },
-  { user: '0x55…7e', amount: '+0.07 $MELOUSD', video: 'MiniPay Demo' },
-  { user: '0x8b…f3', amount: '+0.18 $MELOUSD', video: 'Blockchain Intro' },
-  { user: '0x2c…99', amount: '+0.11 $MELOUSD', video: 'Crypto Wallets' },
+  { user: '0x3f…a1', amount: '+0.14 CELO', video: 'Celo Explained' },
+  { user: '0xa7…2d', amount: '+0.09 CELO', video: 'Web3 Basics' },
+  { user: '0x11…bc', amount: '+0.22 CELO', video: 'DeFi 101' },
+  { user: '0x55…7e', amount: '+0.07 CELO', video: 'MiniPay Demo' },
+  { user: '0x8b…f3', amount: '+0.18 CELO', video: 'Blockchain Intro' },
+  { user: '0x2c…99', amount: '+0.11 CELO', video: 'Crypto Wallets' },
 ]
 
 function TickerRow({ items, reverse }: { items: typeof EARNINGS; reverse?: boolean }) {
