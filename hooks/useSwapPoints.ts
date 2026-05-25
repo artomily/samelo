@@ -23,7 +23,12 @@ export function useSwapPoints(onSuccess?: () => void) {
   const [swapError, setSwapError] = useState<string | null>(null)
   const [celoPreview, setCeloPreview] = useState<string | null>(null)
 
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
+  const {
+    isLoading: isConfirming,
+    isSuccess,
+    isError: isTxError,
+    failureReason,
+  } = useWaitForTransactionReceipt({
     hash: txHash,
     query: { enabled: !!txHash },
   })
@@ -31,31 +36,44 @@ export function useSwapPoints(onSuccess?: () => void) {
   const successFiredRef = useRef(false)
   const lastAmountRef = useRef(0)
 
+  // Handle successful swap → confirm claim in Supabase → refresh points
   useEffect(() => {
     if (isSuccess && !successFiredRef.current) {
       successFiredRef.current = true
 
-      // Mark only the swapped amount as consumed
-      if (address && txHash) {
-        fetch('/api/rewards/confirm-claim', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ walletAddress: address, txHash, amount: lastAmountRef.current }),
-        }).catch(() => {})
+      const confirmAndRefresh = async () => {
+        if (address && txHash) {
+          try {
+            await fetch('/api/rewards/confirm-claim', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ walletAddress: address, txHash, amount: lastAmountRef.current }),
+            })
+          } catch {
+            // non-fatal
+          }
+        }
+        onSuccess?.()
+        toast('Swap complete! CELO is in your wallet', 'success')
       }
 
-      onSuccess?.()
-      toast('Swap complete! CELO is in your wallet', 'success')
+      void confirmAndRefresh()
     }
-    if (!isSuccess && !txHash) {
+
+    // Handle reverted transaction
+    if (isTxError && !swapError && txHash) {
+      const reason = typeof failureReason === 'string' ? failureReason
+        : (failureReason as Record<string, unknown> | null)?.message as string
+        ?? 'Unknown revert'
+      setSwapError(`Transaction reverted: ${reason}`)
+      toast(`Swap failed — ${String(reason).slice(0, 100)}`, 'error')
+    }
+
+    if (!isSuccess && !isTxError && !txHash) {
       successFiredRef.current = false
     }
-  }, [isSuccess, txHash, address, onSuccess])
+  }, [isSuccess, isTxError, txHash, address, onSuccess, failureReason, swapError])
 
-  /**
-   * Request an oracle signature for swapping `pointAmount` points to CELO,
-   * then call swapPoints() on the SameloSwap contract.
-   */
   const swapPoints = useCallback(
     async (pointAmount: number) => {
       if (!address) return
@@ -66,11 +84,12 @@ export function useSwapPoints(onSuccess?: () => void) {
       }
 
       setSwapError(null)
+      setTxHash(undefined)
       setIsFetching(true)
       lastAmountRef.current = pointAmount
+      successFiredRef.current = false
 
       try {
-        // Get oracle-signed swap authorization
         const res = await fetch('/api/rewards/swapauth', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -102,7 +121,11 @@ export function useSwapPoints(onSuccess?: () => void) {
         setTxHash(hash)
       } catch (e) {
         setIsFetching(false)
-        const msg = e instanceof Error ? e.message : 'Swap failed'
+        const raw = (e as Error)?.message || String(e)
+        const isGasIssue = /gas|exceeds|insufficient|balance|fund/i.test(raw)
+        const msg = isGasIssue
+          ? 'Insufficient CELO for gas. Add CELO to your wallet first.'
+          : raw.length > 200 ? raw.slice(0, 200) : raw
         setSwapError(msg)
         toast(msg, 'error')
       }
@@ -118,7 +141,7 @@ export function useSwapPoints(onSuccess?: () => void) {
         ? 'confirming'
         : isSuccess
           ? 'success'
-          : swapError
+          : isTxError || swapError
             ? 'error'
             : 'idle'
 
@@ -132,6 +155,7 @@ export function useSwapPoints(onSuccess?: () => void) {
       setTxHash(undefined)
       setSwapError(null)
       setCeloPreview(null)
+      successFiredRef.current = false
     },
   }
 }

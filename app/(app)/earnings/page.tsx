@@ -37,7 +37,7 @@ export default function EarningsPage() {
     <div className="flex min-h-dvh flex-col bg-[#030303]">
       <EarningsHeader />
 
-      <div className="w-full px-4 py-4 pb-28 sm:px-7 sm:py-5">
+      <div className="w-full overflow-hidden px-4 py-4 pb-20 sm:px-7 sm:py-5 space-y-6">
         <EarnPointsButton onEarned={handleEarned} />
 
         {/* Pending points card */}
@@ -68,7 +68,7 @@ export default function EarningsPage() {
                   href="/swap"
                   className="flex w-full items-center justify-center gap-2 rounded-xl border border-[rgba(200,241,53,0.25)] bg-[rgba(200,241,53,0.07)] py-2.5 font-display text-[11px] font-bold uppercase tracking-wider text-accent transition-all hover:border-[rgba(200,241,53,0.45)] hover:bg-[rgba(200,241,53,0.12)]"
                 >
-                  Swap Points → $MELO
+                  Swap Points → CELO
                   <ArrowRight size={12} />
                 </Link>
               </div>

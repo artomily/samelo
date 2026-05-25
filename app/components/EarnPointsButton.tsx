@@ -112,7 +112,7 @@ export function EarnPointsButton({ onEarned }: EarnPointsButtonProps) {
     status === 'confirming' ? 'Confirming…' :
     status === 'syncing'    ? 'Saving points…' :
     isCoolingDown           ? `Wait ${formatCooldown(cooldownSec)}`
-                            : 'Earn 10 Points'
+                            : 'Early Adopter (+10 Points)'
 
   return (
     <div className="space-y-1.5">

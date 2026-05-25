@@ -35,12 +35,20 @@ export async function POST(request: NextRequest) {
 
   const rawKey = process.env.REWARD_ORACLE_PRIVATE_KEY
   const swapAddress = process.env.NEXT_PUBLIC_SWAP_ADDRESS as `0x${string}` | undefined
+  const minSwapPoints = Number(process.env.MIN_SWAP_POINTS ?? '500')
 
   if (!rawKey || rawKey === '0x') {
     return NextResponse.json({ error: 'Oracle key not configured' }, { status: 503 })
   }
   if (!swapAddress) {
     return NextResponse.json({ error: 'Swap contract not configured' }, { status: 503 })
+  }
+
+  if (pointAmount < minSwapPoints) {
+    return NextResponse.json(
+      { error: `Minimum swap amount is ${minSwapPoints} points` },
+      { status: 400 },
+    )
   }
 
   const supabase = getServiceSupabase()

@@ -37,33 +37,42 @@ export async function POST(request: NextRequest) {
   const rows = unclaimedRows ?? []
 
   // If amount specified, only claim up to that amount (partial claim for swaps)
-  const limitAmount = typeof amount === 'number' ? amount : undefined
-  const idsToClaim: number[] = []
+  const limitAmount = typeof amount === 'number' && amount > 0 ? (amount as number) : undefined
+  const idsToClaimFull: number[] = []
   let claimedTotal = 0
 
   for (const row of rows) {
     if (limitAmount !== undefined && claimedTotal >= limitAmount) break
-    idsToClaim.push(row.id as number)
-    claimedTotal += row.reward_cents ?? 0
+    const cents = row.reward_cents ?? 0
+    if (limitAmount !== undefined && claimedTotal + cents > limitAmount) {
+      // Partial — reduce this row by the consumed portion
+      const remainder = claimedTotal + cents - limitAmount
+      claimedTotal = limitAmount
+      await supabase
+        .from('watches')
+        .update({ reward_cents: remainder })
+        .eq('id', row.id as number)
+    } else {
+      idsToClaimFull.push(row.id as number)
+      claimedTotal += cents
+    }
   }
 
-  const totalCents = rows.reduce((sum, r) => sum + (r.reward_cents ?? 0), 0)
-
-  if (idsToClaim.length > 0) {
+  if (idsToClaimFull.length > 0) {
     await supabase
       .from('watches')
       .update({ claimed: true })
-      .in('id', idsToClaim)
+      .in('id', idsToClaimFull)
   }
 
   // Insert claim record
   await supabase.from('claims').insert({
     wallet_address: wallet,
-    total_cents: totalCents,
+    total_cents: limitAmount ?? claimedTotal,
     tx_hash: txHash,
     status: 'confirmed',
     confirmed_at: new Date().toISOString(),
   })
 
-  return NextResponse.json({ ok: true, totalCents, claimedCount: rows.length })
+  return NextResponse.json({ ok: true, claimedAmount: claimedTotal, claimedCount: idsToClaimFull.length })
 }

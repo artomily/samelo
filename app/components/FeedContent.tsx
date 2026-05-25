@@ -9,7 +9,6 @@ import { WalletBadge } from "@/app/components/WalletBadge";
 import { ConnectBanner } from "@/app/components/ConnectBanner";
 import { toast } from "@/app/components/Toast";
 import { Play } from "lucide-react";
-import { useSwapToMelo } from "@/hooks/useSwapToMelo";
 import Link from "next/link";
 
 const VideoPlayer = dynamic(
@@ -161,21 +160,6 @@ export default function FeedContent() {
     [activeId, earnedIds, address],
   );
 
-  const {
-    swap: swapToMelo,
-    status: swapStatus,
-    reset: resetSwap,
-  } = useSwapToMelo();
-
-  useEffect(() => {
-    if (swapStatus === "success") {
-      setPendingPoints(0);
-      setEarnedIds(new Set());
-      toast("Points swapped to $MELO!", "success");
-      resetSwap();
-    }
-  }, [swapStatus, resetSwap]);
-
   const listVideos = videos.filter((v) => v.id !== activeId);
 
   return (
@@ -183,7 +167,7 @@ export default function FeedContent() {
       <div className="flex min-h-dvh flex-col bg-[#030303]">
         {/* Header */}
         <header
-          className="sticky top-0 z-30 flex items-center justify-between border-b border-[rgba(200,241,53,0.10)] px-4 py-3 sm:px-7 sm:py-3.5"
+          className="sticky top-0 left-0 right-0 z-30 flex items-center justify-between border-b border-[rgba(200,241,53,0.10)] px-4 py-3 sm:px-7 sm:py-3.5"
           style={{
             background: "rgba(3,3,3,0.92)",
             backdropFilter: "blur(16px)",
@@ -207,57 +191,57 @@ export default function FeedContent() {
           </div>
         </header>
 
-        <div className="w-full px-4 py-4 pb-28 sm:px-7 sm:py-5">
+        <div className="w-full overflow-hidden px-4 py-4 pb-20 sm:px-7 sm:py-5">
           <ConnectBanner className="mb-5" />
 
           {/* 4-col Metrics */}
           <div className="mb-4 grid grid-cols-2 gap-2 sm:mb-5 sm:gap-2.5 sm:grid-cols-4">
             <div
-              className="glass-card p-3 sm:p-4"
+              className="glass-card overflow-hidden p-3 sm:p-4"
               style={{
                 borderColor: "rgba(200,241,53,0.25)",
                 boxShadow: "0 0 16px rgba(200,241,53,0.06)",
               }}
             >
-              <p className="mb-1 font-display text-[9px] uppercase tracking-widest text-muted">
+              <p className="mb-1 truncate font-display text-[8px] uppercase tracking-wider text-muted sm:text-[9px] sm:tracking-widest">
                 Total earned
               </p>
               <p
-                className="font-display text-lg font-black tabular-nums text-accent sm:text-xl"
+                className="font-display text-base font-black tabular-nums text-accent sm:text-xl"
                 style={{ textShadow: "0 0 10px rgba(200,241,53,0.35)" }}
               >
                 {pendingPoints}p
               </p>
-              <p className="mt-0.5 text-[10px] text-accent/60">↑ today</p>
+              <p className="mt-0.5 truncate text-[9px] text-accent/60 sm:text-[10px]">&uarr; today</p>
             </div>
-            <div className="glass-card p-3 sm:p-4">
-              <p className="mb-1 font-display text-[9px] uppercase tracking-widest text-muted">
+            <div className="glass-card overflow-hidden p-3 sm:p-4">
+              <p className="mb-1 truncate font-display text-[8px] uppercase tracking-wider text-muted sm:text-[9px] sm:tracking-widest">
                 Pending pts
               </p>
-              <p className="font-display text-lg font-black tabular-nums text-primary sm:text-xl">
-                {pendingPoints}
+              <p className="font-display text-base font-black tabular-nums text-primary sm:text-xl">
+                {pendingPoints}p
               </p>
-              <p className="mt-0.5 text-[10px] text-accent/60">
-                ↑ {earnedIds.size * 10} today
+              <p className="mt-0.5 truncate text-[9px] text-accent/60 sm:text-[10px]">
+                &uarr; {earnedIds.size * 10} today
               </p>
             </div>
-            <div className="glass-card p-3 sm:p-4">
-              <p className="mb-1 font-display text-[9px] uppercase tracking-widest text-muted">
+            <div className="glass-card overflow-hidden p-3 sm:p-4">
+              <p className="mb-1 truncate font-display text-[8px] uppercase tracking-wider text-muted sm:text-[9px] sm:tracking-widest">
                 On-chain
               </p>
-              <p className="font-display text-lg font-black tabular-nums text-primary sm:text-xl">
+              <p className="font-display text-base font-black tabular-nums text-primary sm:text-xl">
                 0
               </p>
-              <p className="mt-0.5 text-[10px] text-muted">Deploy ready</p>
+              <p className="mt-0.5 truncate text-[9px] text-muted sm:text-[10px]">Deploy ready</p>
             </div>
-            <div className="glass-card p-3 sm:p-4">
-              <p className="mb-1 font-display text-[9px] uppercase tracking-widest text-muted">
+            <div className="glass-card overflow-hidden p-3 sm:p-4">
+              <p className="mb-1 truncate font-display text-[8px] uppercase tracking-wider text-muted sm:text-[9px] sm:tracking-widest">
                 Referrals
               </p>
-              <p className="font-display text-lg font-black tabular-nums text-primary sm:text-xl">
+              <p className="font-display text-base font-black tabular-nums text-primary sm:text-xl">
                 0
               </p>
-              <p className="mt-0.5 text-[10px] text-accent/60">
+              <p className="mt-0.5 truncate text-[9px] text-accent/60 sm:text-[10px]">
                 Invite friends
               </p>
             </div>
@@ -266,7 +250,7 @@ export default function FeedContent() {
           {/* 2-col main layout */}
           <div className="grid gap-3 md:grid-cols-[1fr_300px] sm:gap-3.5">
             {/* LEFT: video list + streak */}
-            <div className="glass-card p-4">
+            <div className="glass-card overflow-hidden p-4 order-2 md:order-1">
               <div className="mb-3.5 flex items-center justify-between">
                 <p
                   className="font-display text-[11px] font-bold uppercase tracking-[0.12em] text-primary"
@@ -296,6 +280,7 @@ export default function FeedContent() {
                   <VideoPlayer
                     key={activeId!}
                     video={activeVideo}
+                    earned={earnedIds.has(activeId!)}
                     onEarned={handleEarned}
                   />
 
@@ -344,41 +329,50 @@ export default function FeedContent() {
                   <div
                     key={video.id}
                     className={[
-                      "flex items-center gap-3 py-2.5",
+                      "flex items-center gap-2 py-2.5 sm:gap-3",
                       i < videos.length - 1
                         ? "border-b border-[rgba(200,241,53,0.07)]"
                         : "",
                     ].join(" ")}
                   >
+                    {/* Thumbnail with play overlay */}
                     <button
                       onClick={() => handleSelect(video.id)}
-                      className="flex h-8 w-10 shrink-0 items-center justify-center rounded-md border border-[rgba(200,241,53,0.2)] bg-[rgba(200,241,53,0.06)] transition-all hover:border-[rgba(200,241,53,0.4)] sm:h-9 sm:w-13"
-                      style={{ boxShadow: "0 0 8px rgba(200,241,53,0.08)" }}
+                      className="relative shrink-0 overflow-hidden rounded"
+                      style={{ width: 48, height: 28 }}
                     >
-                      <Play size={14} className="text-accent" />
+                      <img
+                        src={video.thumbnailUrl}
+                        alt={video.title}
+                        className="h-full w-full object-cover"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity hover:bg-black/20">
+                        <Play size={10} className="text-accent drop-shadow-lg" />
+                      </div>
                     </button>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-[12px] font-medium text-primary">
+                      <p className="truncate text-[11px] font-medium text-primary sm:text-[12px]">
                         {video.title}
                       </p>
-                      <p className="text-[11px] text-muted">
+                      <p className="truncate text-[10px] text-muted sm:text-[11px]">
                         {video.sponsor} · {video.durationSeconds}s
                       </p>
                     </div>
                     <span
-                      className="shrink-0 font-display text-[11px] font-bold text-accent"
+                      className="shrink-0 font-display text-[10px] font-bold text-accent sm:text-[11px]"
                       style={{ textShadow: "0 0 8px rgba(200,241,53,0.4)" }}
                     >
                       +{video.rewardPoints}p
                     </span>
                     {earnedIds.has(video.id) ? (
-                      <span className="shrink-0 rounded-md border border-[rgba(200,241,53,0.25)] bg-[rgba(200,241,53,0.08)] px-3 py-1 font-display text-[9px] font-bold uppercase tracking-wider text-accent">
+                      <span className="shrink-0 rounded-md border border-[rgba(200,241,53,0.25)] bg-[rgba(200,241,53,0.08)] px-2 py-1 font-display text-[8px] font-bold uppercase tracking-wider text-accent sm:px-3 sm:text-[9px]">
                         Done
                       </span>
                     ) : (
                       <button
                         onClick={() => handleSelect(video.id)}
-                        className="shrink-0 btn-neon px-3 py-1 text-[10px]"
+                        className="shrink-0 btn-neon px-2 py-1 text-[9px] sm:px-3 sm:text-[10px]"
                       >
                         Watch
                       </button>
@@ -400,10 +394,10 @@ export default function FeedContent() {
             </div>
 
             {/* RIGHT: points + activity */}
-            <div className="flex flex-col gap-3.5">
+            <div className="flex flex-col gap-3.5 order-1 md:order-2">
               {/* Points deploy card */}
               <div
-                className="glass-card p-4"
+                className="glass-card overflow-hidden p-4"
                 style={{ borderColor: "rgba(200,241,53,0.2)" }}
               >
                 <p
@@ -417,7 +411,7 @@ export default function FeedContent() {
                     className="font-display text-3xl font-black tabular-nums text-accent"
                     style={{ textShadow: "0 0 16px rgba(200,241,53,0.5)" }}
                   >
-                    {pendingPoints}
+                    {pendingPoints}p
                   </p>
                   <p className="mt-0.5 font-display text-[9px] uppercase tracking-widest text-muted">
                     pending off-chain pts
@@ -429,7 +423,7 @@ export default function FeedContent() {
                     className="mt-2 flex w-full items-center justify-center rounded-lg border border-[rgba(200,241,53,0.3)] bg-[rgba(200,241,53,0.08)] py-2.5 text-[13px] font-bold text-accent transition-all hover:border-[rgba(200,241,53,0.5)] hover:bg-[rgba(200,241,53,0.14)]"
                     style={{ letterSpacing: "0.04em" }}
                   >
-                    Swap to $MELOUSD
+                    Swap Points → CELO
                   </Link>
                 ) : (
                   <Link
@@ -440,6 +434,41 @@ export default function FeedContent() {
                     Swap Points
                   </Link>
                 )}
+              </div>
+
+              {/* Mission card */}
+              <div className="glass-card animate-running-border overflow-hidden p-4">
+                <div className="mb-2 flex items-center gap-2">
+                  <p
+                    className="font-display text-[11px] font-bold uppercase tracking-[0.12em] text-primary"
+                    style={{ textShadow: "0 0 8px rgba(200,241,53,0.2)" }}
+                  >
+                    Mission
+                  </p>
+                  <span className="rounded-full border border-[rgba(200,241,53,0.2)] bg-[rgba(200,241,53,0.05)] px-2 py-0.5 font-display text-[8px] uppercase tracking-widest text-muted">
+                    Coming Soon
+                  </span>
+                </div>
+                <div className="rounded-xl border border-[rgba(200,241,53,0.1)] bg-[rgba(200,241,53,0.02)] p-3">
+                  <p className="text-[11px] font-medium text-primary leading-relaxed">
+                    Watch all videos to earn
+                  </p>
+                  <p
+                    className="mt-1 font-display text-lg font-black text-accent"
+                    style={{ textShadow: "0 0 12px rgba(200,241,53,0.3)" }}
+                  >
+                    1 CELO
+                  </p>
+                  <p className="mt-1 text-[10px] text-muted">
+                    Sent directly to your MiniPay wallet
+                  </p>
+                </div>
+                <button
+                  disabled
+                  className="mt-3 w-full rounded-lg border border-[rgba(200,241,53,0.1)] bg-[rgba(200,241,53,0.02)] py-2 text-[11px] font-medium text-muted/40 cursor-not-allowed"
+                >
+                  Locked — Coming Soon
+                </button>
               </div>
 
               {/* Recent activity */}
@@ -573,7 +602,7 @@ export default function FeedContent() {
                   href="/swap"
                   className="flex w-full items-center justify-center rounded-xl border border-[rgba(200,241,53,0.28)] bg-[rgba(200,241,53,0.07)] py-3 font-display text-[12px] font-bold uppercase tracking-wider text-accent transition-all hover:border-[rgba(200,241,53,0.45)] hover:bg-[rgba(200,241,53,0.12)]"
                 >
-                  Swap {(pendingPoints / 1000).toFixed(1)} $MELOUSD
+                  Swap {(pendingPoints / 1000).toFixed(1)} CELO
                 </Link>
               </div>
             ) : (
