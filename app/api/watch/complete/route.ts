@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServiceSupabase } from '@/lib/supabase'
-import { verifyWatchToken } from '@/lib/watchToken'
 import { isAddress } from 'viem'
 
 const RATE_LIMIT_WINDOW_MS = 24 * 60 * 60 * 1000 // 24 hours
@@ -13,33 +12,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const { videoId, walletAddress, token } = body as Record<string, unknown>
+  const { videoId, walletAddress } = body as Record<string, unknown>
 
-  // Input validation
-  if (
-    typeof videoId !== 'string' ||
-    typeof walletAddress !== 'string' ||
-    typeof token !== 'string'
-  ) {
+  if (typeof videoId !== 'string' || typeof walletAddress !== 'string') {
     return NextResponse.json(
-      { error: 'videoId, walletAddress, and token are required strings' },
+      { error: 'videoId and walletAddress are required strings' },
       { status: 400 },
     )
   }
 
   if (!isAddress(walletAddress)) {
-    return NextResponse.json(
-      { error: 'Invalid wallet address' },
-      { status: 400 },
-    )
-  }
-
-  // Verify the HMAC watch token
-  if (!verifyWatchToken(token, videoId, walletAddress)) {
-    return NextResponse.json(
-      { error: 'Invalid or expired watch token' },
-      { status: 401 },
-    )
+    return NextResponse.json({ error: 'Invalid wallet address' }, { status: 400 })
   }
 
   const supabase = getServiceSupabase()
@@ -92,7 +75,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ alreadyClaimed: true, totalPendingCents })
   }
 
-  // Record the watch event
+  // Record the watch event in Supabase
   await supabase.from('watches').insert({
     wallet_address: walletAddress.toLowerCase(),
     video_id: videoId,

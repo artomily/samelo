@@ -62,6 +62,16 @@ export const POINTS_ABI = [
   },
   {
     type: 'function',
+    name: 'creditPoints',
+    inputs: [
+      { name: 'user', type: 'address', internalType: 'address' },
+      { name: 'amount', type: 'uint256', internalType: 'uint256' },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     name: 'redeem',
     inputs: [{ name: 'pointsAmount', type: 'uint256', internalType: 'uint256' }],
     outputs: [],

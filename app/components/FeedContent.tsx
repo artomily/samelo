@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useAccount } from "wagmi";
 import { useVideos } from "@/hooks/useVideos";
 import dynamic from "next/dynamic";
@@ -79,22 +79,10 @@ export default function FeedContent() {
   const [earnedIds, setEarnedIds] = useState<Set<string>>(new Set());
   const [showClaimModal, setShowClaimModal] = useState(false);
   const [lastEarnedPoints, setLastEarnedPoints] = useState(0);
-  const watchTokenRef = useRef<string | null>(null);
 
   const activeVideo = activeId
     ? (videos.find((v) => v.id === activeId) ?? null)
     : null;
-
-  useEffect(() => {
-    if (!address || !activeId) return;
-    watchTokenRef.current = null;
-    fetch(`/api/watch/token?videoId=${activeId}&walletAddress=${address}`)
-      .then((r) => r.json())
-      .then((d: { token?: string }) => {
-        watchTokenRef.current = d.token ?? null;
-      })
-      .catch(() => {});
-  }, [activeId, address]);
 
   useEffect(() => {
     if (!address) return;
@@ -137,24 +125,24 @@ export default function FeedContent() {
       setPendingPoints((prev) => prev + rewardPoints);
       setLastEarnedPoints(rewardPoints);
       setShowClaimModal(true);
-      if (!address || !watchTokenRef.current) return;
+      if (!address) return;
+
       try {
         const res = await fetch("/api/watch/complete", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            videoId: activeId,
-            walletAddress: address,
-            token: watchTokenRef.current,
-          }),
+          body: JSON.stringify({ videoId: activeId, walletAddress: address }),
         });
         if (res.ok) {
           const data = (await res.json()) as { totalPendingCents?: number };
           if (typeof data.totalPendingCents === "number")
             setPendingPoints(data.totalPendingCents);
+        } else {
+          const err = await res.json().catch(() => ({})) as { error?: string }
+          console.error('[FeedContent] watch/complete failed:', err.error ?? res.status)
         }
-      } catch {
-        // optimistic update stands
+      } catch (e) {
+        console.error('[FeedContent] watch/complete error:', e)
       }
     },
     [activeId, earnedIds, address],

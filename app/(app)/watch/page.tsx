@@ -4,6 +4,7 @@ import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { useVideos } from '@/hooks/useVideos'
 import { useState, useCallback } from 'react'
+import { useAccount } from 'wagmi'
 import { Skeleton } from '@/app/components/Skeleton'
 import { toast } from '@/app/components/Toast'
 
@@ -19,6 +20,7 @@ function formatDuration(sec: number): string {
 }
 
 export default function WatchPage() {
+  const { address } = useAccount()
   const { videos, loading } = useVideos()
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [earnedIds, setEarnedIds] = useState<Set<string>>(new Set())
@@ -36,11 +38,22 @@ export default function WatchPage() {
     if (hasPrev) setSelectedId(videos[selectedIdx - 1]!.id)
   }, [hasPrev, selectedIdx, videos])
 
-  const handleEarned = useCallback((rewardPoints: number) => {
+  const handleEarned = useCallback(async (rewardPoints: number) => {
     if (!selectedId || earnedIds.has(selectedId)) return
     setEarnedIds((prev) => new Set(prev).add(selectedId))
     toast(`+${rewardPoints} points earned!`, 'success')
-  }, [selectedId, earnedIds])
+
+    if (!address) return
+    try {
+      await fetch('/api/watch/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ videoId: selectedId, walletAddress: address }),
+      })
+    } catch {
+      // non-fatal
+    }
+  }, [selectedId, earnedIds, address])
 
   return (
     <div className="flex min-h-dvh flex-col bg-[#030303]">

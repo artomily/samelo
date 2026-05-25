@@ -65,6 +65,12 @@ contract SameloPoints is
         uint256 newTotal,
         uint256 timestamp
     );
+    event PointsCredited(
+        address indexed user,
+        uint256 amount,
+        uint256 newTotal,
+        uint256 timestamp
+    );
     event PointsRedeemed(
         address indexed user,
         uint256 pointsAmount,
@@ -107,6 +113,19 @@ contract SameloPoints is
     }
 
     // ── Owner setters ─────────────────────────────────────────────────────────
+
+    /**
+     * @notice Credit arbitrary points to a user. Only owner (oracle/backend).
+     * @param user  Recipient address
+     * @param amount Points to credit
+     */
+    function creditPoints(address user, uint256 amount) external onlyOwner {
+        require(user != address(0), "Points: zero user");
+        require(amount > 0, "Points: zero amount");
+        points[user] += amount;
+        totalPointsIssued += amount;
+        emit PointsCredited(user, amount, points[user], block.timestamp);
+    }
 
     function setMeloToken(address token) external onlyOwner {
         meloToken = IERC20(token);
