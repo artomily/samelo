@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Video } from '@/lib/mock-videos'
 
 interface VideoPlayerProps {
@@ -26,20 +26,111 @@ function ytSrc(url: string): string {
 
 export function VideoPlayer({ video, earned = false, onEarned }: VideoPlayerProps) {
   const [claiming, setClaiming] = useState(false)
+  const [watchPercent, setWatchPercent] = useState(0)
+  const [watchComplete, setWatchComplete] = useState(false)
+  const videoRef = useRef<HTMLVideoElement | null>(null)
+  const ytReadyRef = useRef(false)
+  const ytDurationRef = useRef(0)
+
   const isYT = isYouTubeUrl(video.videoUrl)
+  const showClaim = watchComplete && !earned
+
+  // ── YouTube watch tracking via postMessage ──────────────────────────────
+  useEffect(() => {
+    if (!isYT) return
+
+    const handleMessage = (e: MessageEvent) => {
+      if (!e.data || typeof e.data !== 'string') return
+      try {
+        const data = JSON.parse(e.data)
+        if (data.event === 'onReady') {
+          ytReadyRef.current = true
+        }
+        if (data.event === 'onStateChange' && data.info) {
+          if (data.info === 0) {
+            // Ended
+            setWatchPercent(100)
+            setWatchComplete(true)
+          }
+        }
+      } catch {
+        // not JSON or wrong format — ignore
+      }
+    }
+
+    window.addEventListener('message', handleMessage)
+    return () => window.removeEventListener('message', handleMessage)
+  }, [isYT, video.id])
+
+  // ── YouTube: fallback timer-based tracking ──────────────────────────────
+  useEffect(() => {
+    if (!isYT || !video.durationSeconds || video.durationSeconds <= 0) return
+
+    if (earned || watchComplete) return
+
+    const totalMs = video.durationSeconds * 1000
+    const interval = 500
+    const start = Date.now()
+
+    const timer = setInterval(() => {
+      const elapsed = Date.now() - start
+      const pct = Math.min(100, Math.round((elapsed / totalMs) * 100))
+      setWatchPercent(pct)
+      if (pct >= 95) {
+        setWatchComplete(true)
+        clearInterval(timer)
+      }
+    }, interval)
+
+    return () => clearInterval(timer)
+  }, [isYT, video.id, video.durationSeconds, earned, watchComplete])
+
+  // ── Native video watch tracking ─────────────────────────────────────────
+  useEffect(() => {
+    if (isYT) return
+    const el = videoRef.current
+    if (!el) return
+
+    const handleTimeUpdate = () => {
+      if (el.duration <= 0) return
+      const pct = Math.round((el.currentTime / el.duration) * 100)
+      setWatchPercent(pct)
+      if (pct >= 95) setWatchComplete(true)
+    }
+
+    const handleEnded = () => {
+      setWatchPercent(100)
+      setWatchComplete(true)
+    }
+
+    el.addEventListener('timeupdate', handleTimeUpdate)
+    el.addEventListener('ended', handleEnded)
+    return () => {
+      el.removeEventListener('timeupdate', handleTimeUpdate)
+      el.removeEventListener('ended', handleEnded)
+    }
+  }, [isYT, video.id])
+
+  // Reset on video change
+  useEffect(() => {
+    setWatchPercent(0)
+    setWatchComplete(false)
+    ytReadyRef.current = false
+    ytDurationRef.current = 0
+  }, [video.id])
 
   const handleClaim = useCallback(() => {
-    if (earned || claiming) return
+    if (earned || claiming || !watchComplete) return
     setClaiming(true)
     onEarned(video.rewardPoints)
-  }, [earned, claiming, video.rewardPoints, onEarned])
+  }, [earned, claiming, watchComplete, video.rewardPoints, onEarned])
 
   return (
     <div className="w-full overflow-hidden rounded-2xl bg-black">
       <div className="relative w-full">
         {isYT ? (
           <iframe
-            id={`yt-${video.id}`}
+            key={video.id}
             src={ytSrc(video.videoUrl)}
             title={video.title}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -48,6 +139,8 @@ export function VideoPlayer({ video, earned = false, onEarned }: VideoPlayerProp
           />
         ) : (
           <video
+            key={video.id}
+            ref={videoRef}
             src={video.videoUrl}
             poster={video.thumbnailUrl}
             controls
@@ -85,13 +178,45 @@ export function VideoPlayer({ video, earned = false, onEarned }: VideoPlayerProp
             </span>
           </div>
         ) : (
-          <button
-            onClick={handleClaim}
-            disabled={claiming}
-            className="w-full rounded-lg border border-[rgba(200,241,53,0.3)] bg-[rgba(200,241,53,0.08)] py-2 font-display text-[12px] font-bold uppercase tracking-wider text-accent transition-all hover:border-[rgba(200,241,53,0.5)] hover:bg-[rgba(200,241,53,0.14)] disabled:opacity-40"
-          >
-            {claiming ? 'Claiming…' : `Claim +${video.rewardPoints} pts`}
-          </button>
+          <>
+            {/* Watch progress bar */}
+            <div className="mb-2">
+              <div className="flex items-center justify-between text-[9px] text-muted mb-1">
+                <span className="font-display uppercase tracking-widest">Watch to claim</span>
+                <span className="font-mono">{watchPercent}%</span>
+              </div>
+              <div className="h-1.5 w-full rounded-full bg-[rgba(255,255,255,0.08)]">
+                <div
+                  className="h-full rounded-full transition-all duration-300"
+                  style={{
+                    width: `${watchPercent}%`,
+                    background: watchComplete
+                      ? '#c8f135'
+                      : 'linear-gradient(90deg, rgba(200,241,53,0.5), rgba(200,241,53,0.8))',
+                    boxShadow: watchComplete ? '0 0 8px rgba(200,241,53,0.6)' : 'none',
+                  }}
+                />
+              </div>
+            </div>
+
+            {showClaim ? (
+              <button
+                onClick={handleClaim}
+                disabled={claiming}
+                className="w-full rounded-lg border border-[rgba(200,241,53,0.3)] bg-[rgba(200,241,53,0.08)] py-2 font-display text-[12px] font-bold uppercase tracking-wider text-accent transition-all hover:border-[rgba(200,241,53,0.5)] hover:bg-[rgba(200,241,53,0.14)] disabled:opacity-40 animate-pulse"
+                style={{ boxShadow: '0 0 16px rgba(200,241,53,0.2)' }}
+              >
+                {claiming ? 'Claiming…' : `Claim +${video.rewardPoints} pts`}
+              </button>
+            ) : (
+              <button
+                disabled
+                className="w-full rounded-lg border border-[rgba(200,241,53,0.08)] bg-[rgba(200,241,53,0.02)] py-2 font-display text-[11px] uppercase tracking-wider text-muted/40 cursor-not-allowed"
+              >
+                Watch {100 - watchPercent}% more to claim
+              </button>
+            )}
+          </>
         )}
       </div>
     </div>
