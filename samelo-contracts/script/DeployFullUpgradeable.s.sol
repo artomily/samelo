@@ -7,29 +7,36 @@ import "../src/SameloTreasury.sol";
 import "../src/SameloSwap.sol";
 
 /**
- * @title DeployFull
+ * @title DeployFullUpgradeable
  * @notice Deploy SameloTreasury + SameloSwap as UUPS proxies, then wire them together.
  *
  * Usage (testnet):
  *   TESTNET=true \
  *   PRIVATE_KEY=0x... \
  *   ORACLE_ADDRESS=0x... \
- *   forge script script/DeployFull.s.sol:DeployFull \
+ *   forge script script/DeployFullUpgradeable.s.sol:DeployFullUpgradeable \
  *     --rpc-url https://alfajores-forno.celo-testnet.org \
+ *     --broadcast -vvv
+ *
+ * Usage (mainnet):
+ *   PRIVATE_KEY=0x... \
+ *   ORACLE_ADDRESS=0x... \
+ *   forge script script/DeployFullUpgradeable.s.sol:DeployFullUpgradeable \
+ *     --rpc-url https://forno.celo.org \
  *     --broadcast -vvv
  *
  * Environment variables:
  *   PRIVATE_KEY           — deployer private key (becomes DEFAULT_ADMIN)
- *   ORACLE_ADDRESS        — oracle signer wallet (defaults to deployer)
+ *   ORACLE_ADDRESS        — oracle signer wallet (ORACLE_ROLE + DISTRIBUTOR_ROLE)
  *   DISTRIBUTOR_ADDRESS   — optional separate distributor (defaults to oracle)
  *   RESERVE_RATIO_BPS     — reserve % in basis points, default 1000 (10%)
- *   POINTS_TO_CELO_RATE   — CELO wei per 1 point, default 1e13
+ *   POINTS_TO_CELO_RATE   — CELO wei per 1 point, default 1e13 (0.00001 CELO)
  *   MIN_SWAP_POINTS       — minimum points per swap, default 500
  *   MAX_SWAP_POINTS       — maximum points per swap, default 50000
  *   SWAP_COOLDOWN_SECONDS — cooldown between swaps, default 0 (testnet) / 86400 (mainnet)
- *   TESTNET               — true = testnet mode, default false
+ *   TESTNET               — true = networks with CELO 0x471E..., default false
  */
-contract DeployFull is Script {
+contract DeployFullUpgradeable is Script {
     address constant CELO_TOKEN_MAINNET = 0x471EcE3750Da237f93B8E339c536989b8978a438;
     address constant CELO_TOKEN_TESTNET = 0x471EcE3750Da237f93B8E339c536989b8978a438;
 
@@ -49,8 +56,8 @@ contract DeployFull is Script {
         uint256 defaultCooldown = isTestnet ? 0 : 86400;
         uint256 swapCooldown = vm.envOr("SWAP_COOLDOWN_SECONDS", defaultCooldown);
 
-        require(reserveRatioBps <= 3000, "DeployFull: reserveRatio > 30%");
-        require(deployer != address(0), "DeployFull: PRIVATE_KEY required");
+        require(reserveRatioBps <= 3000, "DeployFullUpgradeable: reserveRatio > 30%");
+        require(deployer != address(0), "DeployFullUpgradeable: PRIVATE_KEY required");
 
         vm.startBroadcast(deployerPk);
 
@@ -68,30 +75,38 @@ contract DeployFull is Script {
         console.log("Max Swap Points: ", maxSwapPoints);
         console.log("Swap Cooldown:   ", swapCooldown, "seconds");
 
-        // 1. Deploy Treasury implementation + proxy
+        // 1. Deploy Treasury implementation
         SameloTreasury treasuryImpl = new SameloTreasury();
+        console.log("[1/6] Treasury impl deployed:", address(treasuryImpl));
+
+        // 2. Deploy Treasury proxy + initialize
         bytes memory treasuryInit = abi.encodeCall(
             SameloTreasury.initialize,
             (celoToken, oracle, distributor, reserveRatioBps)
         );
         ERC1967Proxy treasuryProxy = new ERC1967Proxy(address(treasuryImpl), treasuryInit);
         SameloTreasury treasury = SameloTreasury(payable(address(treasuryProxy)));
-        console.log("[1/3] Treasury proxy deployed:", address(treasury));
+        console.log("[2/6] Treasury proxy deployed:", address(treasury));
 
-        // 2. Deploy Swap implementation + proxy
+        // 3. Deploy Swap implementation
         SameloSwap swapImpl = new SameloSwap();
-        address treasuryAddr = address(treasury);
+        console.log("[3/6] Swap impl deployed:     ", address(swapImpl));
+
+        // 4. Deploy Swap proxy + initialize
         bytes memory swapInit = abi.encodeCall(
             SameloSwap.initialize,
-            (celoToken, treasuryAddr, oracle, pointsToCELORate, minSwapPoints, maxSwapPoints, swapCooldown)
+            (celoToken, address(treasury), oracle, pointsToCELORate, minSwapPoints, maxSwapPoints, swapCooldown)
         );
         ERC1967Proxy swapProxy = new ERC1967Proxy(address(swapImpl), swapInit);
         SameloSwap swap = SameloSwap(payable(address(swapProxy)));
-        console.log("[2/3] Swap proxy deployed:    ", address(swap));
+        console.log("[4/6] Swap proxy deployed:    ", address(swap));
 
-        // 3. Wire Swap into Treasury
+        // 5. Wire Swap into Treasury (grants SWAP_ROLE)
         treasury.setSwapContract(address(swap));
-        console.log("[3/3] Swap wired to Treasury (SWAP_ROLE granted)");
+        console.log("[5/6] Swap wired to Treasury (SWAP_ROLE granted)");
+
+        // 6. Transfer DEFAULT_ADMIN to deployer for both (already done in initialize)
+        console.log("[6/6] Admin: ", deployer);
 
         vm.stopBroadcast();
 
@@ -108,5 +123,9 @@ contract DeployFull is Script {
         console.log("1. Set NEXT_PUBLIC_TREASURY_ADDRESS =", address(treasury));
         console.log("2. Set NEXT_PUBLIC_SWAP_ADDRESS     =", address(swap));
         console.log("3. Fund treasury: approve CELO, then call depositRevenue()");
+        console.log("");
+        console.log("To upgrade later:");
+        console.log("  1. Deploy new implementation .sol");
+        console.log("  2. Call proxy.upgradeTo(newImpl)  from admin account");
     }
 }

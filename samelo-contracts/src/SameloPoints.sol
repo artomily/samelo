@@ -1,18 +1,27 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title SameloPoints
  * @notice On-chain points ledger. Users call earn() to receive 10 points.
  *         Points can be redeemed for $MELO tokens via redeem().
  *         A per-wallet cooldown prevents spam on earn().
+ *
+ * @dev UUPS upgradeable — points state survives across upgrades.
  */
-contract SameloPoints is Ownable, ReentrancyGuard {
+contract SameloPoints is
+    Initializable,
+    UUPSUpgradeable,
+    OwnableUpgradeable,
+    ReentrancyGuard
+{
     using SafeERC20 for IERC20;
 
     // ── Constants ─────────────────────────────────────────────────────────────
@@ -29,6 +38,25 @@ contract SameloPoints is Ownable, ReentrancyGuard {
     /// @dev MELO amount per point, scaled by 1e18.
     ///      Rate: 1000 points = 1 $MELOUSD  →  meloRate = 1e33
     uint256 public meloRate = 1_000_000_000_000_000_000_000_000_000_000_000;
+
+    // ── Initializer ───────────────────────────────────────────────────────────
+
+    /// @custom:oz-upgrades-unsafe-allow constructor
+    constructor() {
+        _disableInitializers();
+    }
+
+    function initialize(address initialOwner) public initializer {
+        __Ownable_init(initialOwner);
+    }
+
+    // ── UUPS Upgrade ──────────────────────────────────────────────────────────
+
+    function _authorizeUpgrade(address newImplementation)
+        internal
+        override
+        onlyOwner
+    {}
 
     // ── Events ────────────────────────────────────────────────────────────────
     event PointsEarned(
@@ -51,14 +79,8 @@ contract SameloPoints is Ownable, ReentrancyGuard {
     error MeloNotConfigured();
     error InsufficientMeloReserve();
 
-    constructor(address initialOwner) Ownable(initialOwner) {}
-
     // ── User actions ──────────────────────────────────────────────────────────
 
-    /**
-     * @notice Earn POINTS_PER_EARN points for the caller.
-     *         Reverts if called within EARN_COOLDOWN of the last earn.
-     */
     function earn() external {
         uint256 availableAt = lastEarnedAt[msg.sender] + EARN_COOLDOWN;
         if (block.timestamp < availableAt) revert CooldownActive(availableAt);
@@ -70,10 +92,6 @@ contract SameloPoints is Ownable, ReentrancyGuard {
         emit PointsEarned(msg.sender, POINTS_PER_EARN, points[msg.sender], block.timestamp);
     }
 
-    /**
-     * @notice Redeem points for $MELO tokens.
-     * @param pointsAmount Number of points to redeem.
-     */
     function redeem(uint256 pointsAmount) external nonReentrant {
         if (address(meloToken) == address(0)) revert MeloNotConfigured();
         if (points[msg.sender] < pointsAmount) revert InsufficientPoints();
@@ -95,7 +113,6 @@ contract SameloPoints is Ownable, ReentrancyGuard {
         emit MeloTokenSet(token);
     }
 
-    /// @param rate New MELO/point rate scaled by 1e18 (e.g., 1e18 = 1 MELO per point).
     function setMeloRate(uint256 rate) external onlyOwner {
         meloRate = rate;
         emit MeloRateSet(rate);
@@ -111,20 +128,13 @@ contract SameloPoints is Ownable, ReentrancyGuard {
         return points[user];
     }
 
-    /**
-     * @notice Seconds until the user can earn again. 0 means ready now.
-     */
     function cooldownRemaining(address user) external view returns (uint256) {
         uint256 availableAt = lastEarnedAt[user] + EARN_COOLDOWN;
         if (block.timestamp >= availableAt) return 0;
         return availableAt - block.timestamp;
     }
 
-    /**
-     * @notice Preview how many MELO tokens a points amount redeems to.
-     */
     function meloForPoints(uint256 pointsAmount) external view returns (uint256) {
         return (pointsAmount * meloRate) / 1e18;
     }
 }
-

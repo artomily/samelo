@@ -7,14 +7,17 @@ import "../src/SameloToken.sol";
 import "../src/SameloPoints.sol";
 
 /**
- * @notice Deploy SameloToken (MELO) + SameloPoints (UUPS proxy), wire them together,
+ * @title DeployMeloUpgradeable
+ * @notice Deploy SameloToken (immutable) + SameloPoints (UUPS proxy), wire them together,
  *         and seed 1M MELO as the rewards reserve.
  *
  * Usage (Celo Sepolia):
- *   forge script script/DeployMelo.s.sol --rpc-url $CELO_RPC_URL \
- *     --private-key $PRIVATE_KEY --broadcast
+ *   PRIVATE_KEY=0x... \
+ *   forge script script/DeployMeloUpgradeable.s.sol:DeployMeloUpgradeable \
+ *     --rpc-url $CELO_RPC_URL \
+ *     --broadcast -vvv
  */
-contract DeployMelo is Script {
+contract DeployMeloUpgradeable is Script {
     function run() external {
         uint256 deployerKey = vm.envUint("PRIVATE_KEY");
         address deployer    = vm.addr(deployerKey);
