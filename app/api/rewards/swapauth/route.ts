@@ -56,12 +56,11 @@ export async function POST(request: NextRequest) {
   // Verify the user has at least pointAmount unclaimed points
   const { data: rows } = await supabase
     .from('watches')
-    .select('reward_cents')
+    .select('points')
     .eq('wallet_address', walletAddress.toLowerCase())
     .eq('claimed', false)
 
-  // reward_cents maps 1:1 to points (1 cent = 1 point in Samelo)
-  const availablePoints = (rows ?? []).reduce((s, r) => s + (r.reward_cents ?? 0), 0)
+  const availablePoints = (rows ?? []).reduce((s, r) => s + (r.points ?? 0), 0)
 
   if (availablePoints < pointAmount) {
     return NextResponse.json(
