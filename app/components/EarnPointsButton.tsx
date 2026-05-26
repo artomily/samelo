@@ -31,7 +31,7 @@ export function EarnPointsButton({ onEarned }: EarnPointsButtonProps) {
     abi: POINTS_ABI,
     functionName: 'cooldownRemaining',
     args: address ? [address] : undefined,
-    query: { enabled: !!address && !!POINTS_ADDRESS, refetchInterval: 2_000 },
+    query: { enabled: !!address && !!POINTS_ADDRESS, refetchInterval: false },
   })
 
   const { data: earnCooldownValue } = useReadContract({
