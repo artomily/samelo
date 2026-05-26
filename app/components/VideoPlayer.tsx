@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
 import type { Video } from '@/lib/mock-videos'
 
 interface VideoPlayerProps {
@@ -165,17 +166,25 @@ export function VideoPlayer({ video, earned = false, onEarned }: VideoPlayerProp
 
       <div className="px-3 pb-3 pt-2">
         {earned ? (
-          <div className="flex items-center gap-3">
-            <div
-              className="h-2 flex-1 rounded-full"
-              style={{ background: '#c8f135', boxShadow: '0 0 12px rgba(200,241,53,1)' }}
-            />
-            <span
-              className="shrink-0 font-display text-[11px] font-bold text-accent"
-              style={{ textShadow: '0 0 6px rgba(200,241,53,0.8)' }}
+          <div className="space-y-2.5">
+            <div className="flex items-center gap-3">
+              <div
+                className="h-2 flex-1 rounded-full"
+                style={{ background: '#c8f135', boxShadow: '0 0 12px rgba(200,241,53,1)' }}
+              />
+              <span
+                className="shrink-0 font-display text-[11px] font-bold text-accent"
+                style={{ textShadow: '0 0 6px rgba(200,241,53,0.8)' }}
+              >
+                Rewards claimed
+              </span>
+            </div>
+            <Link
+              href={`/quiz/${encodeURIComponent(video.id)}`}
+              className="flex items-center justify-center gap-1.5 rounded-xl border border-[rgba(200,241,53,0.25)] bg-[rgba(200,241,53,0.06)] py-2 text-[11px] font-bold uppercase tracking-wider text-accent transition-all hover:border-[rgba(200,241,53,0.45)]"
             >
-              Rewards claimed
-            </span>
+              Take Quiz for Bonus Points &rarr;
+            </Link>
           </div>
         ) : (
           <>
