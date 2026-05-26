@@ -26,35 +26,32 @@ export async function POST(request: NextRequest) {
   const supabase = getServiceSupabase()
   const wallet = walletAddress.toLowerCase()
 
-  // Sum up all unclaimed watches for this wallet, ordered oldest first
   const { data: unclaimedRows } = await supabase
     .from('watches')
-    .select('id, reward_cents')
+    .select('id, points')
     .eq('wallet_address', wallet)
     .eq('claimed', false)
     .order('watched_at', { ascending: true })
 
   const rows = unclaimedRows ?? []
 
-  // If amount specified, only claim up to that amount (partial claim for swaps)
   const limitAmount = typeof amount === 'number' && amount > 0 ? (amount as number) : undefined
   const idsToClaimFull: number[] = []
   let claimedTotal = 0
 
   for (const row of rows) {
     if (limitAmount !== undefined && claimedTotal >= limitAmount) break
-    const cents = row.reward_cents ?? 0
-    if (limitAmount !== undefined && claimedTotal + cents > limitAmount) {
-      // Partial — reduce this row by the consumed portion
-      const remainder = claimedTotal + cents - limitAmount
+    const pts = row.points ?? 0
+    if (limitAmount !== undefined && claimedTotal + pts > limitAmount) {
+      const remainder = claimedTotal + pts - limitAmount
       claimedTotal = limitAmount
       await supabase
         .from('watches')
-        .update({ reward_cents: remainder })
+        .update({ points: remainder, reward_cents: remainder })
         .eq('id', row.id as number)
     } else {
       idsToClaimFull.push(row.id as number)
-      claimedTotal += cents
+      claimedTotal += pts
     }
   }
 
@@ -65,7 +62,6 @@ export async function POST(request: NextRequest) {
       .in('id', idsToClaimFull)
   }
 
-  // Insert claim record
   await supabase.from('claims').insert({
     wallet_address: wallet,
     total_cents: limitAmount ?? claimedTotal,
