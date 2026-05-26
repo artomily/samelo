@@ -15,7 +15,7 @@ import type { Video } from '@/lib/mock-videos'
 interface EarningsItem {
   id: number
   video_id: string
-  reward_cents: number
+  points: number
   watched_at: number
   claimed: number
 }
@@ -23,8 +23,8 @@ interface EarningsItem {
 interface HistoryResponse {
   items: EarningsItem[]
   nextCursor: number | null
-  totalEarnedCents: number
-  totalClaimedCents: number
+  totalEarned: number
+  totalClaimed: number
 }
 
 const FAUCET_VIDEO_ID = '__earn_faucet__'
@@ -76,7 +76,7 @@ export function EarningsList() {
         const data: HistoryResponse = await res.json()
         setItems((prev) => (cursor === 0 ? data.items : [...prev, ...data.items]))
         setNextCursor(data.nextCursor)
-        setTotals({ earned: data.totalEarnedCents, claimed: data.totalClaimedCents })
+        setTotals({ earned: data.totalEarned, claimed: data.totalClaimed })
       } catch (e) {
         setError(e instanceof Error ? e.message : 'Failed to load')
       } finally {
@@ -139,8 +139,8 @@ export function EarningsList() {
     <div className="space-y-5">
       {/* Summary row */}
       <div className="grid grid-cols-2 gap-2">
-        <StatPill label={t('totalEarned')} cents={totals.earned} />
-        <StatPill label="Available" cents={available} accent />
+        <StatPill label={t('totalEarned')} points={totals.earned} />
+        <StatPill label="Available" points={available} accent />
       </div>
 
       {/* History list */}
@@ -159,12 +159,12 @@ export function EarningsList() {
                 </p>
                 <p className="text-xs text-muted">{formatDate(item.watched_at)}</p>
               </div>
-              <span
-                className="shrink-0 font-display text-sm font-black text-accent"
-                style={{ textShadow: '0 0 8px rgba(200,241,53,0.4)' }}
-              >
-                +{item.reward_cents}p
-              </span>
+               <span
+                  className="shrink-0 font-display text-sm font-black text-accent"
+                  style={{ textShadow: '0 0 8px rgba(200,241,53,0.4)' }}
+                >
+                  +{item.points}p
+                </span>
             </div>
           )
         })}
@@ -186,11 +186,11 @@ export function EarningsList() {
 
 function StatPill({
   label,
-  cents,
+  points,
   accent = false,
 }: {
   label: React.ReactNode
-  cents: number
+  points: number
   accent?: boolean
 }) {
   return (
@@ -200,7 +200,7 @@ function StatPill({
         className="font-display text-sm font-black"
         style={accent ? { color: '#c8f135', textShadow: '0 0 8px rgba(200,241,53,0.4)' } : { color: '#f0f0f0' }}
       >
-        {cents}p
+        {points}p
       </span>
     </div>
   )
