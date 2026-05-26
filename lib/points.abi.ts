@@ -12,7 +12,7 @@ export const POINTS_ABI = [
   },
   {
     type: 'function',
-    name: 'EARN_COOLDOWN',
+    name: 'earnCooldown',
     inputs: [],
     outputs: [{ name: '', type: 'uint256', internalType: 'uint256' }],
     stateMutability: 'view',

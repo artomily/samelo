@@ -1,11 +1,9 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAccount, useWriteContract, useWaitForTransactionReceipt, useReadContract } from 'wagmi'
 import { POINTS_ABI } from '@/lib/points.abi'
 import { toast } from '@/app/components/Toast'
-
-type EarnStatus = 'idle' | 'pending' | 'confirming' | 'syncing' | 'error'
 
 const POINTS_ADDRESS = process.env.NEXT_PUBLIC_POINTS_ADDRESS as `0x${string}` | undefined
 
@@ -15,8 +13,11 @@ interface EarnPointsButtonProps {
 
 export function EarnPointsButton({ onEarned }: EarnPointsButtonProps) {
   const { address } = useAccount()
-  const [status, setStatus] = useState<EarnStatus>('idle')
+  const [status, setStatus] = useState<'idle' | 'pending' | 'confirming' | 'syncing' | 'cooldown'>('idle')
   const [txHash, setTxHash] = useState<`0x${string}` | undefined>()
+  const [cooldownSec, setCooldownSec] = useState(0)
+  const cooldownEndRef = useRef<number | null>(null)
+  const timerRef = useRef<ReturnType<typeof setInterval>>(undefined)
 
   const { writeContractAsync } = useWriteContract()
 
@@ -25,19 +26,56 @@ export function EarnPointsButton({ onEarned }: EarnPointsButtonProps) {
     query: { enabled: !!txHash },
   })
 
-  // ── On-chain reads ──────────────────────────────────────────────────────────
   const { data: cooldownRemaining, refetch: refetchCooldown } = useReadContract({
     address: POINTS_ADDRESS,
     abi: POINTS_ABI,
     functionName: 'cooldownRemaining',
     args: address ? [address] : undefined,
-    query: { enabled: !!address && !!POINTS_ADDRESS, refetchInterval: 15_000 },
+    query: { enabled: !!address && !!POINTS_ADDRESS, refetchInterval: 2_000 },
   })
 
-  const cooldownSec = cooldownRemaining ? Number(cooldownRemaining) : 0
-  const isCoolingDown = cooldownSec > 0
+  const { data: earnCooldownValue } = useReadContract({
+    address: POINTS_ADDRESS,
+    abi: POINTS_ABI,
+    functionName: 'earnCooldown',
+    query: { enabled: !!POINTS_ADDRESS },
+  })
 
-  // After on-chain confirmation → sync Supabase
+  const refetchRef = useRef(refetchCooldown)
+  refetchRef.current = refetchCooldown
+
+  const earnCooldownSeconds = earnCooldownValue ? Number(earnCooldownValue) : 10
+
+  const startCooldown = useCallback((seconds: number) => {
+    if (timerRef.current) clearInterval(timerRef.current)
+    cooldownEndRef.current = Date.now() + seconds * 1000
+    setCooldownSec(seconds)
+
+    timerRef.current = setInterval(() => {
+      const end = cooldownEndRef.current
+      if (!end) {
+        clearInterval(timerRef.current)
+        return
+      }
+      const remaining = Math.max(0, Math.ceil((end - Date.now()) / 1000))
+      setCooldownSec(remaining)
+      if (remaining <= 0) {
+        clearInterval(timerRef.current)
+        cooldownEndRef.current = null
+        void refetchRef.current()
+      }
+    }, 250)
+  }, [])
+
+  // On page load / reconnect: check if cooldown is still active
+  useEffect(() => {
+    const onChain = cooldownRemaining ? Number(cooldownRemaining) : 0
+    if (onChain > 0 && status === 'idle') {
+      startCooldown(onChain)
+    }
+  }, [cooldownRemaining, status, startCooldown])
+
+  // When tx is confirmed, sync Supabase
   useEffect(() => {
     if (!txConfirmed || !txHash || !address) return
 
@@ -50,9 +88,8 @@ export function EarnPointsButton({ onEarned }: EarnPointsButtonProps) {
       .then((r) => r.json())
       .then((d: { points?: number; total?: number; error?: string }) => {
         if (d.error) throw new Error(d.error)
-        toast(`+${d.points ?? 10} points earned!`, 'success')
+        toast(`+${d.points ?? earnCooldownSeconds} points earned!`, 'success')
         onEarned?.(d.total ?? 0)
-        void refetchCooldown()
       })
       .catch((e: unknown) => {
         toast((e instanceof Error ? e.message : 'Points recorded on-chain, sync pending'), 'default')
@@ -62,7 +99,13 @@ export function EarnPointsButton({ onEarned }: EarnPointsButtonProps) {
         setStatus('idle')
         setTxHash(undefined)
       })
-  }, [txConfirmed, txHash, address, onEarned, refetchCooldown])
+  }, [txConfirmed, txHash, address, onEarned])
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current)
+    }
+  }, [])
 
   const handleEarn = useCallback(async () => {
     if (!address || status !== 'idle') return
@@ -77,7 +120,7 @@ export function EarnPointsButton({ onEarned }: EarnPointsButtonProps) {
         })
         const d = await res.json() as { points?: number; total?: number; error?: string }
         if (!res.ok) throw new Error(d.error ?? 'Failed to earn points')
-        toast(`+${d.points ?? 10} points earned!`, 'success')
+        toast(`+${d.points ?? earnCooldownSeconds} points earned!`, 'success')
         onEarned?.(d.total ?? 0)
       } catch (e) {
         toast(e instanceof Error ? e.message : 'Error', 'error')
@@ -87,7 +130,9 @@ export function EarnPointsButton({ onEarned }: EarnPointsButtonProps) {
       return
     }
 
+    startCooldown(earnCooldownSeconds)
     setStatus('pending')
+
     try {
       const hash = await writeContractAsync({
         address: POINTS_ADDRESS,
@@ -97,15 +142,20 @@ export function EarnPointsButton({ onEarned }: EarnPointsButtonProps) {
       setTxHash(hash)
       setStatus('confirming')
     } catch (e) {
+      // If tx fails, reset cooldown
+      if (timerRef.current) clearInterval(timerRef.current)
+      cooldownEndRef.current = null
+      setCooldownSec(0)
       const msg = e instanceof Error ? e.message : 'Transaction rejected'
       toast(msg.includes('CooldownActive') ? 'Cooldown active — try again later' : msg, 'error')
       setStatus('idle')
     }
-  }, [address, status, writeContractAsync, onEarned])
+  }, [address, status, writeContractAsync, onEarned, startCooldown, earnCooldownSeconds])
 
   if (!address) return null
 
-  const busy = status !== 'idle'
+  const isCoolingDown = cooldownSec > 0
+  const busy = status !== 'idle' && !isCoolingDown
 
   const label =
     status === 'pending'    ? 'Confirm in wallet…' :
@@ -114,6 +164,8 @@ export function EarnPointsButton({ onEarned }: EarnPointsButtonProps) {
     isCoolingDown           ? `Wait ${formatCooldown(cooldownSec)}`
                             : 'Early Adopter (+10 Points)'
 
+  const showSpinner = status === 'pending' || status === 'confirming' || status === 'syncing'
+
   return (
     <div className="space-y-1.5">
       <button
@@ -121,7 +173,7 @@ export function EarnPointsButton({ onEarned }: EarnPointsButtonProps) {
         disabled={busy || isCoolingDown}
         className="flex w-full items-center justify-center gap-2 rounded-2xl bg-accent px-5 py-3.5 text-sm font-semibold text-bg transition-opacity disabled:opacity-60"
       >
-        {busy ? (
+        {showSpinner ? (
           <>
             <span className="h-4 w-4 animate-spin rounded-full border-2 border-bg border-t-transparent" />
             <span>{label}</span>
@@ -133,7 +185,7 @@ export function EarnPointsButton({ onEarned }: EarnPointsButtonProps) {
           </>
         )}
       </button>
-      {isCoolingDown && (
+      {isCoolingDown && !showSpinner && (
         <p className="text-center text-[10px] text-muted/50">
           On-chain cooldown active. Off-chain points still earnable by watching videos.
         </p>

@@ -9,14 +9,14 @@ const DEFAULT_PLAYLIST_ID = 'YOUR_PLAYLIST_ID_HERE'
 const DEFAULT_MAX_RESULTS = 50    // max videos per playlist fetch (1–50)
 
 function calculateRewardPoints(durationSeconds: number): number {
-  if (durationSeconds <= 30) return 5
-  if (durationSeconds <= 120) return 10
-  if (durationSeconds <= 300) return 25
-  if (durationSeconds <= 600) return 50
-  if (durationSeconds <= 1200) return 75
-  if (durationSeconds <= 1800) return 100
-  if (durationSeconds <= 3600) return 150
-  return 200
+  if (durationSeconds <= 30) return 15
+  if (durationSeconds <= 120) return 25
+  if (durationSeconds <= 300) return 75
+  if (durationSeconds <= 600) return 150
+  if (durationSeconds <= 1200) return 200
+  if (durationSeconds <= 1800) return 300
+  if (durationSeconds <= 3600) return 400
+  return 500
 }
 // ─────────────────────────────────────────────────────────────────────────────
 

@@ -37,7 +37,7 @@ contract DeployPoints is Script {
 
         console.log("");
         console.log("POINTS_PER_EARN :", pts.POINTS_PER_EARN());
-        console.log("EARN_COOLDOWN   :", pts.EARN_COOLDOWN(), "seconds");
+        console.log("earnCooldown    :", pts.earnCooldown(), "seconds");
         console.log("");
         console.log("=== Points Address ===");
         console.log("NEXT_PUBLIC_POINTS_ADDRESS=", address(pts));

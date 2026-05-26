@@ -26,7 +26,6 @@ contract SameloPoints is
 
     // ── Constants ─────────────────────────────────────────────────────────────
     uint256 public constant POINTS_PER_EARN = 10;
-    uint256 public constant EARN_COOLDOWN   = 1 hours;
 
     // ── State ─────────────────────────────────────────────────────────────────
     mapping(address => uint256) public points;
@@ -38,6 +37,9 @@ contract SameloPoints is
     /// @dev MELO amount per point, scaled by 1e18.
     ///      Rate: 1000 points = 1 $MELOUSD  →  meloRate = 1e33
     uint256 public meloRate = 1_000_000_000_000_000_000_000_000_000_000_000;
+
+    /// @dev Cooldown in seconds between earn() calls per wallet. Owner-configurable.
+    uint256 public earnCooldown = 10;
 
     // ── Initializer ───────────────────────────────────────────────────────────
 
@@ -88,7 +90,7 @@ contract SameloPoints is
     // ── User actions ──────────────────────────────────────────────────────────
 
     function earn() external {
-        uint256 availableAt = lastEarnedAt[msg.sender] + EARN_COOLDOWN;
+        uint256 availableAt = lastEarnedAt[msg.sender] + earnCooldown;
         if (block.timestamp < availableAt) revert CooldownActive(availableAt);
 
         lastEarnedAt[msg.sender] = block.timestamp;
@@ -137,6 +139,10 @@ contract SameloPoints is
         emit MeloRateSet(rate);
     }
 
+    function setEarnCooldown(uint256 seconds_) external onlyOwner {
+        earnCooldown = seconds_;
+    }
+
     function withdrawMelo(address to, uint256 amount) external onlyOwner {
         meloToken.safeTransfer(to, amount);
     }
@@ -148,7 +154,7 @@ contract SameloPoints is
     }
 
     function cooldownRemaining(address user) external view returns (uint256) {
-        uint256 availableAt = lastEarnedAt[user] + EARN_COOLDOWN;
+        uint256 availableAt = lastEarnedAt[user] + earnCooldown;
         if (block.timestamp >= availableAt) return 0;
         return availableAt - block.timestamp;
     }
