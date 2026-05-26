@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import { useVideos } from '@/hooks/useVideos'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useAccount } from 'wagmi'
 import { Skeleton } from '@/app/components/Skeleton'
 import { toast } from '@/app/components/Toast'
@@ -29,6 +29,22 @@ export default function WatchPage() {
   const selected = selectedIdx >= 0 ? videos[selectedIdx] : null
   const hasNext = selectedIdx >= 0 && selectedIdx < videos.length - 1
   const hasPrev = selectedIdx > 0
+
+  // Pre-load already-watched video IDs so "Earned ✓" shows on page refresh
+  useEffect(() => {
+    if (!address) {
+      setEarnedIds(new Set())
+      return
+    }
+    fetch(`/api/watch/history?walletAddress=${address}`)
+      .then((r) => r.json())
+      .then((d: { videoIds?: string[] }) => {
+        if (d.videoIds && d.videoIds.length > 0) {
+          setEarnedIds(new Set(d.videoIds))
+        }
+      })
+      .catch(() => {})
+  }, [address])
 
   const goNext = useCallback(() => {
     if (hasNext) setSelectedId(videos[selectedIdx + 1]!.id)

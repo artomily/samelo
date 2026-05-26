@@ -79,6 +79,7 @@ export default function FeedContent() {
   const [earnedIds, setEarnedIds] = useState<Set<string>>(new Set());
   const [showClaimModal, setShowClaimModal] = useState(false);
   const [lastEarnedPoints, setLastEarnedPoints] = useState(0);
+  const [historyLoaded, setHistoryLoaded] = useState(false);
 
   const activeVideo = activeId
     ? (videos.find((v) => v.id === activeId) ?? null)
@@ -96,7 +97,11 @@ export default function FeedContent() {
 
   // Pre-load already-watched video IDs so "Done" shows on page refresh
   useEffect(() => {
-    if (!address) return;
+    if (!address) {
+      setHistoryLoaded(false);
+      setEarnedIds(new Set());
+      return;
+    }
     fetch(`/api/watch/history?walletAddress=${address}`)
       .then((r) => r.json())
       .then((d: { videoIds?: string[] }) => {
@@ -104,7 +109,8 @@ export default function FeedContent() {
           setEarnedIds(new Set(d.videoIds));
         }
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setHistoryLoaded(true));
   }, [address]);
 
   const handleSelect = useCallback((id: string) => {
@@ -147,16 +153,23 @@ export default function FeedContent() {
           body: JSON.stringify({ videoId: activeId, walletAddress: address }),
         });
         if (res.ok) {
-          const data = (await res.json()) as { totalPendingCents?: number; totalPendingPoints?: number };
+          const data = (await res.json()) as {
+            alreadyClaimed?: boolean;
+            totalPendingCents?: number;
+            totalPendingPoints?: number;
+          };
+          if (data.alreadyClaimed) {
+            // Was already claimed — nothing new to add
+            return;
+          }
           const pts = data.totalPendingPoints ?? data.totalPendingCents ?? 0;
-          if (typeof pts === "number")
-            setPendingPoints(pts);
+          if (typeof pts === "number") setPendingPoints(pts);
         } else {
-          const err = await res.json().catch(() => ({})) as { error?: string }
-          console.error('[FeedContent] watch/complete failed:', err.error ?? res.status)
+          const err = (await res.json().catch(() => ({}))) as { error?: string };
+          console.error("[FeedContent] watch/complete failed:", err.error ?? res.status);
         }
       } catch (e) {
-        console.error('[FeedContent] watch/complete error:', e)
+        console.error("[FeedContent] watch/complete error:", e);
       }
     },
     [activeId, earnedIds, address],
