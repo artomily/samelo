@@ -89,6 +89,7 @@ export async function POST(request: NextRequest) {
     wallet_address: walletAddress.toLowerCase(),
     video_id: FAUCET_VIDEO_ID,
     reward_cents: POINTS_PER_CLICK,
+    points: POINTS_PER_CLICK,
   })
 
   if (insertError) {
@@ -98,11 +99,11 @@ export async function POST(request: NextRequest) {
   // Return updated unclaimed total
   const { data: rows } = await supabase
     .from('watches')
-    .select('reward_cents')
+    .select('points')
     .eq('wallet_address', walletAddress.toLowerCase())
     .eq('claimed', false)
 
-  const total = (rows ?? []).reduce((s, r) => s + (r.reward_cents ?? 0), 0)
+  const total = (rows ?? []).reduce((s, r) => s + (r.points ?? 0), 0)
 
   return NextResponse.json({ points: POINTS_PER_CLICK, total })
 }
