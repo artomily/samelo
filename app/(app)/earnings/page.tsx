@@ -20,8 +20,8 @@ export default function EarningsPage() {
     setLoadingPending(true)
     fetch(`/api/rewards/pending?walletAddress=${address}`)
       .then((r) => r.json())
-      .then((d: { totalCents?: number }) => {
-        if (typeof d.totalCents === 'number') setPendingPoints(d.totalCents)
+      .then((d: { total?: number }) => {
+        if (typeof d.total === 'number') setPendingPoints(d.total)
       })
       .catch(() => {})
       .finally(() => setLoadingPending(false))
