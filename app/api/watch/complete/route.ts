@@ -80,6 +80,7 @@ export async function POST(request: NextRequest) {
     wallet_address: walletAddress.toLowerCase(),
     video_id: videoId,
     reward_cents: rewardPoints,
+    points: rewardPoints,
     watched_at: new Date().toISOString(),
   })
 
@@ -89,7 +90,7 @@ export async function POST(request: NextRequest) {
     .eq('wallet_address', walletAddress.toLowerCase())
     .eq('claimed', false)
 
-  const totalPendingCents = (allPending ?? []).reduce(
+  const totalPendingPoints = (allPending ?? []).reduce(
     (sum, r) => sum + (r.reward_cents ?? 0),
     0,
   )
@@ -97,6 +98,7 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({
     alreadyClaimed: false,
     rewardPoints,
-    totalPendingCents,
+    totalPendingCents: totalPendingPoints,
+    totalPendingPoints,
   })
 }
