@@ -16,21 +16,20 @@ export async function GET(request: NextRequest) {
 
   const { data: rows } = await supabase
     .from('watches')
-    .select('video_id, reward_cents')
+    .select('video_id, points')
     .eq('wallet_address', wallet.toLowerCase())
     .eq('claimed', false)
 
-  const totalCents = (rows ?? []).reduce((sum, r) => sum + (r.reward_cents ?? 0), 0)
+  const total = (rows ?? []).reduce((sum, r) => sum + (r.points ?? 0), 0)
 
-  // Group by video_id
   const byVideo = new Map<string, number>()
   for (const r of rows ?? []) {
-    byVideo.set(r.video_id, (byVideo.get(r.video_id) ?? 0) + (r.reward_cents ?? 0))
+    byVideo.set(r.video_id, (byVideo.get(r.video_id) ?? 0) + (r.points ?? 0))
   }
-  const perVideo = Array.from(byVideo.entries()).map(([video_id, cents]) => ({
+  const perVideo = Array.from(byVideo.entries()).map(([video_id, points]) => ({
     video_id,
-    cents,
+    points,
   }))
 
-  return NextResponse.json({ totalCents, perVideo })
+  return NextResponse.json({ total, perVideo })
 }
