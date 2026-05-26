@@ -88,8 +88,21 @@ export default function FeedContent() {
     if (!address) return;
     fetch(`/api/rewards/pending?walletAddress=${address}`)
       .then((r) => r.json())
-      .then((d: { totalCents?: number }) => {
-        if (typeof d.totalCents === "number") setPendingPoints(d.totalCents);
+      .then((d: { total?: number }) => {
+        if (typeof d.total === "number") setPendingPoints(d.total);
+      })
+      .catch(() => {});
+  }, [address]);
+
+  // Pre-load already-watched video IDs so "Done" shows on page refresh
+  useEffect(() => {
+    if (!address) return;
+    fetch(`/api/watch/history?walletAddress=${address}`)
+      .then((r) => r.json())
+      .then((d: { videoIds?: string[] }) => {
+        if (d.videoIds && d.videoIds.length > 0) {
+          setEarnedIds(new Set(d.videoIds));
+        }
       })
       .catch(() => {});
   }, [address]);
@@ -134,9 +147,10 @@ export default function FeedContent() {
           body: JSON.stringify({ videoId: activeId, walletAddress: address }),
         });
         if (res.ok) {
-          const data = (await res.json()) as { totalPendingCents?: number };
-          if (typeof data.totalPendingCents === "number")
-            setPendingPoints(data.totalPendingCents);
+          const data = (await res.json()) as { totalPendingCents?: number; totalPendingPoints?: number };
+          const pts = data.totalPendingPoints ?? data.totalPendingCents ?? 0;
+          if (typeof pts === "number")
+            setPendingPoints(pts);
         } else {
           const err = await res.json().catch(() => ({})) as { error?: string }
           console.error('[FeedContent] watch/complete failed:', err.error ?? res.status)
@@ -433,30 +447,30 @@ export default function FeedContent() {
                   >
                     Mission
                   </p>
-                  <span className="rounded-full border border-[rgba(200,241,53,0.2)] bg-[rgba(200,241,53,0.05)] px-2 py-0.5 font-display text-[8px] uppercase tracking-widest text-muted">
-                    Coming Soon
+                  <span className="rounded-full border border-[rgba(200,241,53,0.25)] bg-[rgba(200,241,53,0.08)] px-2 py-0.5 font-display text-[8px] uppercase tracking-widest text-accent">
+                    Active
                   </span>
                 </div>
                 <div className="rounded-xl border border-[rgba(200,241,53,0.1)] bg-[rgba(200,241,53,0.02)] p-3">
                   <p className="text-[11px] font-medium text-primary leading-relaxed">
-                    Watch all videos to earn
+                    Watch videos &amp; take quizzes
                   </p>
                   <p
                     className="mt-1 font-display text-lg font-black text-accent"
                     style={{ textShadow: "0 0 12px rgba(200,241,53,0.3)" }}
                   >
-                    1 CELO
+                    Earn Bonus Points
                   </p>
                   <p className="mt-1 text-[10px] text-muted">
-                    Sent directly to your MiniPay wallet
+                    Complete missions to unlock extra rewards
                   </p>
                 </div>
-                <button
-                  disabled
-                  className="mt-3 w-full rounded-lg border border-[rgba(200,241,53,0.1)] bg-[rgba(200,241,53,0.02)] py-2 text-[11px] font-medium text-muted/40 cursor-not-allowed"
+                <Link
+                  href="/missions"
+                  className="mt-3 flex w-full items-center justify-center rounded-lg border border-[rgba(200,241,53,0.28)] bg-[rgba(200,241,53,0.07)] py-2.5 font-display text-[11px] font-bold uppercase tracking-wider text-accent transition-all hover:border-[rgba(200,241,53,0.45)] hover:bg-[rgba(200,241,53,0.12)]"
                 >
-                  Locked — Coming Soon
-                </button>
+                  Explore Missions &rarr;
+                </Link>
               </div>
 
               {/* Recent activity */}
