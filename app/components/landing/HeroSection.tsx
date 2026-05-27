@@ -5,10 +5,10 @@ import { motion } from 'framer-motion'
 import { CosmicBackground } from '@/app/components/ui/CosmicBackground'
 
 const STATS = [
-  { value: '+100pts', label: 'Per video' },
-  { value: '24h', label: 'Instant payout' },
-  { value: 'CELO', label: 'Payout token' },
-  { value: '0', label: 'Friction' },
+  { value: '+50–200', label: 'Points per video' },
+  { value: 'Same day', label: 'Payout speed' },
+  { value: 'CELO', label: 'Earn token' },
+  { value: 'No KYC', label: 'Required' },
 ]
 
 // Orbit ring data
