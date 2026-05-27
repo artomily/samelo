@@ -8,9 +8,8 @@ import { cn } from '@/lib/utils'
 
 const NAV_LINKS = [
   { href: '#how-it-works', label: 'How it works' },
-  { href: '#earn', label: 'Earn' },
-  { href: '#referral', label: 'Referral' },
-  { href: '#features', label: 'Points' },
+  { href: '#features', label: 'Features' },
+  { href: '#faq', label: 'FAQ' },
 ]
 
 export function Navbar() {
