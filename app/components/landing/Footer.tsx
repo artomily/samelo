@@ -2,13 +2,13 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 const FOOTER_LINKS = [
-  { href: '#', label: 'Docs' },
-  { href: '#', label: 'Contract' },
-  { href: 'https://twitter.com/samelo', label: 'Twitter' },
-  { href: 'https://t.me/samelo', label: 'Telegram' },
-  { href: 'https://github.com/artomily/samelo', label: 'GitHub' },
-  { href: '#', label: 'Privacy' },
-  { href: '#', label: 'Terms' }
+  { href: '#', label: 'Docs', disabled: true },
+  { href: '#', label: 'Contract', disabled: true },
+  { href: 'https://twitter.com/samelo', label: 'Twitter', disabled: false },
+  { href: 'https://t.me/samelo', label: 'Telegram', disabled: false },
+  { href: 'https://github.com/artomily/samelo', label: 'GitHub', disabled: false },
+  { href: '#', label: 'Privacy', disabled: true },
+  { href: '#', label: 'Terms', disabled: true },
 ]
 
 export function Footer() {
@@ -32,12 +32,16 @@ export function Footer() {
           {FOOTER_LINKS.map((link) => (
             <a
               key={link.label}
-              href={link.href}
-              target={link.href.startsWith('http') ? '_blank' : undefined}
-              rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-              className="text-[12px] text-muted transition-colors hover:text-accent"
+              href={link.disabled ? undefined : link.href}
+              target={!link.disabled && link.href.startsWith('http') ? '_blank' : undefined}
+              rel={!link.disabled && link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+              className={`text-[12px] transition-colors ${link.disabled ? 'cursor-default text-muted/30' : 'text-muted hover:text-accent'}`}
+              title={link.disabled ? 'Coming soon' : undefined}
             >
               {link.label}
+              {link.disabled && (
+                <span className="ml-1.5 text-[9px] text-muted/20">soon</span>
+              )}
             </a>
           ))}
         </nav>
