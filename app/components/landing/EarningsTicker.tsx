@@ -62,7 +62,7 @@ export function EarningsTicker() {
         <h2 className="mt-2 font-display text-2xl font-black tracking-tight text-primary sm:text-3xl">
           Real explorers. Real rewards.
         </h2>
-        <p className="mt-2 text-sm text-muted">Broadcasting across the galaxy right now.</p>
+        <p className="mt-2 text-sm text-muted">Broadcasting across the network right now.</p>
       </div>
 
       <div className="flex flex-col gap-3">

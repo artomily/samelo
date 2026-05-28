@@ -32,7 +32,7 @@ const FEATURES = [
   },
   {
     Icon: MapPin,
-    title: 'Galaxy First',
+    title: 'Watch First',
     description: 'Designed for low-bandwidth networks and CELO accessibility. Works everywhere MiniPay works.',
   },
 ]

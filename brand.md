@@ -1,7 +1,7 @@
 # Samelo Brand
 
 ## Identity
-**Samelo** — _Watch content across the galaxy. Mine your rewards._
+**Samelo** — _Watch content . Mine your rewards._
 
 A space-entertainment micro-economy on Celo. Users explore video content, accumulate points, and claim real MELOUSD. The aesthetic is deep space HUD: neon lime on void black, all display text in Orbitron, all running copy in Space Grotesk.
 

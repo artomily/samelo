@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  /* ── Samelo Galaxy Brand Tokens ── */
+  /* ── Samelo Brand Tokens ── */
   --bg: #030303;
   --surface: #080808;
   --card: #0d0d0d;
