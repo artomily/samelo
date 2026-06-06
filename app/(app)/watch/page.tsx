@@ -13,6 +13,11 @@ const VideoPlayer = dynamic(
   { ssr: false, loading: () => <Skeleton className="aspect-video w-full rounded-xl" /> },
 )
 
+const VideoSummary = dynamic(
+  () => import('@/app/components/VideoSummary').then((m) => ({ default: m.VideoSummary })),
+  { ssr: false },
+)
+
 function formatDuration(sec: number): string {
   const m = Math.floor(sec / 60)
   const s = sec % 60
@@ -110,6 +115,9 @@ export default function WatchPage() {
 
                 {/* Video Player */}
                 <VideoPlayer key={selectedId!} video={selected} earned={earnedIds.has(selectedId!)} onEarned={handleEarned} />
+
+                {/* AI Summary */}
+                <VideoSummary videoId={selectedId} />
 
                 {/* Info */}
                 <div>
