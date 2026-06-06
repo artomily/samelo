@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, PlayCircle, TrendingUp, User } from 'lucide-react'
+import { Home, PlayCircle, BarChart3, Trophy, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useTranslation, type TranslationKey } from '@/lib/i18n'
 
@@ -20,7 +20,12 @@ const tabs: { href: string; labelKey: TranslationKey; icon: (active: boolean) =>
   {
     href: '/earnings',
     labelKey: 'earnings',
-    icon: (active: boolean) => <TrendingUp size={22} strokeWidth={active ? 2.5 : 1.5} />,
+    icon: (active: boolean) => <BarChart3 size={22} strokeWidth={active ? 2.5 : 1.5} />,
+  },
+  {
+    href: '/leaderboard',
+    labelKey: 'leaderboard',
+    icon: (active: boolean) => <Trophy size={22} strokeWidth={active ? 2.5 : 1.5} />,
   },
   {
     href: '/profile',
