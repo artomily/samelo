@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { wagmiConfig } from '@/lib/wagmi'
 import { I18nProvider } from '@/lib/i18n'
 import { AutoConnect } from '@/app/components/AutoConnect'
+import { ReferralCapture } from '@/app/components/ReferralCapture'
 
 export function Providers({
   children,
@@ -33,6 +34,7 @@ export function Providers({
       <WagmiProvider config={wagmiConfig} initialState={initialState}>
         <QueryClientProvider client={queryClient}>
           <AutoConnect />
+          <ReferralCapture />
           {children}
         </QueryClientProvider>
       </WagmiProvider>
