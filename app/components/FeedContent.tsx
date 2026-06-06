@@ -22,6 +22,17 @@ const VideoPlayer = dynamic(
   },
 );
 
+const VideoSummary = dynamic(
+  () =>
+    import("@/app/components/VideoSummary").then((m) => ({
+      default: m.VideoSummary,
+    })),
+  {
+    ssr: false,
+    loading: () => null,
+  },
+);
+
 const DAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
 
 function useStreakIdx(watchedToday: boolean) {
@@ -315,6 +326,9 @@ export default function FeedContent() {
                       </span>
                     )}
                   </div>
+
+                  {/* AI Summary */}
+                  <VideoSummary videoId={activeId} />
 
                   {/* Navigation buttons */}
                   <div className="mt-3 flex gap-2">
