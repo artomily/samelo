@@ -49,7 +49,12 @@ next-env.d.ts
 
 #skills
 .agents
-.claude/
+
+# Claude Code — track project commands, ignore cache/sessions
+.claude/cache/
+.claude/sessions/
+.claude/.claude.json
+.claude/*.log
 
 # Foundry build artifacts and cache
 samelo-contracts/out/

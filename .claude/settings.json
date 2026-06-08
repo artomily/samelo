@@ -1,0 +1,18 @@
+{
+  "description": "Samelo — watch-to-earn on Celo. Custom commands for solo builder automation.",
+  "allowedTools": [],
+  "hasClaudeMd": true,
+  "hasAgentsMd": true,
+  "context": {
+    "project": "Samelo",
+    "type": "watch-to-earn platform on Celo",
+    "stack": "Next.js 16, React 19, TypeScript 5, Tailwind v4, Supabase, wagmi v3, viem v2",
+    "chain": "Celo Mainnet (42220)"
+  },
+  "commands": {
+    "commit": "Read `git diff --staged` and propose a Conventional Commit message. Format: `type(scope): description`. If nothing is staged, stage all changes first. Show the message for approval before committing.",
+    "pr": "Read `git log` since last PR base, inspect changed files, and generate a PR title + description. Follow `.github/PULL_REQUEST_TEMPLATE.md` structure. Include Architecture Notes if significant logic changed.",
+    "review": "Read the current diff or PR diff and perform a code review. Check for: security issues, missing error handling, contract constraint violations (UUPS storage layout, ECDSA oracle binding), test coverage gaps, and adherence to project conventions in AGENTS.md.",
+    "changelog": "Run `scripts/generate-changelog.sh` or read `git log` since last tag and generate a properly formatted CHANGELOG entry following Keep a Changelog format."
+  }
+}
