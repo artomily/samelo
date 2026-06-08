@@ -3,6 +3,7 @@ import { getServiceSupabase } from '@/lib/supabase'
 import { isAddress } from 'viem'
 
 const BASE_QUIZ_REWARD = 50
+const PERFECT_SCORE_BONUS = 25
 
 export async function POST(request: NextRequest) {
   let body: unknown
@@ -91,7 +92,9 @@ export async function POST(request: NextRequest) {
       if (answers[i] === questions[i].correct) correctCount++
     }
 
-    const pointsEarned = Math.floor((correctCount / questions.length) * BASE_QUIZ_REWARD)
+    const basePoints = Math.floor((correctCount / questions.length) * BASE_QUIZ_REWARD)
+    const perfectBonus = correctCount === questions.length ? PERFECT_SCORE_BONUS : 0
+    const pointsEarned = basePoints + perfectBonus
 
     // ── Insert attempt ───────────────────────────────────────────
     const { error: insertErr } = await supabase
@@ -117,6 +120,7 @@ export async function POST(request: NextRequest) {
       score: correctCount,
       total: questions.length,
       pointsEarned,
+      perfectBonus,
     })
   } catch (err) {
     console.error('[/api/quiz/submit]', err)
