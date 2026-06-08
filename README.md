@@ -1,4 +1,4 @@
-# Samelo — Watch & Earn on Celo
+# Samelo — Watch & Earn
 
 Turn your attention into income. Watch short videos and earn CELO directly to your MiniPay wallet. Built on Celo with fully on-chain rewards infrastructure.
 
