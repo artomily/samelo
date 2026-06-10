@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { Trophy, Medal, Clock, Crown, Loader2, TrendingUp } from 'lucide-react'
 import { useAccount } from 'wagmi'
 import { cn } from '@/lib/utils'
@@ -18,6 +18,8 @@ interface LeaderboardData {
   total: number
   userRank?: { rank: number; points: number }
 }
+
+const PAGE_SIZE = 50
 
 const TIMEFRAMES: { key: Timeframe; label: string }[] = [
   { key: 'weekly', label: 'Weekly' },
@@ -49,40 +51,125 @@ function RankBadge({ rank }: { rank: number }) {
 export function LeaderboardContent() {
   const { address } = useAccount()
   const [timeframe, setTimeframe] = useState<Timeframe>('all_time')
-  const [data, setData] = useState<LeaderboardData | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [entries, setEntries] = useState<LeaderboardEntry[]>([])
+  const [total, setTotal] = useState(0)
+  const [userRank, setUserRank] = useState<{ rank: number; points: number } | undefined>(undefined)
+  const [loading, setLoading] = useState(false)
+  const [loadingMore, setLoadingMore] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [initialized, setInitialized] = useState(false)
+  const sentinelRef = useRef<HTMLDivElement | null>(null)
+  const fetchIdRef = useRef(0)
 
-  useEffect(() => {
-    let cancelled = false
-    setLoading(true)
+  const hasMore = entries.length < total
 
-    const fetchData = async () => {
-      try {
-        const params = new URLSearchParams({
-          timeframe,
-          limit: '50',
-        })
-        if (address) params.set('walletAddress', address)
+  const fetchPage = useCallback(async (offset: number, append: boolean) => {
+    const fetchId = ++fetchIdRef.current
+    const isInitial = offset === 0 && !append
+    if (isInitial) setLoading(true)
+    else setLoadingMore(true)
 
-        const res = await fetch(`/api/leaderboard?${params}`)
-        if (!res.ok) throw new Error('Failed to fetch leaderboard')
+    try {
+      const params = new URLSearchParams({
+        timeframe,
+        limit: String(PAGE_SIZE),
+        offset: String(offset),
+      })
+      if (address) params.set('walletAddress', address)
 
-        const json = await res.json() as LeaderboardData
-        if (!cancelled) {
-          setData(json)
-          setError(null)
-        }
-      } catch (e) {
-        if (!cancelled) setError(e instanceof Error ? e.message : 'Unknown error')
-      } finally {
-        if (!cancelled) setLoading(false)
+      const res = await fetch(`/api/leaderboard?${params}`)
+      if (!res.ok) throw new Error('Failed to fetch leaderboard')
+
+      const json = await res.json() as LeaderboardData
+      if (fetchId !== fetchIdRef.current) return
+      if (append) {
+        setEntries((prev) => [...prev, ...json.entries])
+      } else {
+        setEntries(json.entries)
+      }
+      setTotal(json.total)
+      setUserRank(json.userRank)
+      setError(null)
+      if (isInitial) setInitialized(true)
+    } catch (e) {
+      if (fetchId !== fetchIdRef.current) return
+      setError(e instanceof Error ? e.message : 'Unknown error')
+    } finally {
+      if (fetchId === fetchIdRef.current) {
+        if (isInitial) setLoading(false)
+        else setLoadingMore(false)
       }
     }
-
-    fetchData()
-    return () => { cancelled = true }
   }, [timeframe, address])
+
+  const handleTimeframeChange = useCallback((tf: Timeframe) => {
+    setTimeframe(tf)
+    setEntries([])
+    setTotal(0)
+    setUserRank(undefined)
+    setError(null)
+    setInitialized(false)
+  }, [])
+
+  const loadMore = useCallback(() => {
+    if (loadingMore || !hasMore) return
+    fetchPage(entries.length, true)
+  }, [loadingMore, hasMore, entries.length, fetchPage])
+
+  return (
+    <LeaderboardLoader
+      timeframe={timeframe}
+      initialized={initialized}
+      fetchPage={fetchPage}
+      onTimeframeChange={handleTimeframeChange}
+      address={address}
+      entries={entries}
+      total={total}
+      userRank={userRank}
+      loading={loading}
+      loadingMore={loadingMore}
+      error={error}
+      hasMore={hasMore}
+      loadMore={loadMore}
+      sentinelRef={sentinelRef}
+    />
+  )
+}
+
+interface LeaderboardLoaderProps {
+  timeframe: Timeframe
+  initialized: boolean
+  fetchPage: (offset: number, append: boolean) => Promise<void>
+  onTimeframeChange: (tf: Timeframe) => void
+  address: string | undefined
+  entries: LeaderboardEntry[]
+  userRank: { rank: number; points: number } | undefined
+  loading: boolean
+  loadingMore: boolean
+  error: string | null
+  hasMore: boolean
+  loadMore: () => void
+  sentinelRef: React.RefObject<HTMLDivElement | null>
+}
+
+function LeaderboardLoader({
+  timeframe,
+  initialized,
+  fetchPage,
+  onTimeframeChange,
+  address,
+  entries,
+  userRank,
+  loading,
+  loadingMore,
+  error,
+  hasMore,
+  loadMore,
+  sentinelRef,
+}: LeaderboardLoaderProps) {
+  if (!initialized && !loading && !error) {
+    fetchPage(0, false)
+  }
 
   return (
     <div className="flex min-h-dvh flex-col bg-[#030303] text-primary">
@@ -101,7 +188,7 @@ export function LeaderboardContent() {
 
       <div className="w-full overflow-hidden px-4 py-4 pb-20 sm:px-7 sm:py-5">
         {/* Your rank card */}
-        {data?.userRank && (
+        {userRank && (
           <div className="mb-4 rounded-2xl border border-[rgba(200,241,53,0.2)] bg-[rgba(200,241,53,0.04)] p-4">
             <p className="mb-1 font-display text-[9px] uppercase tracking-widest text-muted">Your Rank</p>
             <div className="flex items-center justify-between">
@@ -109,10 +196,10 @@ export function LeaderboardContent() {
                 <Crown size={22} className="text-accent" />
                 <div>
                   <p className="font-display text-2xl font-black tabular-nums text-accent">
-                    #{data.userRank.rank}
+                    #{userRank.rank}
                   </p>
                   <p className="text-[10px] text-muted">
-                    {formatPoints(data.userRank.points)} points
+                    {formatPoints(userRank.points)} points
                   </p>
                 </div>
               </div>
@@ -126,7 +213,7 @@ export function LeaderboardContent() {
           {TIMEFRAMES.map((tf) => (
             <button
               key={tf.key}
-              onClick={() => setTimeframe(tf.key)}
+              onClick={() => onTimeframeChange(tf.key)}
               className={cn(
                 'flex-1 rounded-lg py-2 font-display text-[9px] font-bold uppercase tracking-wider transition-all',
                 timeframe === tf.key
@@ -141,12 +228,12 @@ export function LeaderboardContent() {
         </div>
 
         {/* Leaderboard list */}
-        {loading ? (
+        {loading && entries.length === 0 ? (
           <div className="flex flex-col items-center gap-3 py-16">
             <Loader2 size={28} className="animate-spin text-accent/40" />
             <p className="text-xs text-muted">Loading leaderboard...</p>
           </div>
-        ) : error ? (
+        ) : error && entries.length === 0 ? (
           <div className="flex flex-col items-center gap-3 py-16">
             <p className="text-xs text-muted">{error}</p>
           </div>
@@ -166,16 +253,16 @@ export function LeaderboardContent() {
             </div>
 
             <div className="divide-y divide-[rgba(200,241,53,0.06)]">
-              {(data?.entries?.length ?? 0) === 0 ? (
+              {entries.length === 0 ? (
                 <div className="flex flex-col items-center gap-2 py-16">
                   <Trophy size={32} className="text-muted/30" />
                   <p className="text-xs text-muted">No entries yet</p>
                   <p className="text-[10px] text-muted/50">Start watching to earn points</p>
                 </div>
               ) : (
-                data!.entries.map((entry) => (
+                entries.map((entry) => (
                   <div
-                    key={entry.wallet}
+                    key={`${entry.wallet}-${entry.rank}`}
                     className={cn(
                       'flex items-center gap-3 px-4 py-3 transition-colors hover:bg-[rgba(200,241,53,0.02)]',
                       address && entry.wallet === address.toLowerCase() && 'bg-[rgba(200,241,53,0.04)]',
@@ -199,6 +286,20 @@ export function LeaderboardContent() {
                 ))
               )}
             </div>
+
+            {hasMore && (
+              <div ref={sentinelRef} className="flex items-center justify-center py-4">
+                {loadingMore && <Loader2 size={18} className="animate-spin text-accent/40" />}
+                {!loadingMore && (
+                  <button
+                    onClick={loadMore}
+                    className="font-display text-[10px] uppercase tracking-widest text-muted hover:text-accent transition-colors"
+                  >
+                    Load more
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>
