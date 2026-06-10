@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServiceSupabase } from '@/lib/supabase'
+import { verifyWatchToken } from '@/lib/watchToken'
 import { isAddress } from 'viem'
 
 const RATE_LIMIT_WINDOW_MS = 24 * 60 * 60 * 1000 // 24 hours
@@ -12,7 +13,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 })
   }
 
-  const { videoId, walletAddress } = body as Record<string, unknown>
+  const { videoId, walletAddress, watchToken } = body as Record<string, unknown>
 
   if (typeof videoId !== 'string' || typeof walletAddress !== 'string') {
     return NextResponse.json(
@@ -23,6 +24,10 @@ export async function POST(request: NextRequest) {
 
   if (!isAddress(walletAddress)) {
     return NextResponse.json({ error: 'Invalid wallet address' }, { status: 400 })
+  }
+
+  if (typeof watchToken !== 'string' || !verifyWatchToken(watchToken, videoId, walletAddress)) {
+    return NextResponse.json({ error: 'Invalid or expired watch token' }, { status: 401 })
   }
 
   const supabase = getServiceSupabase()
