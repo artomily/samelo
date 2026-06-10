@@ -2,24 +2,31 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServiceSupabase } from '@/lib/supabase'
 
 export type Timeframe = 'weekly' | 'monthly' | 'all_time'
+export type SortBy = 'points' | 'watches'
 
 /**
- * GET /api/leaderboard?timeframe=all_time&limit=50&offset=0&walletAddress=0x...
+ * GET /api/leaderboard?timeframe=all_time&limit=50&offset=0&walletAddress=0x...&sortBy=points
  *
  * Returns ranked leaderboard entries with optional current-user rank.
+ * sortBy: "points" (default) ranks by total points, "watches" ranks by watch count.
  */
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl
   const timeframe = (searchParams.get('timeframe') ?? 'all_time') as Timeframe
+  const sortBy = (searchParams.get('sortBy') ?? 'points') as SortBy
   const limit = Math.min(parseInt(searchParams.get('limit') ?? '50'), 100)
   const offset = parseInt(searchParams.get('offset') ?? '0')
   const walletAddress = searchParams.get('walletAddress') ?? undefined
+
+  if (sortBy !== 'points' && sortBy !== 'watches') {
+    return NextResponse.json({ error: 'Invalid sortBy. Use "points" or "watches".' }, { status: 400 })
+  }
 
   try {
     const supabase = getServiceSupabase()
 
     // Aggregate points per wallet
-    let query = supabase
+    const query = supabase
       .from('profiles')
       .select('wallet_address, total_points, total_earned_cents, display_name')
       .order('total_points', { ascending: false })
@@ -89,6 +96,7 @@ export async function GET(request: NextRequest) {
         })),
         total: pointsMap.size,
         userRank,
+        sortBy: 'points',
       })
     }
 
@@ -154,10 +162,61 @@ export async function GET(request: NextRequest) {
         })),
         total: pointsMap.size,
         userRank,
+        sortBy: 'points',
       })
     }
 
     // all_time: use profiles table directly
+    if (sortBy === 'watches') {
+      // Rank by watch count
+      const watchesQuery = timeframe === 'all_time'
+        ? supabase.from('watches').select('wallet_address')
+        : supabase.from('watches').select('wallet_address').gte('watched_at', timeframe === 'weekly' ? new Date(Date.now() - 7 * 86400000).toISOString() : new Date(Date.now() - 30 * 86400000).toISOString())
+
+      const { data: watchData, error: watchErr } = await watchesQuery
+      if (watchErr) throw watchErr
+
+      const countMap = new Map<string, number>()
+      for (const r of (watchData ?? [])) {
+        countMap.set(r.wallet_address, (countMap.get(r.wallet_address) ?? 0) + 1)
+      }
+
+      const entries = Array.from(countMap.entries())
+        .sort(([, a], [, b]) => b - a)
+        .slice(offset, offset + limit)
+        .map(([wallet, watchCount]) => ({ wallet, points: watchCount, rank: 0 }))
+
+      const wallets = entries.map(e => e.wallet)
+      const { data: displayData } = await supabase
+        .from('profiles')
+        .select('wallet_address, display_name')
+        .in('wallet_address', wallets)
+
+      const displayMap = new Map(
+        (displayData ?? []).map(p => [p.wallet_address, p.display_name]),
+      )
+
+      let userRank: { rank: number; points: number } | undefined
+      if (walletAddress) {
+        const allSorted = Array.from(countMap.entries()).sort(([, a], [, b]) => b - a)
+        const idx = allSorted.findIndex(([w]) => w === walletAddress.toLowerCase())
+        if (idx >= 0) {
+          userRank = { rank: idx + 1, points: allSorted[idx]![1] }
+        }
+      }
+
+      return NextResponse.json({
+        entries: entries.map((e, i) => ({
+          ...e,
+          rank: offset + i + 1,
+          displayName: displayMap.get(e.wallet) ?? null,
+        })),
+        total: countMap.size,
+        userRank,
+        sortBy: 'watches',
+      })
+    }
+
     const { data: allData, error: allErr } = await query
       .range(offset, offset + limit - 1)
 
@@ -199,6 +258,7 @@ export async function GET(request: NextRequest) {
       })),
       total: total ?? 0,
       userRank,
+      sortBy: 'points',
     })
   } catch (err) {
     console.error('[/api/leaderboard]', err)
