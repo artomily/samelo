@@ -194,4 +194,15 @@ describe('GET /api/videos', () => {
     expect(json.videos[0].videoUrl).toContain('youtube.com/embed/testVideoId')
     expect(json.videos[0].videoUrl).toContain('rel=0')
   })
+
+  it('response always contains a videos key even on empty result', async () => {
+    const chain = buildSupabaseChain(null)
+    vi.spyOn(supabaseModule, 'getServiceSupabase').mockReturnValue({ from: chain.from } as any)
+
+    const res = await GET()
+    const json = await res.json()
+
+    expect(json).toHaveProperty('videos')
+    expect(Array.isArray(json.videos)).toBe(true)
+  })
 })
