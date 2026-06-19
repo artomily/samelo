@@ -13,7 +13,9 @@ function buildChain(responses: Record<string, unknown> = {}) {
   const proxy = new Proxy(chain, {
     get(_, method: string) {
       if (method === 'then') {
-        return vi.fn().mockResolvedValue(thenResult)
+        return vi.fn().mockImplementation((resolve?: (v: unknown) => unknown) =>
+          resolve ? Promise.resolve(resolve(thenResult)) : Promise.resolve(thenResult),
+        )
       }
       if (method === 'catch') return vi.fn().mockResolvedValue(undefined)
       if (method === 'finally') return vi.fn().mockResolvedValue(undefined)
@@ -49,7 +51,9 @@ describe('GET /api/referral', () => {
       eq: vi.fn().mockReturnValue({
         eq: vi.fn().mockReturnValue({
           order: vi.fn().mockReturnValue({
-            then: vi.fn().mockResolvedValue({ data: referralData, error: null }),
+            then: vi.fn().mockImplementation((resolve?: (v: unknown) => unknown) =>
+              resolve ? Promise.resolve(resolve({ data: referralData, error: null })) : Promise.resolve({ data: referralData, error: null }),
+            ),
             catch: vi.fn().mockResolvedValue(undefined),
           }),
         }),
@@ -118,7 +122,9 @@ describe('GET /api/referral', () => {
     const referralSelect = vi.fn().mockReturnValue({
       eq: vi.fn().mockReturnValue({
         order: vi.fn().mockReturnValue({
-          then: vi.fn().mockResolvedValue({ data: [], error: null }),
+          then: vi.fn().mockImplementation((resolve?: (v: unknown) => unknown) =>
+            resolve ? Promise.resolve(resolve({ data: [], error: null })) : Promise.resolve({ data: [], error: null }),
+          ),
           catch: vi.fn().mockResolvedValue(undefined),
         }),
       }),
@@ -160,13 +166,17 @@ describe('POST /api/referral', () => {
     })
 
     const insertReferral = vi.fn().mockReturnValue({
-      then: vi.fn().mockResolvedValue({ error: null }),
+      then: vi.fn().mockImplementation((resolve?: (v: unknown) => unknown) =>
+        resolve ? Promise.resolve(resolve({ error: null })) : Promise.resolve({ error: null }),
+      ),
       catch: vi.fn().mockResolvedValue(undefined),
     })
 
     const updateProfile = vi.fn().mockReturnValue({
       eq: vi.fn().mockReturnValue({
-        then: vi.fn().mockResolvedValue({ error: null }),
+        then: vi.fn().mockImplementation((resolve?: (v: unknown) => unknown) =>
+          resolve ? Promise.resolve(resolve({ error: null })) : Promise.resolve({ error: null }),
+        ),
         catch: vi.fn().mockResolvedValue(undefined),
       }),
     })
@@ -311,7 +321,9 @@ describe('POST /api/referral', () => {
     })
 
     const insertReferral = vi.fn().mockReturnValue({
-      then: vi.fn().mockResolvedValue({ error: { code: '23505', message: 'duplicate key' } }),
+      then: vi.fn().mockImplementation((resolve?: (v: unknown) => unknown) =>
+        resolve ? Promise.resolve(resolve({ error: { code: '23505', message: 'duplicate key' } })) : Promise.resolve({ error: { code: '23505', message: 'duplicate key' } }),
+      ),
     })
 
     const fromFn = vi.fn().mockImplementation((table: string) => {
