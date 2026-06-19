@@ -500,6 +500,25 @@ export default function FeedContent() {
                 </Link>
               </div>
 
+              {/* On-chain dashboard shortcut */}
+              <div className="glass-card p-4">
+                <p
+                  className="font-display text-[11px] font-bold uppercase tracking-[0.12em] text-primary"
+                  style={{ textShadow: "0 0 8px rgba(200,241,53,0.2)" }}
+                >
+                  On-Chain Dashboard
+                </p>
+                <p className="mt-1 text-[10px] text-muted">
+                  Track the full Web2 → Web3 money flow in real-time
+                </p>
+                <Link
+                  href="/onchain"
+                  className="mt-3 flex w-full items-center justify-center rounded-lg border border-[rgba(53,208,127,0.28)] bg-[rgba(53,208,127,0.07)] py-2.5 font-display text-[11px] font-bold uppercase tracking-wider text-[#35d07f] transition-all hover:border-[rgba(53,208,127,0.45)] hover:bg-[rgba(53,208,127,0.12)]"
+                >
+                  View Dashboard &rarr;
+                </Link>
+              </div>
+
               {/* Recent activity */}
               {/* <div className="glass-card p-4">
                 <p
