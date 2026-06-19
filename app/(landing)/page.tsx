@@ -3,6 +3,7 @@ import { HeroSection } from '@/app/components/landing/HeroSection'
 import { HowItWorks } from '@/app/components/landing/HowItWorks'
 import { FeaturedVideo } from '@/app/components/landing/FeaturedVideo'
 import { FeaturesSection } from '@/app/components/landing/FeaturesSection'
+import { MoneyFlowSection } from '@/app/components/landing/MoneyFlowSection'
 import { Testimonials } from '@/app/components/landing/Testimonials'
 import { DashboardTeaser } from '@/app/components/landing/DashboardTeaser'
 import { FAQ } from '@/app/components/landing/FAQ'
@@ -19,6 +20,7 @@ export default function LandingPage() {
       <HowItWorks />
       <FeaturedVideo />
       <FeaturesSection />
+      <MoneyFlowSection />
       <Testimonials />
       <DashboardTeaser />
       <FAQ />

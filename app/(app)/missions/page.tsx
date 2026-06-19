@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
 import Link from 'next/link'
 import { Skeleton } from '@/app/components/Skeleton'
-import { Play, BookOpen, CheckCircle2, Lock, ArrowRight } from 'lucide-react'
+import { MissionList } from '@/components/MissionList'
+import { Play, BookOpen, CheckCircle2, Lock, ArrowRight, Target } from 'lucide-react'
 
 interface Mission {
   id: string
@@ -165,6 +166,20 @@ export default function MissionsPage() {
                 )}
               </div>
             )}
+          </section>
+
+          {/* ── Structured Missions ──────────────────────────────────── */}
+          <section>
+            <div className="mb-3 flex items-center gap-2">
+              <Target size={14} className="text-accent" />
+              <p
+                className="font-display text-[12px] font-bold uppercase tracking-[0.12em] text-primary"
+                style={{ textShadow: '0 0 8px rgba(200,241,53,0.2)' }}
+              >
+                Challenges
+              </p>
+            </div>
+            <MissionList />
           </section>
 
           {/* ── Stats summary ─────────────────────────────────────────── */}

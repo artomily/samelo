@@ -97,6 +97,30 @@ Your job is to maximize **visible, meaningful project progress** while keeping t
 - Run `npm run lint` before committing.
 - ESLint with `eslint-config-next` (core-web-vitals + typescript).
 
+## Automation Stack
+
+This repository uses a solo-builder automation stack:
+
+| Command      | What it does                                              |
+| ------------ | --------------------------------------------------------- |
+| `/commit`    | Auto-generate Conventional Commit message from staged diff |
+| `/pr`        | Auto-generate PR title, description, and create via `gh`  |
+| `/review`    | Code review with security, contract, and quality checks    |
+| `/changelog` | Generate CHANGELOG entries from git history               |
+
+### Workflow
+
+```bash
+git checkout -b feat/my-feature
+# ... code ...
+git add .
+/commit          # AI generates commit message → approve → committed
+git push
+/pr              # AI generates PR title + description → approve → PR created
+/review          # AI reviews diff for security, contracts, quality
+/changelog       # AI generates CHANGELOG entries
+```
+
 ## Goal
 
 Make the repository look like a professional crypto startup under active development — one that Celo grant reviewers (Prezenti, Celo Camp) would fund.

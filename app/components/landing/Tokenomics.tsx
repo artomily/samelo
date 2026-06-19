@@ -23,7 +23,7 @@ export function Tokenomics() {
           className="mb-12 text-center"
         >
           <p className="mb-3 font-display text-[11px] font-bold uppercase tracking-[0.2em] text-accent/70">
-            Tokenomics — Coming Soon
+            Tokenomics — Active
           </p>
           <h2 className="font-display text-3xl font-black uppercase tracking-tight text-primary sm:text-4xl">
             $MELO Token
@@ -35,7 +35,7 @@ export function Tokenomics() {
           <div className="mt-3">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(200,241,53,0.25)] bg-[rgba(200,241,53,0.08)] px-4 py-1.5 text-[10px] font-bold uppercase tracking-wider text-accent/80">
               <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
-              Currently earning CELO — $MELO coming soon
+              Watch → earn points → swap for $MELO on Celo
             </span>
           </div>
         </motion.div>

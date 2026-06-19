@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Record referral
+    // Record referral (referrer earns 50, referred earns 25)
     const { error: insertErr } = await supabase
       .from('referrals')
       .insert({
@@ -153,7 +153,8 @@ export async function POST(request: NextRequest) {
       throw insertErr
     }
 
-    // Update referred_by on profile
+    // Update referred_by on profile (trigger awards 25 bonus pts to referred user,
+    // and 50 pts to referrer via existing award_referral_points trigger)
     await supabase
       .from('profiles')
       .update({ referred_by: referrer.wallet_address })
@@ -161,7 +162,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      rewardPoints: 50,
+      rewardPoints: 25,
+      referrerRewardPoints: 50,
       referrerWallet: referrer.wallet_address,
     })
   } catch (err) {

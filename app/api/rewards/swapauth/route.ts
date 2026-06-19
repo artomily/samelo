@@ -3,6 +3,20 @@ import { getServiceSupabase } from '@/lib/supabase'
 import { isAddress, keccak256, encodePacked } from 'viem'
 import { randomBytes } from 'crypto'
 import { privateKeyToAccount } from 'viem/accounts'
+import { rateLimit } from '@/lib/middleware/rate-limit'
+
+// Max 10 swap auth requests per wallet per 24h
+const swapRateLimit = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000,
+  max: 10,
+  keyFn: (req) => {
+    try {
+      return `swap:${req.headers.get('x-forwarded-for') ?? 'unknown'}`
+    } catch {
+      return 'swap:unknown'
+    }
+  },
+})
 
 /**
  * POST /api/rewards/swapauth
@@ -16,6 +30,9 @@ import { privateKeyToAccount } from 'viem/accounts'
  * Returns: { pointAmount, nonce, signature, celoPreview }
  */
 export async function POST(request: NextRequest) {
+  const rateLimitError = swapRateLimit(request)
+  if (rateLimitError) return rateLimitError
+
   let body: unknown
   try {
     body = await request.json()

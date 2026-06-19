@@ -1,23 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useTranslation } from '@/lib/i18n'
 import { useMiniPay } from '@/hooks/useMiniPay'
+import { useReferral } from '@/hooks/useReferral'
 import { useAccount } from 'wagmi'
-import { Share2, Copy, Users, Gift, Check, Loader2, Link2, Trophy } from 'lucide-react'
+import { Share2, Copy, Users, Gift, Check, Loader2, Trophy } from 'lucide-react'
 import Link from 'next/link'
-
-interface ReferralData {
-  referralCode: string
-  referredBy: string | null
-  referralCount: number
-  totalRewardPoints: number
-  referrals: Array<{
-    referred_wallet: string
-    reward_points: number
-    created_at: string
-  }>
-}
 
 function shortenWallet(address: string) {
   return `${address.slice(0, 6)}…${address.slice(-4)}`
@@ -27,92 +16,25 @@ export default function ProfilePage() {
   const { t } = useTranslation()
   const { isConnected, address, connectMiniPay, isConnecting } = useMiniPay()
   const { address: wagmiAddress } = useAccount()
-
-  const [referralData, setReferralData] = useState<ReferralData | null>(null)
-  const [refLoading, setRefLoading] = useState(false)
-  const [copied, setCopied] = useState(false)
-  const [redeeming, setRedeeming] = useState(false)
-  const [redeemCode, setRedeemCode] = useState('')
-  const [redeemError, setRedeemError] = useState<string | null>(null)
-  const [redeemSuccess, setRedeemSuccess] = useState<string | null>(null)
+  const {
+    referralData,
+    loading: refLoading,
+    copied,
+    copyReferralLink,
+    shareReferralLink,
+    redeeming,
+    redeemCode,
+    setRedeemCode,
+    redeemError,
+    redeemSuccess,
+    redeemReferralCode,
+  } = useReferral()
 
   const userAddr = address ?? wagmiAddress
 
-  useEffect(() => {
-    if (!userAddr) {
-      setReferralData(null)
-      return
-    }
-    setRefLoading(true)
-    fetch(`/api/referral?walletAddress=${userAddr}`)
-      .then((r) => r.json())
-      .then((d: ReferralData) => {
-        if (d.referralCode) setReferralData(d)
-      })
-      .catch(() => {})
-      .finally(() => setRefLoading(false))
-  }, [userAddr])
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem('samelo_ref_code')
-      if (stored) {
-        setRedeemCode(stored)
-        localStorage.removeItem('samelo_ref_code')
-      }
-    } catch {
-      // Ignore
-    }
-  }, [])
-
-  async function handleCopyCode() {
-    if (!referralData?.referralCode) return
-    const referralLink = `${window.location.origin}?ref=${referralData.referralCode}`
-    try {
-      await navigator.clipboard.writeText(referralLink)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch {
-      // Fallback: just select text
-    }
-  }
-
   async function handleRedeem() {
     if (!userAddr || !redeemCode.trim()) return
-    setRedeeming(true)
-    setRedeemError(null)
-    setRedeemSuccess(null)
-
-    try {
-      const res = await fetch('/api/referral', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ walletAddress: userAddr, referralCode: redeemCode.trim() }),
-      })
-      const data = await res.json() as {
-        success?: boolean
-        error?: string
-        alreadyReferred?: boolean
-        rewardPoints?: number
-      }
-
-      if (res.ok && data.success) {
-        setRedeemSuccess('Code redeemed! You earned 50 bonus points.')
-        setRedeemCode('')
-        // Refresh referral data
-        if (userAddr) {
-          const refRes = await fetch(`/api/referral?walletAddress=${userAddr}`)
-          const refData = await refRes.json() as ReferralData
-          if (refData.referralCode) setReferralData(refData)
-        }
-      } else {
-        setRedeemError(data.error ?? 'Failed to redeem code')
-      }
-    } catch {
-      setRedeemError('Network error')
-    } finally {
-      setRedeeming(false)
-    }
+    await redeemReferralCode(userAddr, redeemCode)
   }
 
   return (
@@ -154,7 +76,7 @@ export default function ProfilePage() {
                   </div>
                 ) : referralData ? (
                   <>
-                    {/* Referral code + copy */}
+                    {/* Referral code + copy/share */}
                     <div className="mb-3 rounded-xl border border-[rgba(200,241,53,0.15)] bg-[rgba(200,241,53,0.04)] p-3">
                       <p className="mb-2 font-display text-[8px] uppercase tracking-widest text-muted">
                         Your Referral Code
@@ -164,15 +86,22 @@ export default function ProfilePage() {
                           {referralData.referralCode}
                         </p>
                         <button
-                          onClick={handleCopyCode}
+                          onClick={copyReferralLink}
                           className="flex items-center gap-1.5 rounded-lg border border-[rgba(200,241,53,0.2)] bg-[rgba(200,241,53,0.08)] px-3 py-1.5 text-[10px] font-bold text-accent transition-all hover:border-[rgba(200,241,53,0.4)]"
                         >
                           {copied ? <Check size={12} /> : <Copy size={12} />}
                           {copied ? 'Copied' : 'Copy'}
                         </button>
+                        <button
+                          onClick={shareReferralLink}
+                          className="flex items-center gap-1.5 rounded-lg border border-[rgba(200,241,53,0.2)] bg-[rgba(200,241,53,0.08)] px-3 py-1.5 text-[10px] font-bold text-accent transition-all hover:border-[rgba(200,241,53,0.4)]"
+                        >
+                          <Share2 size={12} />
+                          Share
+                        </button>
                       </div>
                       <p className="mt-2 text-[9px] text-muted/60">
-                        Share this code — earn 50 pts per friend
+                        Share this code — you earn 50 pts, they earn 25 pts
                       </p>
                     </div>
 

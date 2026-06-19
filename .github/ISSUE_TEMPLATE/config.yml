@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Samelo Docs
+    url: https://github.com/artomily/samelo
+    about: Read the project README and .context/ docs before opening an issue.
+  - name: Security Vulnerability
+    url: https://github.com/artomily/samelo/security/advisories/new
+    about: Report a security vulnerability privately.

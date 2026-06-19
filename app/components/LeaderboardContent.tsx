@@ -1,10 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Trophy, Medal, Clock, Crown, Loader2, TrendingUp } from 'lucide-react'
+import { useState, useCallback, useRef } from 'react'
+import { Trophy, Medal, Clock, Crown, Loader2, TrendingUp, Eye } from 'lucide-react'
 import { useAccount } from 'wagmi'
 import { cn } from '@/lib/utils'
-import type { Timeframe } from '@/app/api/leaderboard/route'
+import type { Timeframe, SortBy } from '@/app/api/leaderboard/route'
 
 interface LeaderboardEntry {
   wallet: string
@@ -17,12 +17,18 @@ interface LeaderboardData {
   entries: LeaderboardEntry[]
   total: number
   userRank?: { rank: number; points: number }
+  sortBy?: SortBy
 }
 
 const TIMEFRAMES: { key: Timeframe; label: string }[] = [
   { key: 'weekly', label: 'Weekly' },
   { key: 'monthly', label: 'Monthly' },
   { key: 'all_time', label: 'All Time' },
+]
+
+const SORT_TABS: { key: SortBy; label: string }[] = [
+  { key: 'points', label: 'Top Earners' },
+  { key: 'watches', label: 'Top Viewers' },
 ]
 
 function shortenWallet(address: string) {
@@ -49,40 +55,52 @@ function RankBadge({ rank }: { rank: number }) {
 export function LeaderboardContent() {
   const { address } = useAccount()
   const [timeframe, setTimeframe] = useState<Timeframe>('all_time')
-  const [data, setData] = useState<LeaderboardData | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [sortBy, setSortBy] = useState<SortBy>('points')
+  const [state, setState] = useState<{
+    data: LeaderboardData | null
+    loading: boolean
+    error: string | null
+    initialized: boolean
+  }>({ data: null, loading: true, error: null, initialized: false })
+  const fetchIdRef = useRef(0)
 
-  useEffect(() => {
-    let cancelled = false
-    setLoading(true)
-
-    const fetchData = async () => {
-      try {
-        const params = new URLSearchParams({
-          timeframe,
-          limit: '50',
-        })
-        if (address) params.set('walletAddress', address)
-
-        const res = await fetch(`/api/leaderboard?${params}`)
-        if (!res.ok) throw new Error('Failed to fetch leaderboard')
-
-        const json = await res.json() as LeaderboardData
-        if (!cancelled) {
-          setData(json)
-          setError(null)
-        }
-      } catch (e) {
-        if (!cancelled) setError(e instanceof Error ? e.message : 'Unknown error')
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
+  const fetchLeaderboard = useCallback(async (tf: Timeframe, addr: string | undefined, sb: SortBy) => {
+    const id = ++fetchIdRef.current
+    try {
+      const params = new URLSearchParams({ timeframe: tf, limit: '50', sortBy: sb })
+      if (addr) params.set('walletAddress', addr)
+      const res = await fetch(`/api/leaderboard?${params}`)
+      if (!res.ok) throw new Error('Failed to fetch leaderboard')
+      const json = await res.json() as LeaderboardData
+      if (id !== fetchIdRef.current) return
+      setState({ data: json, loading: false, error: null, initialized: true })
+    } catch (e) {
+      if (id !== fetchIdRef.current) return
+      setState((prev) => ({
+        ...prev,
+        loading: false,
+        error: e instanceof Error ? e.message : 'Unknown error',
+        initialized: true,
+      }))
     }
+  }, [])
 
-    fetchData()
-    return () => { cancelled = true }
-  }, [timeframe, address])
+  const handleTimeframeChange = useCallback((tf: Timeframe) => {
+    setTimeframe(tf)
+    setState((prev) => ({ ...prev, loading: true }))
+    fetchLeaderboard(tf, address, sortBy)
+  }, [address, sortBy, fetchLeaderboard])
+
+  const handleSortChange = useCallback((sb: SortBy) => {
+    setSortBy(sb)
+    setState((prev) => ({ ...prev, loading: true }))
+    fetchLeaderboard(timeframe, address, sb)
+  }, [address, timeframe, fetchLeaderboard])
+
+  if (!state.initialized) {
+    fetchLeaderboard(timeframe, address, sortBy)
+    setState((prev) => ({ ...prev, initialized: true }))
+  }
 
   return (
     <div className="flex min-h-dvh flex-col bg-[#030303] text-primary">
@@ -101,7 +119,7 @@ export function LeaderboardContent() {
 
       <div className="w-full overflow-hidden px-4 py-4 pb-20 sm:px-7 sm:py-5">
         {/* Your rank card */}
-        {data?.userRank && (
+        {state.data?.userRank && (
           <div className="mb-4 rounded-2xl border border-[rgba(200,241,53,0.2)] bg-[rgba(200,241,53,0.04)] p-4">
             <p className="mb-1 font-display text-[9px] uppercase tracking-widest text-muted">Your Rank</p>
             <div className="flex items-center justify-between">
@@ -109,10 +127,10 @@ export function LeaderboardContent() {
                 <Crown size={22} className="text-accent" />
                 <div>
                   <p className="font-display text-2xl font-black tabular-nums text-accent">
-                    #{data.userRank.rank}
+                    #{state.data.userRank.rank}
                   </p>
                   <p className="text-[10px] text-muted">
-                    {formatPoints(data.userRank.points)} points
+                    {formatPoints(state.data.userRank.points)} {state.data.sortBy === 'watches' ? 'watches' : 'points'}
                   </p>
                 </div>
               </div>
@@ -122,11 +140,11 @@ export function LeaderboardContent() {
         )}
 
         {/* Timeframe tabs */}
-        <div className="mb-4 flex gap-1.5 rounded-xl border border-[rgba(200,241,53,0.1)] bg-[#0d0d0d] p-1">
+        <div className="mb-3 flex gap-1.5 rounded-xl border border-[rgba(200,241,53,0.1)] bg-[#0d0d0d] p-1">
           {TIMEFRAMES.map((tf) => (
             <button
               key={tf.key}
-              onClick={() => setTimeframe(tf.key)}
+              onClick={() => handleTimeframeChange(tf.key)}
               className={cn(
                 'flex-1 rounded-lg py-2 font-display text-[9px] font-bold uppercase tracking-wider transition-all',
                 timeframe === tf.key
@@ -140,15 +158,35 @@ export function LeaderboardContent() {
           ))}
         </div>
 
+        {/* Sort tabs */}
+        <div className="mb-4 flex gap-1.5 rounded-xl border border-[rgba(200,241,53,0.1)] bg-[#0d0d0d] p-1">
+          {SORT_TABS.map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => handleSortChange(tab.key)}
+              className={cn(
+                'flex-1 rounded-lg py-2 font-display text-[9px] font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1',
+                sortBy === tab.key
+                  ? 'bg-accent/12 text-accent border border-[rgba(200,241,53,0.25)]'
+                  : 'text-muted hover:text-primary',
+              )}
+            >
+              {tab.key === 'watches' && <Eye size={10} className="inline" />}
+              {tab.key === 'points' && <Trophy size={10} className="inline" />}
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
         {/* Leaderboard list */}
-        {loading ? (
+        {state.loading && !state.data ? (
           <div className="flex flex-col items-center gap-3 py-16">
             <Loader2 size={28} className="animate-spin text-accent/40" />
             <p className="text-xs text-muted">Loading leaderboard...</p>
           </div>
-        ) : error ? (
+        ) : state.error && !state.data ? (
           <div className="flex flex-col items-center gap-3 py-16">
-            <p className="text-xs text-muted">{error}</p>
+            <p className="text-xs text-muted">{state.error}</p>
           </div>
         ) : (
           <div className="rounded-2xl border border-[rgba(200,241,53,0.1)] bg-[#0d0d0d] overflow-hidden">
@@ -161,19 +199,19 @@ export function LeaderboardContent() {
                 Wallet
               </span>
               <span className="font-display text-[8px] uppercase tracking-widest text-muted">
-                Points
+                {sortBy === 'watches' ? 'Watches' : 'Points'}
               </span>
             </div>
 
             <div className="divide-y divide-[rgba(200,241,53,0.06)]">
-              {(data?.entries?.length ?? 0) === 0 ? (
+              {(state.data?.entries?.length ?? 0) === 0 ? (
                 <div className="flex flex-col items-center gap-2 py-16">
                   <Trophy size={32} className="text-muted/30" />
                   <p className="text-xs text-muted">No entries yet</p>
                   <p className="text-[10px] text-muted/50">Start watching to earn points</p>
                 </div>
               ) : (
-                data!.entries.map((entry) => (
+                state.data!.entries.map((entry) => (
                   <div
                     key={entry.wallet}
                     className={cn(

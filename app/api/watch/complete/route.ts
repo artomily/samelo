@@ -1,10 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServiceSupabase } from '@/lib/supabase'
+import { syncMissionProgress } from '@/lib/mission-progress-sync'
 import { isAddress } from 'viem'
+import { rateLimit } from '@/lib/middleware/rate-limit'
 
 const RATE_LIMIT_WINDOW_MS = 24 * 60 * 60 * 1000 // 24 hours
 
+// Per-IP rate limiter: max 100 complete requests per hour (anti-bot)
+const ipRateLimit = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 100,
+})
+
 export async function POST(request: NextRequest) {
+  const rateLimitError = ipRateLimit(request)
+  if (rateLimitError) return rateLimitError
+
   let body: unknown
   try {
     body = await request.json()
@@ -94,6 +105,9 @@ export async function POST(request: NextRequest) {
     (sum, r) => sum + (r.reward_cents ?? 0),
     0,
   )
+
+  // Sync mission progress in background — don't block the response
+  syncMissionProgress(supabase, walletAddress.toLowerCase()).catch(() => {})
 
   return NextResponse.json({
     alreadyClaimed: false,

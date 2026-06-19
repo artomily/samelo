@@ -7,19 +7,25 @@ const TESTIMONIALS = [
     initials: 'AK',
     name: 'Amara K.',
     location: 'Lagos, Nigeria',
-    quote: 'I earn CELO every morning before work. It takes five minutes and the money lands in MiniPay the same day. This is the first Web3 app that actually pays.',
+    quote: 'I earn $MELO every morning before work. It takes five minutes and the tokens land in MiniPay the same day. This is the first Web3 app that actually pays.',
   },
   {
     initials: 'RD',
     name: 'Rizal D.',
     location: 'Jakarta, Indonesia',
-    quote: 'The points system keeps me coming back. I watch, I collect, I deploy — it feels like a game but the rewards are real stablecoins.',
+    quote: 'The missions system keeps me coming back. I watch, complete challenges, and redeem $MELO — it feels like a game but the rewards are real tokens.',
   },
   {
     initials: 'FM',
     name: 'Fatima M.',
     location: 'Nairobi, Kenya',
     quote: "Finally a Web3 app that doesn't need me to understand crypto. I just open MiniPay, tap watch, and see my balance go up.",
+  },
+  {
+    initials: 'CB',
+    name: 'Carlos B.',
+    location: 'São Paulo, Brazil',
+    quote: 'Referred three friends and unlocked a 150-point bonus instantly. The referral system is the easiest DeFi onboarding I have ever seen.',
   },
 ]
 
