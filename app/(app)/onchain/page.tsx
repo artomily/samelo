@@ -8,6 +8,7 @@ import { LiveSwapFeed } from '@/components/dashboard/LiveSwapFeed'
 import { BurnRateGauge } from '@/components/dashboard/BurnRateGauge'
 import { ProtocolStats } from '@/components/dashboard/ProtocolStats'
 import { SwapperLeaderboard } from '@/components/dashboard/SwapperLeaderboard'
+import { UserFlowCard } from '@/components/dashboard/UserFlowCard'
 
 export default function OnChainDashboardPage() {
   return (
@@ -53,8 +54,8 @@ export default function OnChainDashboardPage() {
           <FunnelMetrics />
         </section>
 
-        {/* Flow diagram + burn gauge side by side */}
-        <div className="grid gap-5 lg:grid-cols-2">
+        {/* Flow diagram + burn gauge + user flow */}
+        <div className="grid gap-5 lg:grid-cols-3">
           <section className="space-y-2">
             <h2 className="text-[11px] font-bold uppercase tracking-widest text-white/40">Money Flow Path</h2>
             <MoneyFlowDiagram />
@@ -62,6 +63,10 @@ export default function OnChainDashboardPage() {
           <section className="space-y-2">
             <h2 className="text-[11px] font-bold uppercase tracking-widest text-white/40">Redemption Health</h2>
             <BurnRateGauge />
+          </section>
+          <section className="space-y-2">
+            <h2 className="text-[11px] font-bold uppercase tracking-widest text-white/40">Your Flow</h2>
+            <UserFlowCard />
           </section>
         </div>
 
