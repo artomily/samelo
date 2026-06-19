@@ -144,10 +144,30 @@ describe('POST /api/quiz/submit', () => {
   })
 
   it('returns 409 for duplicate quiz attempt', async () => {
-    const maybeSingle = vi.fn().mockResolvedValue({ data: { id: 1 }, error: null })
-    const eq = vi.fn().mockReturnValue({ maybeSingle })
-    const select = vi.fn().mockReturnValue({ eq })
-    const from = vi.fn().mockReturnValue({ select })
+    // Route order: (1) fetch quiz, (2) check duplicate attempt
+    // First call must return valid quiz so the route reaches the duplicate check.
+    const validQuiz = { questions: JSON.stringify([{ q: 'Q?', options: ['A', 'B'], correct: 0 }]) }
+    const from = vi.fn().mockImplementation((table: string) => {
+      if (table === 'video_quizzes') {
+        return {
+          select: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              maybeSingle: vi.fn().mockResolvedValue({ data: validQuiz, error: null }),
+            }),
+          }),
+        }
+      }
+      // user_quiz_attempts: existing record → triggers 409
+      return {
+        select: vi.fn().mockReturnValue({
+          eq: vi.fn().mockReturnValue({
+            eq: vi.fn().mockReturnValue({
+              maybeSingle: vi.fn().mockResolvedValue({ data: { id: 1 }, error: null }),
+            }),
+          }),
+        }),
+      }
+    })
 
     vi.spyOn(supabaseModule, 'getServiceSupabase').mockReturnValue({ from } as any)
 
