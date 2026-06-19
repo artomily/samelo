@@ -45,4 +45,16 @@ describe('POST /api/rewards/earn-points', () => {
 
     expect(res.status).toBe(400)
   })
+
+  it('returns 400 for invalid txHash format', async () => {
+    const req = createNextRequest('/api/rewards/earn-points', {
+      method: 'POST',
+      body: { walletAddress: VALID_WALLET, txHash: 'not-a-valid-hash' },
+    })
+    const res = await POST(req)
+
+    expect(res.status).toBe(400)
+    const json = await res.json()
+    expect(json.error).toContain('txHash')
+  })
 })
