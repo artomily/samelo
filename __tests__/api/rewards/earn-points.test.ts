@@ -35,4 +35,14 @@ describe('POST /api/rewards/earn-points', () => {
     const json = await res.json()
     expect(json.error).toContain('walletAddress')
   })
+
+  it('returns 400 for invalid wallet address format', async () => {
+    const req = createNextRequest('/api/rewards/earn-points', {
+      method: 'POST',
+      body: { walletAddress: INVALID_WALLET },
+    })
+    const res = await POST(req)
+
+    expect(res.status).toBe(400)
+  })
 })
