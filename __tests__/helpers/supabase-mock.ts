@@ -40,12 +40,18 @@ export function createSupabaseMock(returnData: Record<string, unknown> = {}) {
   mockChain.upsert = vi.fn().mockReturnValue(chain)
   mockChain.not = vi.fn().mockReturnValue(chain)
 
-  // Resolve the chain — returns data/error when awaited
+  // Resolve the chain — returns data/error when awaited.
+  // Must call onFulfilled(value) to satisfy the Promise thenable protocol;
+  // mockResolvedValue only returns a Promise, it never calls the callback.
   const resolveData = returnData.resolveData ?? defaultData
-  const then = vi.fn().mockResolvedValue({
+  const resolvedValue = {
     data: resolveData,
     error: returnData.resolveError ?? defaultError,
     count: returnData.resolveCount ?? defaultCount,
+  }
+  const then = vi.fn().mockImplementation((onFulfilled: ((v: unknown) => unknown) | undefined) => {
+    if (onFulfilled) return Promise.resolve(onFulfilled(resolvedValue))
+    return Promise.resolve(resolvedValue)
   })
 
   // Make the chain thenable (awaitable)
