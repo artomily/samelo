@@ -32,10 +32,10 @@ const STEPS = [
   {
     number: '04',
     Icon: ArrowLeftRight,
-    title: 'Swap to CELO',
+    title: 'Swap to $MELO',
     description:
-      'Enter your points amount and swap for CELO in a single on-chain transaction via oracle signature.',
-    detail: 'No gas hacks. No complex math. Enter any amount (min 500 pts), sign once, get CELO sent directly to your wallet.',
+      'Enter your points amount and swap for $MELO in a single on-chain transaction via oracle signature.',
+    detail: 'No gas hacks. No complex math. Enter any amount (min 500 pts), sign once, get $MELO sent directly to your wallet. 1000 pts = 1 $MELO.',
   },
 ]
 
