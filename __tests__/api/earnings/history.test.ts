@@ -42,4 +42,23 @@ describe('GET /api/earnings/history', () => {
     const json = await res.json()
     expect(json.error).toContain('Invalid')
   })
+
+  it('returns items, nextCursor, totalEarned, totalClaimed on success', async () => {
+    const watchRows = [
+      { id: 1, video_id: 'v1', points: 10, watched_at: '2026-01-01T12:00:00Z', claimed: false },
+    ]
+    vi.spyOn(supabaseModule, 'getServiceSupabase').mockReturnValue({
+      from: makeFromWithResults({ watches: watchRows, user_quiz_attempts: [] }),
+    } as any)
+
+    const req = createNextRequest(`/api/earnings/history?walletAddress=${VALID_WALLET}`)
+    const res = await GET(req)
+    const json = await res.json()
+
+    expect(res.status).toBe(200)
+    expect(json).toHaveProperty('items')
+    expect(json).toHaveProperty('nextCursor')
+    expect(json).toHaveProperty('totalEarned')
+    expect(json).toHaveProperty('totalClaimed')
+  })
 })
