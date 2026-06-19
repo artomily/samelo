@@ -47,15 +47,14 @@ describe('GET /api/referral', () => {
     })
 
     const referralData = [{ ...mockReferral }]
+    // Route: from('referrals').select().eq('referrer_wallet', addr).order() — only ONE .eq()
     const referralSelect = vi.fn().mockReturnValue({
       eq: vi.fn().mockReturnValue({
-        eq: vi.fn().mockReturnValue({
-          order: vi.fn().mockReturnValue({
-            then: vi.fn().mockImplementation((resolve?: (v: unknown) => unknown) =>
-              resolve ? Promise.resolve(resolve({ data: referralData, error: null })) : Promise.resolve({ data: referralData, error: null }),
-            ),
-            catch: vi.fn().mockResolvedValue(undefined),
-          }),
+        order: vi.fn().mockReturnValue({
+          then: vi.fn().mockImplementation((resolve?: (v: unknown) => unknown) =>
+            resolve ? Promise.resolve(resolve({ data: referralData, error: null })) : Promise.resolve({ data: referralData, error: null }),
+          ),
+          catch: vi.fn().mockResolvedValue(undefined),
         }),
       }),
     })
