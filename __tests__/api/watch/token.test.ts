@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { GET } from '@/app/api/watch/token/route'
-import { createNextRequest } from '../helpers/request'
-import { VALID_WALLET, INVALID_WALLET } from '../helpers/fixtures'
+import { createNextRequest } from '../../helpers/request'
+import { VALID_WALLET, INVALID_WALLET } from '../../helpers/fixtures'
 
 describe('GET /api/watch/token', () => {
   beforeEach(() => {
