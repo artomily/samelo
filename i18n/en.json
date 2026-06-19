@@ -46,5 +46,16 @@
   "referralReferredBy": "Referred by",
   "aiSummary": "AI Summary",
   "aiSummaryGenerating": "Generating summary...",
-  "swapPoints": "Swap Points"
+  "swapPoints": "Swap Points",
+  "missions": "Missions",
+  "missionsChallenges": "Challenges",
+  "missionsActive": "Active Missions",
+  "missionsCompleted": "Completed",
+  "missionsClaim": "Claim Reward",
+  "missionsClaiming": "Claiming…",
+  "missionsClaimed": "Claimed",
+  "missionsNotStarted": "Not started",
+  "missionsNoMissions": "No missions available",
+  "missionsClaimSuccess": "Reward claimed!",
+  "missionsClaimError": "Failed to claim reward"
 }
