@@ -57,4 +57,29 @@ describe('POST /api/rewards/earn-points', () => {
     const json = await res.json()
     expect(json.error).toContain('txHash')
   })
+
+  it('returns 429 when hourly rate limit is exceeded', async () => {
+    // Count query returns 10 — at the limit
+    const result = { data: null, error: null, count: 10 }
+    const thenable = {
+      then: vi.fn().mockImplementation((resolve?: (v: unknown) => unknown) =>
+        resolve ? Promise.resolve(resolve(result)) : Promise.resolve(result),
+      ),
+    }
+    const proxy = new Proxy({} as Record<string, ReturnType<typeof vi.fn>>, {
+      get(_, method: string) {
+        if (method === 'then') return thenable.then
+        return vi.fn().mockReturnValue(proxy)
+      },
+    })
+    vi.spyOn(supabaseModule, 'getServiceSupabase').mockReturnValue({ from: vi.fn().mockReturnValue(proxy) } as any)
+
+    const req = createNextRequest('/api/rewards/earn-points', {
+      method: 'POST',
+      body: { walletAddress: VALID_WALLET },
+    })
+    const res = await POST(req)
+
+    expect(res.status).toBe(429)
+  })
 })
