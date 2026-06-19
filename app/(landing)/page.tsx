@@ -4,6 +4,7 @@ import { HowItWorks } from '@/app/components/landing/HowItWorks'
 import { FeaturedVideo } from '@/app/components/landing/FeaturedVideo'
 import { FeaturesSection } from '@/app/components/landing/FeaturesSection'
 import { Testimonials } from '@/app/components/landing/Testimonials'
+import { DashboardTeaser } from '@/app/components/landing/DashboardTeaser'
 import { FAQ } from '@/app/components/landing/FAQ'
 import { SeeItInAction } from '@/app/components/landing/SeeItInAction'
 import { CTASection } from '@/app/components/landing/CTASection'
@@ -19,6 +20,7 @@ export default function LandingPage() {
       <FeaturedVideo />
       <FeaturesSection />
       <Testimonials />
+      <DashboardTeaser />
       <FAQ />
       <SeeItInAction />
       <CTASection />
