@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback, useRef } from 'react'
-import { Trophy, Medal, Clock, Crown, Loader2, TrendingUp, Search } from 'lucide-react'
+import { Trophy, Medal, Clock, Crown, Loader2, Share2 } from 'lucide-react'
 import { useAccount } from 'wagmi'
 import { cn } from '@/lib/utils'
 import type { Timeframe } from '@/app/api/leaderboard/route'
@@ -35,16 +35,6 @@ function formatPoints(points: number) {
   return points.toString()
 }
 
-function filterEntries(entries: LeaderboardEntry[], search: string): LeaderboardEntry[] {
-  if (!search.trim()) return entries
-  const q = search.toLowerCase().trim()
-  return entries.filter(
-    (e) =>
-      (e.displayName && e.displayName.toLowerCase().includes(q)) ||
-      e.wallet.toLowerCase().includes(q),
-  )
-}
-
 function RankBadge({ rank }: { rank: number }) {
   if (rank === 1) return <Trophy size={18} className="text-yellow-400" />
   if (rank === 2) return <Medal size={18} className="text-zinc-300" />
@@ -59,14 +49,13 @@ function RankBadge({ rank }: { rank: number }) {
 export function LeaderboardContent() {
   const { address } = useAccount()
   const [timeframe, setTimeframe] = useState<Timeframe>('all_time')
-  const [search, setSearch] = useState('')
   const [state, setState] = useState<{
     data: LeaderboardData | null
     loading: boolean
     error: string | null
     initialized: boolean
   }>({ data: null, loading: true, error: null, initialized: false })
-
+  const [copied, setCopied] = useState(false)
   const fetchIdRef = useRef(0)
 
   const fetchLeaderboard = useCallback(async (tf: Timeframe, addr: string | undefined) => {
@@ -101,7 +90,17 @@ export function LeaderboardContent() {
     setState((prev) => ({ ...prev, initialized: true }))
   }
 
-  const entries = state.data ? filterEntries(state.data.entries, search) : []
+  const handleShare = () => {
+    if (!state.data?.userRank) return
+    const text = `I'm rank #${state.data.userRank.rank} on Samelo with ${formatPoints(state.data.userRank.points)} points! Watch content. Mine your rewards. ${window.location.origin}`
+    if (navigator.share) {
+      navigator.share({ title: 'Samelo Leaderboard', text }).catch(() => {})
+    } else {
+      navigator.clipboard.writeText(text)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }
 
   return (
     <div className="flex min-h-dvh flex-col bg-[#030303] text-primary">
@@ -135,7 +134,13 @@ export function LeaderboardContent() {
                   </p>
                 </div>
               </div>
-              <TrendingUp size={18} className="text-accent/40" />
+              <button
+                onClick={handleShare}
+                className="flex items-center gap-1.5 rounded-lg border border-[rgba(200,241,53,0.2)] bg-[rgba(200,241,53,0.06)] px-2.5 py-1.5 font-display text-[9px] uppercase tracking-wider text-accent transition-all hover:border-[rgba(200,241,53,0.4)] hover:bg-[rgba(200,241,53,0.12)]"
+              >
+                <Share2 size={12} />
+                {copied ? 'Copied!' : 'Share'}
+              </button>
             </div>
           </div>
         )}
@@ -157,26 +162,6 @@ export function LeaderboardContent() {
               {tf.label}
             </button>
           ))}
-        </div>
-
-        {/* Search */}
-        <div className="relative mb-4">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search name or wallet..."
-            className="w-full rounded-xl border border-[rgba(200,241,53,0.1)] bg-[#0d0d0d] py-2.5 pl-9 pr-3 font-mono text-xs text-primary placeholder:text-muted/50 focus:border-[rgba(200,241,53,0.3)] focus:outline-none focus:ring-0 transition-colors"
-          />
-          {search && (
-            <button
-              onClick={() => setSearch('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted hover:text-primary text-xs"
-            >
-              ✕
-            </button>
-          )}
         </div>
 
         {/* Leaderboard list */}
@@ -205,14 +190,14 @@ export function LeaderboardContent() {
             </div>
 
             <div className="divide-y divide-[rgba(200,241,53,0.06)]">
-              {entries.length === 0 ? (
+              {(state.data?.entries?.length ?? 0) === 0 ? (
                 <div className="flex flex-col items-center gap-2 py-16">
                   <Trophy size={32} className="text-muted/30" />
-                  <p className="text-xs text-muted">{search ? 'No matches found' : 'No entries yet'}</p>
+                  <p className="text-xs text-muted">No entries yet</p>
                   <p className="text-[10px] text-muted/50">Start watching to earn points</p>
                 </div>
               ) : (
-                entries.map((entry) => (
+                state.data!.entries.map((entry) => (
                   <div
                     key={entry.wallet}
                     className={cn(
