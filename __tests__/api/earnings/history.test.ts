@@ -90,4 +90,23 @@ describe('GET /api/earnings/history', () => {
 
     expect(json.totalEarned).toBe(60)
   })
+
+  it('nextCursor is null when results fit in one page', async () => {
+    const watchRows = Array.from({ length: 5 }, (_, i) => ({
+      id: i + 1,
+      video_id: `v${i}`,
+      points: 10,
+      watched_at: `2026-01-0${i + 1}T12:00:00Z`,
+      claimed: false,
+    }))
+    vi.spyOn(supabaseModule, 'getServiceSupabase').mockReturnValue({
+      from: makeFromWithResults({ watches: watchRows, user_quiz_attempts: [] }),
+    } as any)
+
+    const req = createNextRequest(`/api/earnings/history?walletAddress=${VALID_WALLET}`)
+    const res = await GET(req)
+    const json = await res.json()
+
+    expect(json.nextCursor).toBeNull()
+  })
 })
