@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServiceSupabase } from '@/lib/supabase'
+import { syncMissionProgress } from '@/lib/mission-progress-sync'
 import { isAddress } from 'viem'
 
 const BASE_QUIZ_REWARD = 50
@@ -115,6 +116,8 @@ export async function POST(request: NextRequest) {
       }
       throw insertErr
     }
+
+    syncMissionProgress(supabase, walletAddress.toLowerCase()).catch(() => {})
 
     return NextResponse.json({
       score: correctCount,
