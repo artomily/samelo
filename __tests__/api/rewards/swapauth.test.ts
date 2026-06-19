@@ -53,4 +53,22 @@ describe('POST /api/rewards/swapauth', () => {
     process.env.REWARD_ORACLE_PRIVATE_KEY = original
     expect(res.status).toBe(503)
   })
+
+  it('returns 400 when pointAmount is below minimum (500)', async () => {
+    // Temporarily set oracle key so we get past the 503 check
+    process.env.REWARD_ORACLE_PRIVATE_KEY = '0x' + 'a'.repeat(64)
+    process.env.NEXT_PUBLIC_SWAP_ADDRESS = VALID_WALLET
+
+    const req = createNextRequest('/api/rewards/swapauth', {
+      method: 'POST',
+      body: { walletAddress: VALID_WALLET, pointAmount: 100 },
+    })
+    const res = await POST(req)
+
+    delete process.env.REWARD_ORACLE_PRIVATE_KEY
+    delete process.env.NEXT_PUBLIC_SWAP_ADDRESS
+    expect(res.status).toBe(400)
+    const json = await res.json()
+    expect(json.error).toContain('Minimum')
+  })
 })
