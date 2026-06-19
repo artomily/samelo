@@ -62,10 +62,23 @@ describe('GET /api/leaderboard', () => {
       { wallet_address: '0xabc123456789012345678901234567890abc12345' },
     ]
 
-    const selectFn = vi.fn().mockResolvedValue({ data: watchData, error: null })
+    // Route builds `query = from('profiles').select().order()` before the sortBy branch,
+    // so profiles mock must support .order() even though it's never awaited in this path.
+    const watchSelectFn = vi.fn().mockImplementation((resolve?: (v: unknown) => unknown) =>
+      resolve ? Promise.resolve(resolve({ data: watchData, error: null })) : Promise.resolve({ data: watchData, error: null }),
+    )
+    const profilesChain = {
+      order: vi.fn().mockReturnThis(),
+      in: vi.fn().mockImplementation((resolve?: (v: unknown) => unknown) =>
+        resolve ? Promise.resolve(resolve({ data: [], error: null })) : Promise.resolve({ data: [], error: null }),
+      ),
+      then: vi.fn().mockImplementation((resolve?: (v: unknown) => unknown) =>
+        resolve ? Promise.resolve(resolve({ data: [], error: null })) : Promise.resolve({ data: [], error: null }),
+      ),
+    }
     const from = vi.fn().mockImplementation((table: string) => {
-      if (table === 'watches') return { select: selectFn }
-      if (table === 'profiles') return { select: vi.fn().mockReturnValue({ in: vi.fn().mockResolvedValue({ data: [], error: null }) }) }
+      if (table === 'watches') return { select: vi.fn().mockReturnValue({ then: watchSelectFn }) }
+      if (table === 'profiles') return { select: vi.fn().mockReturnValue(profilesChain) }
       return {}
     })
 
