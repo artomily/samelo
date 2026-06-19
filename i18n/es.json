@@ -57,4 +57,15 @@
   "onchainVerifyCeloscan": "Verificar en Celoscan",
   "onchainBurnRate": "Tasa de Quema",
   "onchainFlowTimeline": "Línea de Tiempo"
+  "missions": "Misiones",
+  "missionsChallenges": "Desafíos",
+  "missionsActive": "Misiones Activas",
+  "missionsCompleted": "Completadas",
+  "missionsClaim": "Reclamar Recompensa",
+  "missionsClaiming": "Reclamando…",
+  "missionsClaimed": "Reclamado",
+  "missionsNotStarted": "No iniciado",
+  "missionsNoMissions": "No hay misiones disponibles",
+  "missionsClaimSuccess": "¡Recompensa reclamada!",
+  "missionsClaimError": "Error al reclamar recompensa"
 }

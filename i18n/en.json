@@ -57,4 +57,15 @@
   "onchainVerifyCeloscan": "Verify on Celoscan",
   "onchainBurnRate": "Burn Rate",
   "onchainFlowTimeline": "Flow Timeline"
+  "missions": "Missions",
+  "missionsChallenges": "Challenges",
+  "missionsActive": "Active Missions",
+  "missionsCompleted": "Completed",
+  "missionsClaim": "Claim Reward",
+  "missionsClaiming": "Claiming…",
+  "missionsClaimed": "Claimed",
+  "missionsNotStarted": "Not started",
+  "missionsNoMissions": "No missions available",
+  "missionsClaimSuccess": "Reward claimed!",
+  "missionsClaimError": "Failed to claim reward"
 }

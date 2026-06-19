@@ -57,4 +57,15 @@
   "onchainVerifyCeloscan": "Thibitisha kwenye Celoscan",
   "onchainBurnRate": "Kiwango cha Kuchoma",
   "onchainFlowTimeline": "Mtiririko wa Wakati"
+  "missions": "Misheni",
+  "missionsChallenges": "Changamoto",
+  "missionsActive": "Misheni Inayoendelea",
+  "missionsCompleted": "Zilizokamilika",
+  "missionsClaim": "Dai Tuzo",
+  "missionsClaiming": "Inadai…",
+  "missionsClaimed": "Imedaiwa",
+  "missionsNotStarted": "Haijaanza",
+  "missionsNoMissions": "Hakuna misheni zinazopatikana",
+  "missionsClaimSuccess": "Tuzo imedaiwa!",
+  "missionsClaimError": "Imeshindwa kudai tuzo"
 }
