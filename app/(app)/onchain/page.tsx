@@ -6,6 +6,7 @@ import { MoneyFlowDiagram } from '@/components/dashboard/MoneyFlowDiagram'
 import { FlowChart } from '@/components/dashboard/FlowChart'
 import { LiveSwapFeed } from '@/components/dashboard/LiveSwapFeed'
 import { BurnRateGauge } from '@/components/dashboard/BurnRateGauge'
+import { ProtocolStats } from '@/components/dashboard/ProtocolStats'
 
 export default function OnChainDashboardPage() {
   return (
@@ -67,6 +68,12 @@ export default function OnChainDashboardPage() {
         <section className="space-y-2">
           <h2 className="text-[11px] font-bold uppercase tracking-widest text-white/40">Daily Activity</h2>
           <FlowChart />
+        </section>
+
+        {/* Protocol stats */}
+        <section className="space-y-2">
+          <h2 className="text-[11px] font-bold uppercase tracking-widest text-white/40">Protocol Stats</h2>
+          <ProtocolStats />
         </section>
 
         {/* Live swap feed */}
