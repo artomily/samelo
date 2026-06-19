@@ -23,17 +23,17 @@ const FEATURES = [
   {
     Icon: Users,
     title: 'Referral Network',
-    description: 'Invite explorers and earn a percentage of their watch rewards forever. Your network compounds.',
+    description: 'Invite friends and earn 50 bonus points per referral. Share a link, they watch, both earn.',
   },
   {
     Icon: BarChart2,
-    title: 'Points Systems',
-    description: 'Accumulate off-chain points as you watch, then deploy them to Celo in batches to save gas.',
+    title: 'Mission System',
+    description: 'Complete structured challenges — watch N videos, ace quizzes, refer friends — for bonus $MELO rewards.',
   },
   {
     Icon: MapPin,
     title: 'Watch First',
-    description: 'Designed for low-bandwidth networks and CELO accessibility. Works everywhere MiniPay works.',
+    description: 'Built for low-bandwidth networks. Works everywhere MiniPay works — Africa, Asia, Latin America.',
   },
 ]
 
