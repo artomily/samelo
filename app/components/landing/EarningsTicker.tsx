@@ -1,12 +1,14 @@
 'use client'
 
 const EARNINGS = [
-  { user: '0x3f…a1', amount: '+0.14 CELO', video: 'Celo Explained' },
-  { user: '0xa7…2d', amount: '+0.09 CELO', video: 'Web3 Basics' },
-  { user: '0x11…bc', amount: '+0.22 CELO', video: 'DeFi 101' },
-  { user: '0x55…7e', amount: '+0.07 CELO', video: 'MiniPay Demo' },
-  { user: '0x8b…f3', amount: '+0.18 CELO', video: 'Blockchain Intro' },
-  { user: '0x2c…99', amount: '+0.11 CELO', video: 'Crypto Wallets' },
+  { user: '0x3f…a1', amount: '+140 pts', video: 'Celo Explained' },
+  { user: '0xa7…2d', amount: '+90 pts', video: 'Web3 Basics' },
+  { user: '0x11…bc', amount: '+220 pts', video: 'DeFi 101' },
+  { user: '0x55…7e', amount: '+70 pts', video: 'MiniPay Demo' },
+  { user: '0x8b…f3', amount: '+180 pts', video: 'Blockchain Intro' },
+  { user: '0x2c…99', amount: '+110 pts', video: 'Crypto Wallets' },
+  { user: '0xd9…41', amount: '+50 pts', video: 'NFT Crash Course' },
+  { user: '0x7e…c2', amount: '+200 pts', video: 'Layer 2 Deep Dive' },
 ]
 
 function TickerRow({ items, reverse }: { items: typeof EARNINGS; reverse?: boolean }) {
