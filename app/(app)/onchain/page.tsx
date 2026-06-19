@@ -7,6 +7,7 @@ import { FlowChart } from '@/components/dashboard/FlowChart'
 import { LiveSwapFeed } from '@/components/dashboard/LiveSwapFeed'
 import { BurnRateGauge } from '@/components/dashboard/BurnRateGauge'
 import { ProtocolStats } from '@/components/dashboard/ProtocolStats'
+import { SwapperLeaderboard } from '@/components/dashboard/SwapperLeaderboard'
 
 export default function OnChainDashboardPage() {
   return (
@@ -76,11 +77,18 @@ export default function OnChainDashboardPage() {
           <ProtocolStats />
         </section>
 
-        {/* Live swap feed */}
-        <section className="space-y-2">
-          <h2 className="text-[11px] font-bold uppercase tracking-widest text-white/40">Live Swaps</h2>
-          <LiveSwapFeed />
-        </section>
+        {/* Swapper leaderboard + live feed */}
+        <div className="grid gap-5 lg:grid-cols-2">
+          <section className="space-y-2">
+            <h2 className="text-[11px] font-bold uppercase tracking-widest text-white/40">Top Earners</h2>
+            <SwapperLeaderboard />
+          </section>
+          <section className="space-y-2">
+            <h2 className="text-[11px] font-bold uppercase tracking-widest text-white/40">Live Swaps</h2>
+            <LiveSwapFeed />
+          </section>
+        </div>
+
 
         {/* Celoscan CTA */}
         <div className="text-center pt-2 pb-4">
