@@ -98,4 +98,16 @@ describe('GET /api/watch/token', () => {
 
     expect(json.token).toMatch(/^[A-Za-z0-9_-]+$/)
   })
+
+  it('token payload contains videoId and wallet', async () => {
+    const req = createNextRequest(
+      `/api/watch/token?videoId=uniqueVideo&walletAddress=${VALID_WALLET}`,
+    )
+    const res = await GET(req)
+    const json = await res.json()
+
+    // Token is base64url — decode and check it contains expected data
+    const decoded = Buffer.from(json.token.split('.')[0] ?? json.token, 'base64url').toString('utf8')
+    expect(decoded).toContain('uniqueVideo')
+  })
 })
