@@ -66,10 +66,15 @@ export default function WatchPage() {
 
     if (!address) return
     try {
+      const tokenRes = await fetch(
+        `/api/watch/token?videoId=${encodeURIComponent(selectedId)}&walletAddress=${encodeURIComponent(address)}`,
+      )
+      const { token } = await tokenRes.json()
+
       await fetch('/api/watch/complete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ videoId: selectedId, walletAddress: address }),
+        body: JSON.stringify({ videoId: selectedId, walletAddress: address, watchToken: token }),
       })
     } catch {
       // non-fatal

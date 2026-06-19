@@ -1,10 +1,10 @@
 'use client'
 
 import { useState, useCallback, useRef } from 'react'
-import { Trophy, Medal, Clock, Crown, Loader2, TrendingUp, Eye } from 'lucide-react'
+import { Trophy, Medal, Clock, Crown, Loader2, Share2 } from 'lucide-react'
 import { useAccount } from 'wagmi'
 import { cn } from '@/lib/utils'
-import type { Timeframe, SortBy } from '@/app/api/leaderboard/route'
+import type { Timeframe } from '@/app/api/leaderboard/route'
 
 interface LeaderboardEntry {
   wallet: string
@@ -17,18 +17,12 @@ interface LeaderboardData {
   entries: LeaderboardEntry[]
   total: number
   userRank?: { rank: number; points: number }
-  sortBy?: SortBy
 }
 
 const TIMEFRAMES: { key: Timeframe; label: string }[] = [
   { key: 'weekly', label: 'Weekly' },
   { key: 'monthly', label: 'Monthly' },
   { key: 'all_time', label: 'All Time' },
-]
-
-const SORT_TABS: { key: SortBy; label: string }[] = [
-  { key: 'points', label: 'Top Earners' },
-  { key: 'watches', label: 'Top Viewers' },
 ]
 
 function shortenWallet(address: string) {
@@ -55,19 +49,19 @@ function RankBadge({ rank }: { rank: number }) {
 export function LeaderboardContent() {
   const { address } = useAccount()
   const [timeframe, setTimeframe] = useState<Timeframe>('all_time')
-  const [sortBy, setSortBy] = useState<SortBy>('points')
   const [state, setState] = useState<{
     data: LeaderboardData | null
     loading: boolean
     error: string | null
     initialized: boolean
   }>({ data: null, loading: true, error: null, initialized: false })
+  const [copied, setCopied] = useState(false)
   const fetchIdRef = useRef(0)
 
-  const fetchLeaderboard = useCallback(async (tf: Timeframe, addr: string | undefined, sb: SortBy) => {
+  const fetchLeaderboard = useCallback(async (tf: Timeframe, addr: string | undefined) => {
     const id = ++fetchIdRef.current
     try {
-      const params = new URLSearchParams({ timeframe: tf, limit: '50', sortBy: sb })
+      const params = new URLSearchParams({ timeframe: tf, limit: '50' })
       if (addr) params.set('walletAddress', addr)
       const res = await fetch(`/api/leaderboard?${params}`)
       if (!res.ok) throw new Error('Failed to fetch leaderboard')
@@ -88,18 +82,24 @@ export function LeaderboardContent() {
   const handleTimeframeChange = useCallback((tf: Timeframe) => {
     setTimeframe(tf)
     setState((prev) => ({ ...prev, loading: true }))
-    fetchLeaderboard(tf, address, sortBy)
-  }, [address, sortBy, fetchLeaderboard])
-
-  const handleSortChange = useCallback((sb: SortBy) => {
-    setSortBy(sb)
-    setState((prev) => ({ ...prev, loading: true }))
-    fetchLeaderboard(timeframe, address, sb)
-  }, [address, timeframe, fetchLeaderboard])
+    fetchLeaderboard(tf, address)
+  }, [address, fetchLeaderboard])
 
   if (!state.initialized) {
-    fetchLeaderboard(timeframe, address, sortBy)
+    fetchLeaderboard(timeframe, address)
     setState((prev) => ({ ...prev, initialized: true }))
+  }
+
+  const handleShare = () => {
+    if (!state.data?.userRank) return
+    const text = `I'm rank #${state.data.userRank.rank} on Samelo with ${formatPoints(state.data.userRank.points)} points! Watch content. Mine your rewards. ${window.location.origin}`
+    if (navigator.share) {
+      navigator.share({ title: 'Samelo Leaderboard', text }).catch(() => {})
+    } else {
+      navigator.clipboard.writeText(text)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
   }
 
   return (
@@ -130,17 +130,23 @@ export function LeaderboardContent() {
                     #{state.data.userRank.rank}
                   </p>
                   <p className="text-[10px] text-muted">
-                    {formatPoints(state.data.userRank.points)} {state.data.sortBy === 'watches' ? 'watches' : 'points'}
+                    {formatPoints(state.data.userRank.points)} points
                   </p>
                 </div>
               </div>
-              <TrendingUp size={18} className="text-accent/40" />
+              <button
+                onClick={handleShare}
+                className="flex items-center gap-1.5 rounded-lg border border-[rgba(200,241,53,0.2)] bg-[rgba(200,241,53,0.06)] px-2.5 py-1.5 font-display text-[9px] uppercase tracking-wider text-accent transition-all hover:border-[rgba(200,241,53,0.4)] hover:bg-[rgba(200,241,53,0.12)]"
+              >
+                <Share2 size={12} />
+                {copied ? 'Copied!' : 'Share'}
+              </button>
             </div>
           </div>
         )}
 
         {/* Timeframe tabs */}
-        <div className="mb-3 flex gap-1.5 rounded-xl border border-[rgba(200,241,53,0.1)] bg-[#0d0d0d] p-1">
+        <div className="mb-4 flex gap-1.5 rounded-xl border border-[rgba(200,241,53,0.1)] bg-[#0d0d0d] p-1">
           {TIMEFRAMES.map((tf) => (
             <button
               key={tf.key}
@@ -154,26 +160,6 @@ export function LeaderboardContent() {
             >
               {tf.key === 'weekly' && <Clock size={10} className="mr-1 inline" />}
               {tf.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Sort tabs */}
-        <div className="mb-4 flex gap-1.5 rounded-xl border border-[rgba(200,241,53,0.1)] bg-[#0d0d0d] p-1">
-          {SORT_TABS.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => handleSortChange(tab.key)}
-              className={cn(
-                'flex-1 rounded-lg py-2 font-display text-[9px] font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-1',
-                sortBy === tab.key
-                  ? 'bg-accent/12 text-accent border border-[rgba(200,241,53,0.25)]'
-                  : 'text-muted hover:text-primary',
-              )}
-            >
-              {tab.key === 'watches' && <Eye size={10} className="inline" />}
-              {tab.key === 'points' && <Trophy size={10} className="inline" />}
-              {tab.label}
             </button>
           ))}
         </div>
@@ -199,7 +185,7 @@ export function LeaderboardContent() {
                 Wallet
               </span>
               <span className="font-display text-[8px] uppercase tracking-widest text-muted">
-                {sortBy === 'watches' ? 'Watches' : 'Points'}
+                Points
               </span>
             </div>
 
