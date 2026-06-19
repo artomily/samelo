@@ -5,6 +5,7 @@ import { FeaturedVideo } from '@/app/components/landing/FeaturedVideo'
 import { FeaturesSection } from '@/app/components/landing/FeaturesSection'
 import { MoneyFlowSection } from '@/app/components/landing/MoneyFlowSection'
 import { Testimonials } from '@/app/components/landing/Testimonials'
+import { DashboardTeaser } from '@/app/components/landing/DashboardTeaser'
 import { FAQ } from '@/app/components/landing/FAQ'
 import { SeeItInAction } from '@/app/components/landing/SeeItInAction'
 import { CTASection } from '@/app/components/landing/CTASection'
@@ -21,6 +22,7 @@ export default function LandingPage() {
       <FeaturesSection />
       <MoneyFlowSection />
       <Testimonials />
+      <DashboardTeaser />
       <FAQ />
       <SeeItInAction />
       <CTASection />
