@@ -82,4 +82,37 @@ describe('POST /api/rewards/earn-points', () => {
 
     expect(res.status).toBe(429)
   })
+
+  it('credits 10 points and returns total on success', async () => {
+    let callCount = 0
+    const from = vi.fn().mockImplementation(() => {
+      callCount++
+      const result = callCount === 1
+        ? { data: null, error: null, count: 0 }  // rate limit check: 0 earns
+        : { data: [{ points: 10 }], error: null } // final total query
+      const proxy = new Proxy({} as Record<string, ReturnType<typeof vi.fn>>, {
+        get(_, method: string) {
+          if (method === 'then') {
+            return vi.fn().mockImplementation((resolve?: (v: unknown) => unknown) =>
+              resolve ? Promise.resolve(resolve(result)) : Promise.resolve(result),
+            )
+          }
+          return vi.fn().mockReturnValue(proxy)
+        },
+      })
+      return proxy
+    })
+    vi.spyOn(supabaseModule, 'getServiceSupabase').mockReturnValue({ from } as any)
+
+    const req = createNextRequest('/api/rewards/earn-points', {
+      method: 'POST',
+      body: { walletAddress: VALID_WALLET },
+    })
+    const res = await POST(req)
+    const json = await res.json()
+
+    expect(res.status).toBe(200)
+    expect(json.points).toBe(10)
+    expect(json.total).toBeDefined()
+  })
 })
