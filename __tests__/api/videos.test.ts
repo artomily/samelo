@@ -175,4 +175,23 @@ describe('GET /api/videos', () => {
 
     expect(json.videos[0].durationSeconds).toBe(240)
   })
+
+  it('videoUrl uses youtube embed format with rel=0', async () => {
+    const chain = buildSupabaseChain([{
+      id: 'testVideoId',
+      title: 'Video',
+      thumbnail_url: null,
+      channel_title: 'Ch',
+      duration_seconds: 60,
+      reward_cents: 5,
+      fetched_at: '2026-01-01T00:00:00Z',
+    }])
+    vi.spyOn(supabaseModule, 'getServiceSupabase').mockReturnValue({ from: chain.from } as any)
+
+    const res = await GET()
+    const json = await res.json()
+
+    expect(json.videos[0].videoUrl).toContain('youtube.com/embed/testVideoId')
+    expect(json.videos[0].videoUrl).toContain('rel=0')
+  })
 })
