@@ -157,4 +157,22 @@ describe('GET /api/videos', () => {
 
     expect(json.videos[0].sponsor).toBe('YouTube')
   })
+
+  it('includes durationSeconds in each video object', async () => {
+    const chain = buildSupabaseChain([{
+      id: 'abc123',
+      title: 'Video',
+      thumbnail_url: 'https://example.com/t.jpg',
+      channel_title: 'Ch',
+      duration_seconds: 240,
+      reward_cents: 5,
+      fetched_at: '2026-01-01T00:00:00Z',
+    }])
+    vi.spyOn(supabaseModule, 'getServiceSupabase').mockReturnValue({ from: chain.from } as any)
+
+    const res = await GET()
+    const json = await res.json()
+
+    expect(json.videos[0].durationSeconds).toBe(240)
+  })
 })
