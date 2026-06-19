@@ -42,5 +42,16 @@
   "referralReferredBy": "Referido por",
   "aiSummary": "Resumen IA",
   "aiSummaryGenerating": "Generando resumen...",
-  "swapPoints": "Intercambiar Puntos"
+  "swapPoints": "Intercambiar Puntos",
+  "missions": "Misiones",
+  "missionsChallenges": "Desafíos",
+  "missionsActive": "Misiones Activas",
+  "missionsCompleted": "Completadas",
+  "missionsClaim": "Reclamar Recompensa",
+  "missionsClaiming": "Reclamando…",
+  "missionsClaimed": "Reclamado",
+  "missionsNotStarted": "No iniciado",
+  "missionsNoMissions": "No hay misiones disponibles",
+  "missionsClaimSuccess": "¡Recompensa reclamada!",
+  "missionsClaimError": "Error al reclamar recompensa"
 }
