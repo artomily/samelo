@@ -75,4 +75,19 @@ describe('GET /api/earnings/history', () => {
     expect(json.items).toEqual([])
     expect(json.totalEarned).toBe(0)
   })
+
+  it('includes quiz points in totalEarned', async () => {
+    vi.spyOn(supabaseModule, 'getServiceSupabase').mockReturnValue({
+      from: makeFromWithResults({
+        watches: [{ id: 1, video_id: 'v1', points: 10, watched_at: '2026-01-01T12:00:00Z', claimed: false }],
+        user_quiz_attempts: [{ points_earned: 50 }],
+      }),
+    } as any)
+
+    const req = createNextRequest(`/api/earnings/history?walletAddress=${VALID_WALLET}`)
+    const res = await GET(req)
+    const json = await res.json()
+
+    expect(json.totalEarned).toBe(60)
+  })
 })
