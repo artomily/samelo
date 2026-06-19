@@ -33,4 +33,13 @@ describe('GET /api/earnings/history', () => {
 
     expect(res.status).toBe(400)
   })
+
+  it('returns 400 for invalid wallet format', async () => {
+    const req = createNextRequest(`/api/earnings/history?walletAddress=${INVALID_WALLET}`)
+    const res = await GET(req)
+
+    expect(res.status).toBe(400)
+    const json = await res.json()
+    expect(json.error).toContain('Invalid')
+  })
 })
