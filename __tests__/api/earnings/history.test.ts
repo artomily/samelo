@@ -61,4 +61,18 @@ describe('GET /api/earnings/history', () => {
     expect(json).toHaveProperty('totalEarned')
     expect(json).toHaveProperty('totalClaimed')
   })
+
+  it('returns empty items array when no watches exist', async () => {
+    vi.spyOn(supabaseModule, 'getServiceSupabase').mockReturnValue({
+      from: makeFromWithResults({ watches: [], user_quiz_attempts: [] }),
+    } as any)
+
+    const req = createNextRequest(`/api/earnings/history?walletAddress=${VALID_WALLET}`)
+    const res = await GET(req)
+    const json = await res.json()
+
+    expect(res.status).toBe(200)
+    expect(json.items).toEqual([])
+    expect(json.totalEarned).toBe(0)
+  })
 })
