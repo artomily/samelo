@@ -37,6 +37,16 @@ const PARTNERS = [
       </svg>
     ),
   },
+  {
+    name: 'Prezenti',
+    description: 'Celo ecosystem grants',
+    icon: (
+      <svg viewBox="0 0 120 120" className="h-10 w-10" fill="none">
+        <rect x="24" y="24" width="72" height="72" rx="16" stroke="rgba(200,241,53,0.3)" strokeWidth="2" />
+        <path d="M44 60h32M60 44v32" stroke="#c8f135" strokeWidth="3" strokeLinecap="round" opacity="0.7" />
+      </svg>
+    ),
+  },
 ]
 
 export function Partners() {
