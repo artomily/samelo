@@ -46,5 +46,16 @@
   "referralReferredBy": "Alikurufaa",
   "aiSummary": "Muhtasari wa AI",
   "aiSummaryGenerating": "Inazalisha muhtasari...",
-  "swapPoints": "Badilisha Pointi"
+  "swapPoints": "Badilisha Pointi",
+  "missions": "Misheni",
+  "missionsChallenges": "Changamoto",
+  "missionsActive": "Misheni Inayoendelea",
+  "missionsCompleted": "Zilizokamilika",
+  "missionsClaim": "Dai Tuzo",
+  "missionsClaiming": "Inadai…",
+  "missionsClaimed": "Imedaiwa",
+  "missionsNotStarted": "Haijaanza",
+  "missionsNoMissions": "Hakuna misheni zinazopatikana",
+  "missionsClaimSuccess": "Tuzo imedaiwa!",
+  "missionsClaimError": "Imeshindwa kudai tuzo"
 }
