@@ -2,11 +2,11 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 const FOOTER_LINKS = [
+  { href: '/home', label: 'App', disabled: false },
   { href: '#', label: 'Docs', disabled: true },
-  { href: '#', label: 'Contract', disabled: true },
-  { href: 'https://twitter.com/samelo', label: 'Twitter', disabled: false },
-  { href: 'https://t.me/samelo', label: 'Telegram', disabled: false },
   { href: 'https://github.com/artomily/samelo', label: 'GitHub', disabled: false },
+  { href: '#', label: 'Twitter', disabled: true },
+  { href: '#', label: 'Telegram', disabled: true },
   { href: '#', label: 'Privacy', disabled: true },
   { href: '#', label: 'Terms', disabled: true },
 ]
@@ -48,7 +48,7 @@ export function Footer() {
 
         {/* Legal copy */}
         <p className="font-display text-[9px] uppercase tracking-widest text-muted/40">
-          Built on Celo · Powered by MiniPay
+          Built on Celo · Powered by MiniPay · © 2026 Samelo
         </p>
       </div>
     </footer>
