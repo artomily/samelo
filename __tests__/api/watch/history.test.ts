@@ -8,7 +8,9 @@ function createMockFrom(data: unknown) {
   const rows = data
   const selectFn = vi.fn().mockReturnValue({
     eq: vi.fn().mockReturnValue({
-      then: vi.fn().mockResolvedValue({ data: rows, error: null }),
+      then: vi.fn().mockImplementation((resolve?: (v: unknown) => unknown) =>
+        resolve ? Promise.resolve(resolve({ data: rows, error: null })) : Promise.resolve({ data: rows, error: null }),
+      ),
       catch: vi.fn().mockResolvedValue(undefined),
       finally: vi.fn().mockResolvedValue(undefined),
     }),
