@@ -11,7 +11,9 @@ function buildSupabaseChain(data: unknown, error: unknown = null) {
     eq: vi.fn().mockReturnValue(chain),
     order: vi.fn().mockReturnValue(chain),
     limit: vi.fn().mockReturnValue(chain),
-    then: vi.fn().mockResolvedValue({ data, error }),
+    then: vi.fn().mockImplementation((resolve?: (v: unknown) => unknown) =>
+      resolve ? Promise.resolve(resolve({ data, error })) : Promise.resolve({ data, error }),
+    ),
     catch: vi.fn().mockResolvedValue(undefined),
     finally: vi.fn().mockResolvedValue(undefined),
   }
