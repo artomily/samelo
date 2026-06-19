@@ -205,4 +205,13 @@ describe('GET /api/videos', () => {
     expect(json).toHaveProperty('videos')
     expect(Array.isArray(json.videos)).toBe(true)
   })
+
+  it('queries by descending fetched_at order', async () => {
+    const chain = buildSupabaseChain([])
+    vi.spyOn(supabaseModule, 'getServiceSupabase').mockReturnValue({ from: chain.from } as any)
+
+    await GET()
+
+    expect(chain.order).toHaveBeenCalledWith('fetched_at', { ascending: false })
+  })
 })
