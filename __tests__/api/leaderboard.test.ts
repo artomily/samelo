@@ -62,22 +62,24 @@ describe('GET /api/leaderboard', () => {
       { wallet_address: '0xabc123456789012345678901234567890abc12345' },
     ]
 
-    // Route builds `query = from('profiles').select().order()` before the sortBy branch,
-    // so profiles mock must support .order() even though it's never awaited in this path.
-    const watchSelectFn = vi.fn().mockImplementation((resolve?: (v: unknown) => unknown) =>
-      resolve ? Promise.resolve(resolve({ data: watchData, error: null })) : Promise.resolve({ data: watchData, error: null }),
-    )
+    // Route builds `query = from('profiles').select().order()` before checking sortBy.
+    // For the watches path, query is never awaited but order() must not throw.
+    // The display-names lookup calls from('profiles').select().in(column, values).
+    const makeThenableResult = (data: unknown) => ({
+      then: vi.fn().mockImplementation((onFulfilled?: (v: unknown) => unknown) =>
+        onFulfilled ? Promise.resolve(onFulfilled({ data, error: null })) : Promise.resolve({ data, error: null }),
+      ),
+    })
     const profilesChain = {
       order: vi.fn().mockReturnThis(),
-      in: vi.fn().mockImplementation((resolve?: (v: unknown) => unknown) =>
-        resolve ? Promise.resolve(resolve({ data: [], error: null })) : Promise.resolve({ data: [], error: null }),
-      ),
-      then: vi.fn().mockImplementation((resolve?: (v: unknown) => unknown) =>
-        resolve ? Promise.resolve(resolve({ data: [], error: null })) : Promise.resolve({ data: [], error: null }),
+      // .in('column_name', values) is called with 2 args; it must RETURN a thenable.
+      in: vi.fn().mockReturnValue(makeThenableResult([])),
+      then: vi.fn().mockImplementation((onFulfilled?: (v: unknown) => unknown) =>
+        onFulfilled ? Promise.resolve(onFulfilled({ data: [], error: null })) : Promise.resolve({ data: [], error: null }),
       ),
     }
     const from = vi.fn().mockImplementation((table: string) => {
-      if (table === 'watches') return { select: vi.fn().mockReturnValue({ then: watchSelectFn }) }
+      if (table === 'watches') return { select: vi.fn().mockReturnValue(makeThenableResult(watchData)) }
       if (table === 'profiles') return { select: vi.fn().mockReturnValue(profilesChain) }
       return {}
     })
