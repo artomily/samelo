@@ -93,17 +93,29 @@ describe('GET /api/leaderboard', () => {
   })
 
   it('defaults to all_time timeframe', async () => {
-    const mockProfiles = []
-    const selectFn = vi.fn().mockReturnValue({
-      order: vi.fn().mockReturnValue({
-        range: vi.fn().mockResolvedValue({ data: mockProfiles, error: null }),
-      }),
+    const mockProfiles: unknown[] = []
+    // all_time path: query = from('profiles').select().order().range()
+    // then a count query: from('profiles').select('*', { count: 'exact', head: true }).gt()
+    let profilesCallCount = 0
+    const from = vi.fn().mockImplementation(() => {
+      profilesCallCount++
+      if (profilesCallCount === 1) {
+        return {
+          select: vi.fn().mockReturnValue({
+            order: vi.fn().mockReturnValue({
+              range: vi.fn().mockResolvedValue({ data: mockProfiles, error: null }),
+            }),
+          }),
+        }
+      }
+      // count query and any subsequent calls
+      return {
+        select: vi.fn().mockReturnValue({
+          gt: vi.fn().mockResolvedValue({ count: 0, error: null }),
+          eq: vi.fn().mockReturnValue({ maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }) }),
+        }),
+      }
     })
-    const countFn = vi.fn().mockResolvedValue({ count: 0, error: null })
-
-    const from = vi.fn().mockImplementation(() => ({
-      select: callCount => callCount === 1 ? selectFn : vi.fn().mockReturnValue({ gt: vi.fn().mockReturnValue(countFn) }),
-    }))
 
     vi.spyOn(supabaseModule, 'getServiceSupabase').mockReturnValue({ from } as any)
 
