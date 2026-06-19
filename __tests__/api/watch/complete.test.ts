@@ -9,8 +9,11 @@ function mockSupabaseChain(responses: Record<string, unknown> = {}) {
 
   const chain: Record<string, ReturnType<typeof vi.fn>> = {}
 
+  const defaultResult = responses.default ?? { data: null, error: null }
   const thenable = {
-    then: vi.fn().mockResolvedValue(responses.default ?? { data: null, error: null }),
+    then: vi.fn().mockImplementation((resolve?: (v: unknown) => unknown) =>
+      resolve ? Promise.resolve(resolve(defaultResult)) : Promise.resolve(defaultResult),
+    ),
     catch: vi.fn().mockResolvedValue(undefined),
     finally: vi.fn().mockResolvedValue(undefined),
   }
@@ -123,7 +126,9 @@ describe('POST /api/watch/complete', () => {
 
     const eqChain: Record<string, ReturnType<typeof vi.fn>> = {}
     const thenable = {
-      then: vi.fn().mockResolvedValue({ data: pendingRows, error: null }),
+      then: vi.fn().mockImplementation((resolve?: (v: unknown) => unknown) =>
+        resolve ? Promise.resolve(resolve({ data: pendingRows, error: null })) : Promise.resolve({ data: pendingRows, error: null }),
+      ),
       catch: vi.fn().mockResolvedValue(undefined),
       finally: vi.fn().mockResolvedValue(undefined),
     }
@@ -137,7 +142,9 @@ describe('POST /api/watch/complete', () => {
     const videoSelect = vi.fn().mockReturnValue({ eq: videoEq })
 
     const watchInsert = vi.fn().mockReturnValue({
-      then: vi.fn().mockResolvedValue({ data: null, error: null }),
+      then: vi.fn().mockImplementation((resolve?: (v: unknown) => unknown) =>
+        resolve ? Promise.resolve(resolve({ data: null, error: null })) : Promise.resolve({ data: null, error: null }),
+      ),
       catch: vi.fn().mockResolvedValue(undefined),
       finally: vi.fn().mockResolvedValue(undefined),
     })
@@ -146,7 +153,9 @@ describe('POST /api/watch/complete', () => {
     const pendingSelect = vi.fn().mockReturnValue({
       eq: vi.fn().mockReturnValue({
         eq: vi.fn().mockReturnValue({
-          then: vi.fn().mockResolvedValue({ data: pendingRows, error: null }),
+          then: vi.fn().mockImplementation((resolve?: (v: unknown) => unknown) =>
+            resolve ? Promise.resolve(resolve({ data: pendingRows, error: null })) : Promise.resolve({ data: pendingRows, error: null }),
+          ),
           catch: vi.fn().mockResolvedValue(undefined),
           finally: vi.fn().mockResolvedValue(undefined),
         }),
@@ -154,7 +163,9 @@ describe('POST /api/watch/complete', () => {
     })
 
     const upsertResult = {
-      then: vi.fn().mockResolvedValue({ data: null, error: null }),
+      then: vi.fn().mockImplementation((resolve?: (v: unknown) => unknown) =>
+        resolve ? Promise.resolve(resolve({ data: null, error: null })) : Promise.resolve({ data: null, error: null }),
+      ),
       catch: vi.fn().mockResolvedValue(undefined),
       finally: vi.fn().mockResolvedValue(undefined),
     }
@@ -190,7 +201,9 @@ describe('POST /api/watch/complete', () => {
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
               eq: vi.fn().mockReturnValue({
-                then: vi.fn().mockResolvedValue({ data: pendingRows, error: null }),
+                then: vi.fn().mockImplementation((resolve?: (v: unknown) => unknown) =>
+                  resolve ? Promise.resolve(resolve({ data: pendingRows, error: null })) : Promise.resolve({ data: pendingRows, error: null }),
+                ),
                 catch: vi.fn().mockResolvedValue(undefined),
                 finally: vi.fn().mockResolvedValue(undefined),
               }),
@@ -223,14 +236,18 @@ describe('POST /api/watch/complete', () => {
     const videoSelect = vi.fn().mockReturnValue({ eq: videoEq })
 
     const watchInsertResult = {
-      then: vi.fn().mockResolvedValue({ data: null, error: null }),
+      then: vi.fn().mockImplementation((resolve?: (v: unknown) => unknown) =>
+        resolve ? Promise.resolve(resolve({ data: null, error: null })) : Promise.resolve({ data: null, error: null }),
+      ),
       catch: vi.fn().mockResolvedValue(undefined),
       finally: vi.fn().mockResolvedValue(undefined),
     }
     const watchInsert = vi.fn().mockReturnValue(watchInsertResult)
 
     const upsertResult = {
-      then: vi.fn().mockResolvedValue({ data: null, error: null }),
+      then: vi.fn().mockImplementation((resolve?: (v: unknown) => unknown) =>
+        resolve ? Promise.resolve(resolve({ data: null, error: null })) : Promise.resolve({ data: null, error: null }),
+      ),
       catch: vi.fn().mockResolvedValue(undefined),
       finally: vi.fn().mockResolvedValue(undefined),
     }
@@ -270,7 +287,9 @@ describe('POST /api/watch/complete', () => {
           select: vi.fn().mockReturnValue({
             eq: vi.fn().mockReturnValue({
               eq: vi.fn().mockReturnValue({
-                then: vi.fn().mockResolvedValue({ data: pendingData, error: null }),
+                then: vi.fn().mockImplementation((resolve?: (v: unknown) => unknown) =>
+                  resolve ? Promise.resolve(resolve({ data: pendingData, error: null })) : Promise.resolve({ data: pendingData, error: null }),
+                ),
                 catch: vi.fn().mockResolvedValue(undefined),
                 finally: vi.fn().mockResolvedValue(undefined),
               }),
@@ -302,7 +321,9 @@ describe('POST /api/watch/complete', () => {
     const videoSelect = vi.fn().mockReturnValue({ eq: videoEq })
 
     const upsertResult = {
-      then: vi.fn().mockResolvedValue({ data: null, error: null }),
+      then: vi.fn().mockImplementation((resolve?: (v: unknown) => unknown) =>
+        resolve ? Promise.resolve(resolve({ data: null, error: null })) : Promise.resolve({ data: null, error: null }),
+      ),
       catch: vi.fn().mockResolvedValue(undefined),
       finally: vi.fn().mockResolvedValue(undefined),
     }
