@@ -37,6 +37,18 @@ const FAQS = [
     q: 'How do I know it is not a scam?',
     a: 'All payouts are verifiable on the Celo blockchain. Our smart contracts are open-source and auditable. Anyone can inspect the code and verify the flow of funds.',
   },
+  {
+    q: 'What is $MELO?',
+    a: '$MELO is the native governance and reward token of the Samelo ecosystem. It is earned by swapping your points on-chain. Holders can participate in platform governance and receive staking rewards as the ecosystem grows.',
+  },
+  {
+    q: 'Can I refer friends?',
+    a: 'Yes! Share your unique referral link and earn bonus points for every friend who joins and watches their first video. Your friend also gets a welcome bonus — everyone wins.',
+  },
+  {
+    q: 'What are missions?',
+    a: 'Missions are structured challenges — watch N videos, complete quizzes, refer friends. Each completed mission unlocks bonus points you can claim with a single tap. A new set of missions is released every season.',
+  },
 ]
 
 function FAQItem({
