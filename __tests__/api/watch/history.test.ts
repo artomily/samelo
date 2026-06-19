@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { GET } from '@/app/api/watch/history/route'
 import * as supabaseModule from '@/lib/supabase'
-import { createNextRequest } from '../helpers/request'
-import { VALID_WALLET, INVALID_WALLET, VIDEO_ID } from '../helpers/fixtures'
+import { createNextRequest } from '../../helpers/request'
+import { VALID_WALLET, INVALID_WALLET, VIDEO_ID } from '../../helpers/fixtures'
 
 function createMockFrom(data: unknown) {
   const rows = data
