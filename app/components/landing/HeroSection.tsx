@@ -7,7 +7,7 @@ import { CosmicBackground } from '@/app/components/ui/CosmicBackground'
 const STATS = [
   { value: '+50–200', label: 'Points per video' },
   { value: 'Same day', label: 'Payout speed' },
-  { value: 'CELO', label: 'Earn token' },
+  { value: '$MELO', label: 'Earn token' },
   { value: 'No KYC', label: 'Required' },
 ]
 
@@ -116,7 +116,7 @@ export function HeroSection() {
           transition={{ duration: 0.7, delay: 0.2 }}
           className="max-w-[38ch] text-sm leading-relaxed text-muted sm:text-base"
         >
-          Watch short videos and earn points — pay out to CELO on your MiniPay wallet. No tricks, no waiting.
+          Watch short videos and earn points — swap to $MELO on Celo. No tricks, no waiting.
         </motion.p>
 
         {/* CTAs */}
