@@ -1,0 +1,16 @@
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS bio TEXT;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS twitter TEXT;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS website TEXT;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS country TEXT;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS follower_count INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS following_count INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE profiles ADD COLUMN IF NOT EXISTS is_verified BOOLEAN NOT NULL DEFAULT false;
+
+CREATE TABLE IF NOT EXISTS follows (
+  follower_wallet TEXT NOT NULL,
+  following_wallet TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (follower_wallet, following_wallet)
+);
+
+CREATE INDEX IF NOT EXISTS follows_following_idx ON follows (following_wallet);
