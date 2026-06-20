@@ -6,8 +6,8 @@ describe('validatePlaylistTags', () => {
     expect(validatePlaylistTags(['CRYPTO', 'DeFi'])).toEqual(['crypto', 'defi'])
   })
 
-  it('removes special characters', () => {
-    expect(validatePlaylistTags(['hello world!', 'foo-bar'])).toEqual(['hello-world', 'foo-bar'])
+  it('removes special characters (spaces stripped, hyphens kept)', () => {
+    expect(validatePlaylistTags(['hello world!', 'foo-bar'])).toEqual(['helloworld', 'foo-bar'])
   })
 
   it('filters tags shorter than 2 chars', () => {
