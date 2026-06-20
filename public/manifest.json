@@ -1,0 +1,22 @@
+{
+  "name": "Samelo — Watch to Earn",
+  "short_name": "Samelo",
+  "description": "Watch videos, earn $MELO on Celo blockchain",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#030303",
+  "theme_color": "#c8f135",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "/icons/icon-72.png",  "sizes": "72x72",   "type": "image/png" },
+    { "src": "/icons/icon-96.png",  "sizes": "96x96",   "type": "image/png" },
+    { "src": "/icons/icon-128.png", "sizes": "128x128", "type": "image/png" },
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "screenshots": [
+    { "src": "/screenshots/home.png", "sizes": "390x844", "type": "image/png", "form_factor": "narrow" }
+  ],
+  "categories": ["finance", "entertainment"],
+  "lang": "en"
+}
