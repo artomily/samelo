@@ -1,33 +1,40 @@
 'use client'
-
-import type { AppNotification } from '@/lib/types/notification'
 import { NOTIFICATION_ICONS } from '@/lib/types/notification'
-import { timeAgo } from '@/lib/time-ago'
+import type { Notification } from '@/lib/types/notification'
+import { formatRelative } from '@/lib/utils/date'
+import { useMarkAsRead } from '@/hooks/useNotifications'
 
 interface NotificationItemProps {
-  notification: AppNotification
-  onRead: (id: string) => void
+  notification: Notification
 }
 
-export function NotificationItem({ notification, onRead }: NotificationItemProps) {
-  const icon = NOTIFICATION_ICONS[notification.type]
+export function NotificationItem({ notification }: NotificationItemProps) {
+  const { mutate: markRead } = useMarkAsRead()
+  const isUnread = !notification.read_at
+
   return (
     <div
-      onClick={() => !notification.read && onRead(notification.id)}
-      className={`flex gap-3 p-3 rounded-lg cursor-pointer transition-all ${
-        notification.read ? 'opacity-50' : 'bg-white/5 hover:bg-white/8'
+      className={`flex gap-3 p-3 rounded-lg cursor-pointer transition-colors ${
+        isUnread ? 'bg-white/5 hover:bg-white/8' : 'hover:bg-white/3'
       }`}
+      onClick={() => isUnread && markRead(notification.id)}
     >
-      <div className="text-xl flex-shrink-0 w-8 h-8 flex items-center justify-center">{icon}</div>
+      <span className="text-xl flex-shrink-0 mt-0.5">
+        {NOTIFICATION_ICONS[notification.type]}
+      </span>
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between gap-2">
-          <p className="text-sm font-medium text-white leading-snug">{notification.title}</p>
-          {!notification.read && (
-            <div className="w-2 h-2 rounded-full bg-[#c8f135] flex-shrink-0 mt-1" />
+          <p className={`text-sm font-medium ${isUnread ? 'text-white' : 'text-white/60'}`}>
+            {notification.title}
+          </p>
+          {isUnread && (
+            <span className="w-2 h-2 rounded-full bg-[#c8f135] flex-shrink-0 mt-1.5" />
           )}
         </div>
-        <p className="text-xs text-white/50 mt-0.5 line-clamp-2">{notification.message}</p>
-        <p className="text-[10px] text-white/30 mt-1">{timeAgo(notification.createdAt)}</p>
+        <p className="text-xs text-white/40 mt-0.5">{notification.body}</p>
+        <p className="text-xs text-white/25 mt-1">
+          {formatRelative(new Date(notification.created_at))}
+        </p>
       </div>
     </div>
   )
