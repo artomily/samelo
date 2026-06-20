@@ -1,68 +1,37 @@
 import { describe, it, expect } from 'vitest'
-import { maskApiKey, isExpired, isActive } from '@/lib/types/api-key'
-import type { ApiKey } from '@/lib/types/api-key'
+import { generateApiKey, hashApiKey, validateScopes, hasScope } from '@/lib/api-key'
 
-function makeKey(overrides: Partial<ApiKey> = {}): ApiKey {
-  return {
-    id: 'test-id',
-    wallet: '0xabc',
-    name: 'Test Key',
-    key_prefix: 'smlo_',
-    last_used_at: null,
-    expires_at: null,
-    created_at: new Date().toISOString(),
-    revoked_at: null,
-    ...overrides,
-  }
-}
-
-describe('maskApiKey', () => {
-  it('shows first 9, 8 dots, last 4 for a long key', () => {
-    const key = 'smlo_abc123XYZ456'
-    const masked = maskApiKey(key)
-    expect(masked.startsWith('smlo_abc1')).toBe(true)
-    expect(masked.endsWith('Z456')).toBe(true)
-    expect(masked).toContain('••••••••')
+describe('api-key lib', () => {
+  it('generateApiKey returns key starting with smlo_ prefix', () => {
+    const { key } = generateApiKey()
+    expect(key).toMatch(/^smlo_[0-9a-f]{64}$/)
   })
 
-  it('handles short keys gracefully', () => {
-    const masked = maskApiKey('smlo_')
-    expect(masked.length).toBeGreaterThan(0)
-  })
-})
-
-describe('isExpired', () => {
-  it('returns false when no expiry', () => {
-    expect(isExpired(makeKey())).toBe(false)
+  it('generateApiKey prefix is first 12 chars of key', () => {
+    const { key, prefix } = generateApiKey()
+    expect(prefix).toBe(key.slice(0, 12))
   })
 
-  it('returns true when expiry is in the past', () => {
-    const past = new Date(Date.now() - 1000).toISOString()
-    expect(isExpired(makeKey({ expires_at: past }))).toBe(true)
+  it('hash is deterministic', () => {
+    const key = 'smlo_test'
+    expect(hashApiKey(key)).toBe(hashApiKey(key))
   })
 
-  it('returns false when expiry is in the future', () => {
-    const future = new Date(Date.now() + 60_000).toISOString()
-    expect(isExpired(makeKey({ expires_at: future }))).toBe(false)
-  })
-})
-
-describe('isActive', () => {
-  it('returns true for non-revoked, non-expired key', () => {
-    expect(isActive(makeKey())).toBe(true)
+  it('hash differs for different keys', () => {
+    expect(hashApiKey('smlo_a')).not.toBe(hashApiKey('smlo_b'))
   })
 
-  it('returns false when revoked', () => {
-    expect(isActive(makeKey({ revoked_at: new Date().toISOString() }))).toBe(false)
+  it('validateScopes filters invalid scopes', () => {
+    const result = validateScopes(['read', 'write', 'invalid', 'hacker'])
+    expect(result).toEqual(['read', 'write'])
   })
 
-  it('returns false when expired', () => {
-    const past = new Date(Date.now() - 1000).toISOString()
-    expect(isActive(makeKey({ expires_at: past }))).toBe(false)
+  it('hasScope: admin scope grants all access', () => {
+    expect(hasScope(['admin'], 'read')).toBe(true)
+    expect(hasScope(['admin'], 'write')).toBe(true)
   })
 
-  it('returns false when revoked AND expired', () => {
-    const past = new Date(Date.now() - 1000).toISOString()
-    expect(isActive(makeKey({ revoked_at: past, expires_at: past }))).toBe(false)
+  it('hasScope: read scope does not grant write', () => {
+    expect(hasScope(['read'], 'write')).toBe(false)
   })
 })
