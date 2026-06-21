@@ -8,7 +8,7 @@ export type NotificationType =
   | 'achievement_unlocked'
   | 'system'
 
-export interface Notification {
+export interface NotificationCenterItem {
   id: string
   wallet: string
   type: NotificationType
@@ -42,12 +42,12 @@ export const NOTIFICATION_COLORS: Record<NotificationType, string> = {
   system: '#aaa',
 }
 
-export function unreadCount(notifications: Notification[]): number {
+export function unreadCount(notifications: NotificationCenterItem[]): number {
   return notifications.filter((n) => !n.is_read).length
 }
 
-export function groupByDate(notifications: Notification[]): Record<string, Notification[]> {
-  const groups: Record<string, Notification[]> = {}
+export function groupByDate(notifications: NotificationCenterItem[]): Record<string, NotificationCenterItem[]> {
+  const groups: Record<string, NotificationCenterItem[]> = {}
   for (const n of notifications) {
     const day = n.created_at.slice(0, 10)
     if (!groups[day]) groups[day] = []

@@ -1,4 +1,4 @@
-CREATE TABLE notifications (
+CREATE TABLE notification_center (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   wallet TEXT NOT NULL,
   type TEXT NOT NULL CHECK (type IN (
@@ -13,4 +13,4 @@ CREATE TABLE notifications (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX notifications_wallet_idx ON notifications (wallet, is_read, created_at DESC);
+CREATE INDEX notification_center_wallet_idx ON notification_center (wallet, is_read, created_at DESC);
